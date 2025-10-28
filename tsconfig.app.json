@@ -1,0 +1,23 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "composite": true,
+    "tsBuildInfoFile": "./node_modules/.tsbuildinfo/tsconfig.app.tsbuildinfo",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "allowJs": true,
+    "strict": true,
+    "jsx": "react-jsx",
+    "rootDir": "./src",
+
+    /* ---- CORREÇÃO DA FLAG ---- */
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "noEmit": false,           
+    "outDir": "./dist"         
+    /* -------------------------- */
+  },
+  "include": ["src"],
+  "exclude": ["node_modules"]
+}

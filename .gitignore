@@ -1,0 +1,57 @@
+# Dependências
+/node_modules
+
+# Yarn 2/3
+/.pnp
+/.pnp.js
+/.yarn/*
+
+# Build e Output
+# Pasta de build/produção
+
+/dist
+/build
+/out
+
+# Arquivos de Cache e Gerados Automaticamente
+.DS_Store
+
+# Variáveis de ambiente locais
+
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Cache do VS Code
+
+.vscode-test
+.vscode-test-web
+
+# Arquivos de log e cache do Vite
+
+/.vite
+/.cache
+/coverage
+
+# Arquivos de sistema gerados
+
+/temp
+/tmp
+
+# TypeScript
+# Cache de compilação do TypeScript
+
+*.tsbuildinfo
+
+# Arquivos de definições de tipo (se gerados separadamente)
+
+*.d.ts.map
+*.js.map
+
+# Logs de Erro do NPM
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+pnpm-error.log*
