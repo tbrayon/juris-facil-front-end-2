@@ -1,6 +1,16 @@
-import React, { useState } from 'react'; 
+import React, { useState } from 'react';
+import {
+  Scale, FileText, Calendar, FileSignature, LogOut, BarChart3,
+  FileBarChart, Shield, Menu as MenuIcon, HomeIcon, Contact, LifeBuoy
+} from 'lucide-react';
+
 import { Button } from './ui/button';
-import { Scale, Users, FileText, Calendar, FileSignature, LogOut, BarChart3, FileBarChart, Shield, Menu as MenuIcon, HomeIcon, Contact, LifeBuoy } from 'lucide-react';
+import { Toaster } from './ui/sonner';
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from './ui/sheet';
+import { Separator } from './ui/separator';
+import { useIsMobile } from '../use-mobile';
+
+// === IMPORTS COM NOMES EXATOS DOS ARQUIVOS ===
 import { ClientesView } from './ClientesView';
 import { ProcessosView } from './ProcessosView';
 import PrazosView from './PrazosView';
@@ -9,37 +19,61 @@ import { DashboardView } from './DashboardView';
 import { RelatoriosView } from './RelatoriosView';
 import { UsuariosView } from './UsuariosView';
 import { Home } from './Home';
-import { Toaster } from './ui/sonner';
-import { Footer } from './Footer';
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from './ui/sheet';
-import { useIsMobile } from '../use-mobile'; 
-import { Separator } from './ui/separator';
 import Menu from './Menu';
-import { Sac } from './Sac';
-import { TermosDeUso } from './Termos-de-uso';
-import { PoliticaDePrivacidade } from './Politica-de-privacidade';
 import { CookieConsentBanner } from './CookieConsentBanner';
-import { PoliticaDeCookies } from './Politica-de-Cookies';
 
+// === COMPONENTES LEGAIS (com export nomeado) ===
+import { Footer } from './Footer';                    // Footer.tsx
+import { Sac } from './Sac';                          // Sac.tsx
+import { TermosDeUso } from './Termos-de-uso';        // Termos-de-uso.tsx
+import { PoliticaDePrivacidade }  from './Politica-de-privacidade'; // Politica-de-privacidade.tsx
+import { PoliticaDeCookies } from './Politica-de-cookies';         // Politica-de-cookies.tsx
+
+// === TIPOS ===
+export type AppView =
+  | 'home' | 'dashboard' | 'clientes' | 'processos' | 'prazos' | 'contratos'
+  | 'relatorios' | 'usuarios' | 'suporte' | 'termos' | 'privacidade' | 'cookies';
+
+export type NavigateFunc = (view: AppView) => void;
+
+// === PROPS DO HEADER ===
 interface HeaderProps {
   userName: string;
   userTipo: string;
   onLogout: () => void;
 }
 
+// === COMPONENTE HEADER ===
 export default function Header({ userName, userTipo, onLogout }: HeaderProps) {
-  // ... (todos os seus 'useState' e funções 'handle...', 'CurrentView') ...
-  const [activeView, setActiveView] = useState<
-    'home' | 'dashboard' | 'clientes' | 'processos' | 'prazos' | 'contratos' |
-    'relatorios' | 'usuarios' | 'suporte' | 'termos' | 'privacidade' | 'cookies'
-  >('home');
+  const [activeView, setActiveView] = useState<AppView>('home');
   const [clienteIdParaEditar, setClienteIdParaEditar] = useState<string | null>(null);
   const [processoIdParaEditar, setProcessoIdParaEditar] = useState<string | null>(null);
   const [menuMobileAberto, setMenuMobileAberto] = useState(false);
   const isMobile = useIsMobile();
 
-  const CurrentView = () => { /* ... seu switch case ... */
-     switch (activeView) {
+  const handleNavigate: NavigateFunc = (view) => {
+    setActiveView(view);
+    setMenuMobileAberto(false);
+  };
+
+  const handleVoltarInicio = () => {
+    setActiveView('home');
+    setClienteIdParaEditar(null);
+    setProcessoIdParaEditar(null);
+  };
+
+  const handleEditarCliente = (clienteId: string) => {
+    setClienteIdParaEditar(clienteId);
+    setActiveView('clientes');
+  };
+
+  const handleEditarProcesso = (processoId: string) => {
+    setProcessoIdParaEditar(processoId);
+    setActiveView('processos');
+  };
+
+  const CurrentView = () => {
+    switch (activeView) {
       case 'home':
         return <Home userTipo={userTipo} onNavigate={handleNavigate} />;
       case 'dashboard':
@@ -73,86 +107,63 @@ export default function Header({ userName, userTipo, onLogout }: HeaderProps) {
           />
         );
       case 'usuarios':
-        return userTipo === 'administrador' ? <UsuariosView onVoltar={handleVoltarInicio} /> : null;
+        return userTipo === 'administrador' ? (
+          <UsuariosView onVoltar={handleVoltarInicio} />
+        ) : null;
+
+      // === PÁGINAS LEGAIS ===
       case 'suporte':
-        return <Sac />;
+        return <Sac onNavigate={handleNavigate} />;
       case 'termos':
-        return <TermosDeUso />;
+        return <TermosDeUso onNavigate={handleNavigate} />;
       case 'privacidade':
-        return <PoliticaDePrivacidade />;
+        return <PoliticaDePrivacidade onNavigate={handleNavigate} />;
       case 'cookies':
-        // Certifique-se que o nome do componente aqui bate com a importação
-        return <PoliticaDeCookies />; 
+        return <PoliticaDeCookies onNavigate={handleNavigate} />;
+
       default:
         return <Home userTipo={userTipo} onNavigate={handleNavigate} />;
     }
   };
 
-   const handleEditarCliente = (clienteId: string) => {
-    setClienteIdParaEditar(clienteId);
-    setActiveView('clientes');
-  };
-
-  const handleEditarProcesso = (processoId: string) => {
-    setProcessoIdParaEditar(processoId);
-    setActiveView('processos');
-  };
-
-  const handleVoltarInicio = () => {
-    setActiveView('home');
-    setClienteIdParaEditar(null);
-    setProcessoIdParaEditar(null);
-  };
-
-  const handleNavigate = (view:
-    'home' | 'dashboard' | 'clientes' | 'processos' | 'prazos' | 'contratos' |
-    'relatorios' | 'usuarios' | 'suporte' | 'termos' | 'privacidade' | 'cookies'
-  ) => {
-    setActiveView(view);
-    setMenuMobileAberto(false);
-  };
-
-
   return (
     <>
       <Toaster position="top-right" richColors />
       <div className="min-h-screen bg-[#f6f3ee] flex flex-col">
-        {/* Header (Top Bar) */}
-        <header className="bg-white border-b-2 border-[#d4c4b0] shadow-md sticky top-0 z-20">
-          {/* ... (conteúdo do <header>) ... */}
-           <div className="w-full flex items-center justify-between px-4 py-4 md:px-6">
+        {/* Header Principal */}
+        <header className="bg-white border-b-2 border-[#d4c4b0] shadow-sm sticky top-0 z-20">
+          <div className="max-w-7xl mx-auto w-full flex items-center justify-between px-6 py-4">
             {/* Logo */}
             <button
               onClick={handleVoltarInicio}
-              className="flex items-center gap-2 md:gap-3 cursor-pointer hover:opacity-80 transition-opacity duration-200 group"
+              className="flex items-center gap-2 md:gap-3 cursor-pointer hover:opacity-80 transition-opacity group"
             >
-              <div className="bg-gradient-to-br from-[#a16535] to-[#8b5329] p-1.5 md:p-2 rounded-lg shadow-lg group-hover:shadow-xl transition-shadow duration-200">
-                <Scale className="w-6 h-6 md:w-8 md:h-8 text-white" />
+              <div className="bg-gradient-to-br from-[#a16535] to-[#8b5329] p-2.5 rounded-lg shadow-lg group-hover:shadow-xl transition-shadow">
+                <Scale className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-lg md:text-2xl text-[#2d1f16]">
-                  JURIS <span className="text-[#a16535]">FÁCIL</span>
+                <h1 className="text-xl md:text-2xl text-[#2d1f16] font-semibold">
+                  JURIS <span className="text-[#a16535] font-normal">FÁCIL</span>
                 </h1>
-                <p className="text-xs md:text-sm text-[#6b5544] hidden sm:block">Sistema de Gestão Jurídica</p>
+                <p className="text-xs text-[#6b5544] hidden sm:block">Sistema de Gestão Jurídica</p>
               </div>
             </button>
 
-            {/* Lado Direito do Header */}
+            {/* Usuário + Menu Mobile + Sair */}
             <div className="flex items-center gap-4">
               <div className="hidden sm:block text-right">
                 <p className="text-sm text-[#6b5544]">Bem-vindo(a),</p>
                 <p className="text-[#2d1f16] font-semibold">{userName}</p>
               </div>
 
-              {/* Menu Mobile (Sheet) */}
+              {/* Menu Mobile */}
               {isMobile && (
                 <Sheet open={menuMobileAberto} onOpenChange={setMenuMobileAberto}>
-                   {/* ... (SheetTrigger, SheetContent com todos os botões) ... */}
-                   <SheetTrigger asChild>
+                  <SheetTrigger asChild>
                     <Button
                       variant="outline"
                       size="icon"
-                      className="md:hidden border-2 border-[#a16535] text-[#a16535] hover:bg-[#a16535] hover:text-white transition-all duration-200"
+                      className="md:hidden border-2 border-[#a16535] text-[#a16535] hover:bg-[#a16535] hover:text-white"
                     >
                       <MenuIcon className="h-5 w-5" />
                     </Button>
@@ -236,7 +247,7 @@ export default function Header({ userName, userTipo, onLogout }: HeaderProps) {
                       <Button
                         variant="outline"
                         onClick={onLogout}
-                        className="w-full justify-start border-2 border-[#a16535] text-[#a16535] hover:bg-[#a16535] hover:text-white transition-all duration-200"
+                        className="w-full justify-start border-2 border-[#a16535] text-[#a16535] hover:bg-[#a16535] hover:text-white"
                       >
                         <LogOut className="w-4 h-4 mr-2" /> Sair
                       </Button>
@@ -245,11 +256,11 @@ export default function Header({ userName, userTipo, onLogout }: HeaderProps) {
                 </Sheet>
               )}
 
-              {/* Botão Sair - Desktop */}
+              {/* Botão Sair (Desktop) */}
               <Button
                 variant="outline"
                 onClick={onLogout}
-                className="hidden md:flex border-2 border-[#a16535] text-[#a16535] hover:bg-[#a16535] hover:text-white transition-all duration-200 shadow-sm hover:shadow-md"
+                className="hidden md:flex border-2 border-[#a16535] text-[#a16535] hover:bg-[#a16535] hover:text-white shadow-sm hover:shadow-md h-10 px-4"
               >
                 <LogOut className="w-4 h-4 mr-2" />
                 Sair
@@ -258,31 +269,23 @@ export default function Header({ userName, userTipo, onLogout }: HeaderProps) {
           </div>
         </header>
 
-        {/* CONTAINER PRINCIPAL: Menu Lateral + Conteúdo */}
-        <div className="flex flex-grow">
-          {/* Menu Lateral Desktop (Sidebar) */}
-          {activeView !== 'home' && !isMobile && !['termos', 'privacidade', 'cookies'].includes(activeView) && (
-            <Menu
-              activeView={activeView}
-              userTipo={userTipo}
-              onNavigate={handleNavigate}
-            />
-          )}
+        {/* Menu Desktop */}
+        {!isMobile && !['termos', 'privacidade', 'cookies', 'suporte'].includes(activeView) && (
+          <div className="bg-white border-b-2 border-[#d4c4b0] shadow-sm sticky top-[72px] md:top-[76px] z-10">
+            <Menu activeView={activeView} userTipo={userTipo} onNavigate={handleNavigate} />
+          </div>
+        )}
 
-          {/* Área de Conteúdo Principal (View Switcher) */}
-          <main className="flex-1 w-full p-4 md:p-8">
-            <div className={!['termos', 'privacidade', 'cookies'].includes(activeView) ? 'max-w-7xl mx-auto' : ''}>
-                 <CurrentView />
-            </div>
-          </main>
-        </div>
+        {/* Conteúdo Principal */}
+        <main className="flex-1 w-full p-4 md:p-8">
+          <div className={!['termos', 'privacidade', 'cookies', 'suporte'].includes(activeView) ? 'max-w-7xl mx-auto' : ''}>
+            <CurrentView />
+          </div>
+        </main>
 
+        {/* Footer e Banner */}
         <Footer onNavigate={handleNavigate} />
-        
-        {/* NOVO: Renderizar o Banner de Consentimento aqui */}
-        {/* Ele precisa da função onNavigate para o link da política */}
         <CookieConsentBanner onNavigate={handleNavigate} />
-        
       </div>
     </>
   );

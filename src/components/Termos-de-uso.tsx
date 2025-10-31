@@ -1,42 +1,80 @@
-// src/components/Termos-de-uso.tsx
 import React from 'react';
+import { FileText, ArrowLeft } from 'lucide-react';
+import { Button } from './ui/button';
 
-export function TermosDeUso() {
+type AppView = 'home' | 'dashboard' | 'suporte' | 'termos' | 'privacidade' | 'cookies';
+type NavigateFunc = (view: AppView) => void;
+
+interface TermosDeUsoProps {
+  onNavigate: NavigateFunc;
+}
+
+export function TermosDeUso({ onNavigate }: TermosDeUsoProps) {
   return (
-    <div className="max-w-4xl mx-auto p-6 md:p-8 bg-white rounded-lg shadow-md border border-[#d4c4b0] mt-10 prose prose-stone">
-      <h1 className="text-3xl font-semibold text-[#2d1f16] mb-6">Termos de Uso - JURIS FÁCIL</h1>
-      
-      <p className="text-sm text-[#6b5544] mb-4">Última atualização: [Inserir Data]</p>
+    <div className="max-w-2xl sm:max-w-7xl mx-auto mt-10 px-4 sm:px-0">
+      {/* Botão "Página Inicial" FORA DO CARD – RESPONSIVO */}
+      <div className="flex justify-end mb-6">
+        <div className="w-full sm:w-auto flex justify-center sm:justify-end">
+          <Button
+            variant="outline"
+            onClick={() => onNavigate('home')}
+            className="w-full sm:w-auto border-2 border-[#a16535] text-[#a16535] hover:bg-[#a16535] hover:text-white transition-all duration-200 rounded-md px-4 py-2 text-sm sm:text-base"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Página Inicial
+          </Button>
+        </div>
+      </div>
 
-      <h2 className="text-xl font-semibold text-[#a16535] mt-6 mb-3">1. Aceitação dos Termos</h2>
-      <p>Ao acessar e usar o sistema JURIS FÁCIL ("Serviço"), você concorda em cumprir e estar vinculado a estes Termos de Uso. Se você não concorda com estes termos, não utilize o Serviço.</p>
+      {/* Card Principal */}
+      <div className="p-5 sm:p-6 md:p-8 bg-white rounded-lg shadow-md border border-[#d4c4b0]">
+        {/* Cabeçalho */}
+        <div className="mb-6">
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold text-[#2d1f16] flex items-center gap-2">
+            <FileText className="w-6 h-6 sm:w-7 sm:h-7 text-[#a16535] flex-shrink-0" />
+            Termos de Uso
+          </h2>
+          <p className="text-sm sm:text-base text-[#6b5544] mt-1">
+            Regras e condições de uso do sistema
+          </p>
+        </div>
 
-      <h2 className="text-xl font-semibold text-[#a16535] mt-6 mb-3">2. Descrição do Serviço</h2>
-      <p>JURIS FÁCIL é um sistema de gestão jurídica projetado para auxiliar [Descrever brevemente o público e a finalidade principal, ex: advogados e escritórios na organização de processos, clientes e prazos].</p>
+        {/* Título Principal */}
+        <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-[#2d1f16] mb-2">
+          Termos de Uso - JURIS FÁCIL
+        </h1>
+        <p className="text-sm sm:text-base text-[#6b5544] mb-6">
+          Ao acessar e utilizar o aplicativo <strong>JURIS FÁCIL</strong>, o usuário declara estar de acordo com os Termos de Uso aqui descritos:
+        </p>
 
-      <h2 className="text-xl font-semibold text-[#a16535] mt-6 mb-3">3. Contas de Usuário</h2>
-      <p>Para acessar certas funcionalidades, você pode precisar criar uma conta. Você é responsável por manter a confidencialidade de sua senha e conta, e por todas as atividades que ocorram sob sua conta. Notifique-nos imediatamente sobre qualquer uso não autorizado.</p>
+        {/* Lista de Termos */}
+        <ul className="list-disc pl-5 sm:pl-6 space-y-3 text-gray-700 text-sm sm:text-base">
+          <li>O <strong>cadastro é obrigatório</strong> e o usuário é responsável pela veracidade das informações fornecidas.</li>
+          <li>O <strong>login e senha são pessoais e intransferíveis</strong>. O usuário deve manter a confidencialidade desses dados.</li>
+          <li>É <strong>proibido utilizar o app para atividades ilícitas</strong>, inserir informações de terceiros sem consentimento ou comprometer a integridade e segurança do aplicativo.</li>
+          <li>O usuário responde por <strong>danos causados pelo uso indevido</strong>, sendo passível de responsabilização civil e criminal.</li>
+          <li>O <strong>JURIS FÁCIL não se responsabiliza</strong> por instabilidades técnicas, danos em dispositivos ou infecções por software malicioso.</li>
+        </ul>
 
-      <h2 className="text-xl font-semibold text-[#a16535] mt-6 mb-3">4. Uso Aceitável</h2>
-      <p>Você concorda em usar o Serviço apenas para fins legais e de acordo com estes Termos. Você não deve usar o Serviço de forma que possa danificar, desabilitar, sobrecarregar ou prejudicar o sistema.</p>
-      {/* Adicionar outros pontos relevantes sobre responsabilidades do usuário, ex: precisão dos dados inseridos */}
-
-      <h2 className="text-xl font-semibold text-[#a16535] mt-6 mb-3">5. Propriedade Intelectual</h2>
-      <p>O Serviço e seu conteúdo original, recursos e funcionalidades são e permanecerão propriedade exclusiva de [Nome da Empresa/Seu Nome] e seus licenciadores.</p>
-
-      <h2 className="text-xl font-semibold text-[#a16535] mt-6 mb-3">6. Isenção de Garantias</h2>
-      <p>O Serviço é fornecido "COMO ESTÁ" e "CONFORME DISPONÍVEL". Não garantimos que o serviço será ininterrupto, seguro ou livre de erros.</p>
-
-      <h2 className="text-xl font-semibold text-[#a16535] mt-6 mb-3">7. Limitação de Responsabilidade</h2>
-      <p>Em nenhuma circunstância [Nome da Empresa/Seu Nome] será responsável por quaisquer danos indiretos, incidentais, especiais, consequenciais ou punitivos decorrentes do uso do Serviço.</p>
-
-      <h2 className="text-xl font-semibold text-[#a16535] mt-6 mb-3">8. Modificações nos Termos</h2>
-      <p>Reservamo-nos o direito de modificar estes Termos a qualquer momento. Notificaremos sobre quaisquer alterações publicando os novos Termos no site. É sua responsabilidade revisar periodicamente.</p>
-
-      <h2 className="text-xl font-semibold text-[#a16535] mt-6 mb-3">9. Contato</h2>
-      <p>Se você tiver alguma dúvida sobre estes Termos, entre em contato conosco em: <a href="mailto:[Seu Email de Contato]" className="text-[#a16535] hover:underline">[Seu Email de Contato]</a>.</p>
-      
-      {/* Adicionar cláusulas sobre rescisão, lei aplicável, etc., conforme necessário */}
+        {/* Suporte + e-mail: TUDO NA MESMA LINHA */}
+        <p className="mt-6 text-xs sm:text-sm text-[#6b5544]">
+          Dúvidas? Use o{' '}
+          <button
+            type="button"
+            onClick={() => onNavigate('suporte')}
+            className="text-[#a16535] hover:underline font-medium focus:outline-none"
+          >
+            suporte disponível
+          </button>{' '}
+          ou envie um e-mail para:{' '}
+          <a
+            href="mailto:suporte@jurisfacil.com.br"
+            className="text-[#a16535] hover:underline font-medium"
+          >
+            suporte@jurisfacil.com.br
+          </a>
+        </p>
+      </div>
     </div>
   );
 }
