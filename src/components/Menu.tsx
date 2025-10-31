@@ -29,7 +29,6 @@ interface MenuProps {
 }
 
 export default function Menu({ activeView, userTipo, onNavigate }: MenuProps) {
-  if (activeView === 'home') return null;
 
   // Detecta se a tela é mobile (usado para trocar ícones)
   const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;

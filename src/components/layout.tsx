@@ -135,7 +135,7 @@ export default function Layout({
 
         {/* MENU DESKTOP (Mostrado apenas em telas 'lg' ou maiores) */}
         <div className="hidden lg:block"> {/* <-- LÓGICA ALTERADA */}
-          {currentView !== 'home' &&
+          {currentView &&
             !['termos', 'privacidade', 'cookies', 'suporte'].includes(currentView) && (
               <Menu activeView={currentView} userTipo={userTipo} onNavigate={onNavigate} />
             )}
