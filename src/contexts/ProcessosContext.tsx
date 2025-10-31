@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { getLocalDateString } from '../utils/formatters';
+import { getLocalDateString } from '../others/formatters';
 
 export interface Notificacao {
   id: string;

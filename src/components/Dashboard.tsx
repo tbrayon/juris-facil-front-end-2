@@ -330,14 +330,15 @@ export function DashboardView({ onVoltar, usuarioTipo }: DashboardViewProps) {
                 </AlertDialogContent>
               </AlertDialog>
             )}
-            <Button
-              variant="outline"
-              onClick={onVoltar}
-              className="border-2 border-[#a16535] text-[#a16535] hover:bg-[#a16535] hover:text-white transition-all duration-200"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Página Inicial
-            </Button>
+          <Button
+            variant="outline"
+            onClick={onVoltar}
+            className="w-full sm:w-auto !bg-white !text-[#a16535] border-2 border-[#a16535] hover:!bg-[#a16535] hover:!text-white transition-all duration-200"
+          >
+           <ArrowLeft className="w-4 h-4 mr-2" />
+             Página Inicial
+          </Button>
+
           </div>
         </div>
       </div>

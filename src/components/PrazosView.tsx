@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 // import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 // ... (outros imports simulados) ...
 // import { formatDateBR } from '../utils/formatters';
@@ -6,6 +6,23 @@ import React, { useState, useMemo } from 'react';
 // --- INÍCIO DAS SIMULAÇÕES (MOCKS) ---
 // Como não temos acesso aos arquivos ./ui/*, ../contexts/*, etc.,
 // vamos criar componentes e hooks simulados para fazer o código funcionar.
+
+// Mock para toast (sonner) - ADICIONADO
+const toast = {
+  success: (message: string, options?: { description?: string; duration?: number }) => {
+    console.log(`[TOAST SUCCESS]: ${message}`, options?.description || '');
+    // Simula um alerta simples no navegador
+    // window.alert(`SUCESSO: ${message}\n${options?.description || ''}`);
+  },
+  error: (message: string, options?: { description?: string; duration?: number }) => {
+    console.error(`[TOAST ERROR]: ${message}`, options?.description || '');
+    // window.alert(`ERRO: ${message}\n${options?.description || ''}`);
+  },
+  info: (message: string) => {
+    console.info(`[TOAST INFO]: ${message}`);
+    // window.alert(`INFO: ${message}`);
+  }
+};
 
 // Mock para icones lucide-react
 const LucideMock = ({ className = '', children, ...props }: React.SVGProps<SVGSVGElement> & { children?: React.ReactNode }) => (
@@ -34,6 +51,10 @@ const Search = (props: React.SVGProps<SVGSVGElement>) => <LucideMock {...props}>
 const Eye = (props: React.SVGProps<SVGSVGElement>) => <LucideMock {...props}><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" /><circle cx="12" cy="12" r="3" /></LucideMock>;
 const Filter = (props: React.SVGProps<SVGSVGElement>) => <LucideMock {...props}><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" /></LucideMock>;
 const ArrowLeft = (props: React.SVGProps<SVGSVGElement>) => <LucideMock {...props}><path d="m12 19-7-7 7-7" /><path d="M19 12H5" /></LucideMock>;
+// NOVO: Ícone 'X' para fechar o modal
+const X = (props: React.SVGProps<SVGSVGElement>) => <LucideMock {...props}><path d="M18 6 6 18" /><path d="m6 6 12 12" /></LucideMock>;
+// NOVO: Ícone 'Plus' para o botão de simulação
+const PlusCircle = (props: React.SVGProps<SVGSVGElement>) => <LucideMock {...props}><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="16"/><line x1="8" x2="16" y1="12" y2="12"/></LucideMock>;
 
 
 // Mock para ./ui/card
@@ -180,9 +201,23 @@ const formatDateBR = (dateString: string | null | undefined) => {
   }
 };
 
+// Mock do Processo para o Modal
+type MockProcesso = {
+  id: string;
+  proximoPrazo: string | null;
+  numeroProcesso: string;
+  clienteNome: string;
+  clienteDocumento: string;
+  advogadoResponsavel: string;
+  // Adicione outros campos que possam existir no seu objeto 'processo' real
+  tipoAcao?: string;
+  vara?: string;
+  ultimaAtualizacao?: string;
+};
+
 // Mock para ../contexts/ProcessosContext
 // Data de referência: 2025-10-27
-const mockProcessosData = [
+const mockProcessosData: MockProcesso[] = [ // Tipagem adicionada
   {
     id: '1',
     proximoPrazo: '2025-10-27T12:00:00.000Z', // Hoje
@@ -217,7 +252,7 @@ const mockProcessosData = [
   },
   {
     id: '5',
-    proximoPrazo: null, // Sem prazo
+    proximoPrazo: null, // Sem prazo (NÃO DEVE APARECER NA LISTA DE PRAZOS)
     numeroProcesso: '0001111-22.2025.8.26.0005',
     clienteNome: 'Pedro Martins',
     clienteDocumento: '111.222.333-44',
@@ -225,7 +260,12 @@ const mockProcessosData = [
   }
 ];
 
+
+// ATUALIZADO: O mock do hook agora é apenas uma função simples
+// O estado será gerenciado dentro do componente PrazosView
 const useProcessos = () => {
+  // Em uma aplicação real, isso viria de um React.Context
+  // Aqui, apenas retornamos a lista estática para o useMemo usar
   return { processos: mockProcessosData };
 };
 // --- FIM DAS SIMULAÇÕES (MOCKS) ---
@@ -241,7 +281,7 @@ interface PrazoInfo {
   advogado: string;
   diasRestantes: number;
   urgencia: 'vencido' | 'hoje' | 'proximos7' | 'futuro';
-  processo: any;
+  processo: MockProcesso; // Usando o MockProcesso
 }
 
 interface PrazosViewProps {
@@ -250,19 +290,32 @@ interface PrazosViewProps {
 
 // Garantir que PrazosView seja exportado como default ou App
 function PrazosView({ onVoltar }: PrazosViewProps) {
-  const { processos } = useProcessos();
+  
+  // NOVO: Estado reativo para simular o Contexto de processos
+  // Começa com os dados do mock
+  const [listaProcessos, setListaProcessos] = useState(mockProcessosData);
+
+  // O 'useProcessos' mockado é simples, então pegamos a lista do nosso estado reativo
+  // Isso garante que o useMemo e useProcessos usem a lista mais atual
+  const { processos: processosDoHook } = useProcessos(); 
+  const processos = listaProcessos; // Usamos o ESTADO REATIVO
+  
   const [termoBusca, setTermoBusca] = useState('');
   const [filtroUrgencia, setFiltroUrgencia] = useState<string>('todos');
   const [filtroAdvogado, setFiltroAdvogado] = useState<string>('todos');
+  
+  // NOVO: Estado para controlar o modal
+  const [processoSelecionado, setProcessoSelecionado] = useState<MockProcesso | null>(null);
 
   // Extrair e processar prazos dos processos
+  // ATUALIZADO: O useMemo agora depende de 'processos' (nosso estado reativo)
   const prazos = useMemo<PrazoInfo[]>(() => {
     // Definir "hoje" de forma consistente com os mocks
     const hoje = new Date('2025-10-27T12:00:00.000Z');
     hoje.setUTCHours(0, 0, 0, 0); // Usar UTC para consistência
 
     return processos
-      .filter(p => p.proximoPrazo) // Isso filtra os nulos
+      .filter(p => p.proximoPrazo) // Isso filtra os nulos (Ex: Pedro Martins)
       .map(processo => {
         // --- CORREÇÃO: processo.proximoPrazo não é nulo aqui devido ao filtro ---
         const dataPrazo = new Date(processo.proximoPrazo as string); 
@@ -293,11 +346,11 @@ function PrazosView({ onVoltar }: PrazosViewProps) {
           advogado: processo.advogadoResponsavel,
           diasRestantes,
           urgencia,
-          processo,
+          processo: processo as MockProcesso, // Passa o objeto processo inteiro
         };
       })
       .sort((a, b) => new Date(a.data).getTime() - new Date(b.data).getTime());
-  }, [processos]);
+  }, [processos]); // AGORA DEPENDE DO ESTADO REATIVO
 
   // Aplicar filtros
   const prazosFiltrados = useMemo(() => {
@@ -331,7 +384,7 @@ function PrazosView({ onVoltar }: PrazosViewProps) {
   const advogados = useMemo(() => {
     const uniqueAdvogados = [...new Set(processos.map(p => p.advogadoResponsavel))];
     return uniqueAdvogados.filter(Boolean);
-  }, [processos]);
+  }, [processos]); // AGORA DEPENDE DO ESTADO REATIVO
 
   const getUrgenciaBadge = (urgencia: PrazoInfo['urgencia'], diasRestantes: number) => {
     switch (urgencia) {
@@ -362,10 +415,19 @@ function PrazosView({ onVoltar }: PrazosViewProps) {
     }
   };
 
+  // ATUALIZADO: Handler para abrir o modal
   const handleVerProcesso = (prazo: PrazoInfo) => {
-    // Implementar navegação para o processo (pode adicionar modal ou navegação)
-    console.log('Ver processo:', prazo.processo);
+    setProcessoSelecionado(prazo.processo);
+    // console.log('Ver processo:', prazo.processo); // Mantido para debug
   };
+
+  // NOVO: Handler para fechar o modal
+  const fecharModal = () => {
+    setProcessoSelecionado(null);
+  };
+  
+  // REMOVIDO: O botão e a função handleSimularAdicao foram removidos.
+
 
   return (
     // {/* ALTERAÇÃO: Adicionado 'p-4' para dar espaçamento em telas pequenas */}
@@ -377,22 +439,27 @@ function PrazosView({ onVoltar }: PrazosViewProps) {
       */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
-          <h2 className="text-[#2d1f16] flex items-center gap-2">
+          <h2 className="text-2xl font-bold text-[#2d1f16] flex items-center gap-2"> {/* Aumentei a fonte do título */}
             <Calendar className="w-6 h-6 text-[#a16535]" />
             Prazos e Audiências
           </h2>
           <p className="text-[#6b5544]">Acompanhe todos os prazos processuais e audiências</p>
         </div>
+        {/* BOTÕES NO CABEÇALHO */}
+        <div className="flex flex-col sm:flex-row gap-2">
+          {/* REMOVIDO: Botão de Simulação removido a pedido do usuário */}
+        
         <Button
-          variant="outline"
-          onClick={onVoltar}
-          className="border-2 border-[#a16535] text-[#a16535] hover:bg-[#a16535] hover:text-white transition-all duration-200 self-start sm:self-auto"
-        >
-          {/* ALTERAÇÃO: 'mr-0 sm:mr-2' remove a margem do ícone em telas pequenas */}
-          <ArrowLeft className="w-4 h-4 mr-0 sm:mr-2" />
-          {/* ALTERAÇÃO: 'hidden sm:inline' esconde o texto em telas pequenas, criando um botão de ícone */}
-          <span className="hidden sm:inline">Página Inicial</span>
-        </Button>
+                variant="outline"
+                onClick={onVoltar}
+                // Classes com !important (prefixo !) aplicadas
+                className="w-full sm:w-auto !bg-white !text-[#a16535] border-2 border-[#a16535] hover:!bg-[#a16535] hover:!text-white transition-all duration-200"
+            >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Página Inicial
+            </Button>
+        </div>
+
       </div>
 
       {/* Cards de Resumo */}
@@ -406,7 +473,7 @@ function PrazosView({ onVoltar }: PrazosViewProps) {
             <div className="flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-2">
               <div className="text-center sm:text-left">
                 <p className="text-red-700 text-sm mb-1">Vencidos</p>
-                <p className="text-red-800 text-4xl">{stats.vencidos}</p>
+                <p className="text-red-800 text-4xl font-bold">{stats.vencidos}</p> {/* Adicionado font-bold */}
               </div>
               <AlertCircle className="w-10 h-10 text-red-600" />
             </div>
@@ -419,7 +486,7 @@ function PrazosView({ onVoltar }: PrazosViewProps) {
             <div className="flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-2">
               <div className="text-center sm:text-left">
                 <p className="text-amber-700 text-sm mb-1">Hoje</p>
-                <p className="text-amber-800 text-4xl">{stats.hoje}</p>
+                <p className="text-amber-800 text-4xl font-bold">{stats.hoje}</p> {/* Adicionado font-bold */}
               </div>
               <Clock className="w-10 h-10 text-amber-600" />
             </div>
@@ -432,7 +499,7 @@ function PrazosView({ onVoltar }: PrazosViewProps) {
             <div className="flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-2">
               <div className="text-center sm:text-left">
                 <p className="text-orange-700 text-sm mb-1">Próximos 7 dias</p>
-                <p className="text-orange-800 text-4xl">{stats.proximos7}</p>
+                <p className="text-orange-800 text-4xl font-bold">{stats.proximos7}</p> {/* Adicionado font-bold */}
               </div>
               <Calendar className="w-10 h-10 text-orange-600" />
             </div>
@@ -445,7 +512,7 @@ function PrazosView({ onVoltar }: PrazosViewProps) {
             <div className="flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-2">
               <div className="text-center sm:text-left">
                 <p className="text-green-700 text-sm mb-1">Futuros</p>
-                <p className="text-green-800 text-4xl">{stats.futuros}</p>
+                <p className="text-green-800 text-4xl font-bold">{stats.futuros}</p> {/* Adicionado font-bold */}
               </div>
               <Calendar className="w-10 h-10 text-green-600" />
             </div>
@@ -607,9 +674,17 @@ function PrazosView({ onVoltar }: PrazosViewProps) {
                 {prazosFiltrados.map((prazo) => (
                   <Card key={prazo.id} className="bg-[#f6f3ee] border-[#d4c4b0]">
                     <CardContent className="p-4">
-                      {/* Linha 1: Processo e Ação */}
-                      <div className="flex justify-between items-start mb-2">
-                        <span className="text-[#2d1f16] font-mono text-sm font-semibold break-all pr-2">
+                      {/* MUDANÇA: 'items-start' -> 'items-center' 
+                        Isso vai alinhar verticalmente o ícone com o número do processo,
+                        mesmo que o número quebre em duas linhas.
+                      */}
+                      <div className="flex justify-between items-center mb-2">
+                        {/* MUDANÇA: 'break-all' -> 'break-words'
+                          'break-words' (overflow-wrap: break-word) é melhor para
+                          números de processo, pois tenta quebrar em hífens/espaços
+                          primeiro, o que é mais legível que o 'break-all'.
+                        */}
+                        <span className="text-[#2d1f16] font-mono text-sm font-semibold break-words pr-2">
                           {prazo.numeroProcesso}
                         </span>
                         <Button
@@ -663,9 +738,95 @@ function PrazosView({ onVoltar }: PrazosViewProps) {
         </CardContent>
         {/* --- FIM DA CORREÇÃO DA TABELA --- */}
       </Card>
+      
+      {/* --- INÍCIO DO MODAL ---
+        Renderiza o modal se 'processoSelecionado' não for nulo
+      */}
+      {processoSelecionado && (
+        <ModalProcesso processo={processoSelecionado} onClose={fecharModal} />
+      )}
+      {/* --- FIM DO MODAL --- */}
+      
     </div>
   );
 }
+
+// --- NOVO: Componente ModalProcesso ---
+// Um componente simples de modal para exibir detalhes do processo
+interface ModalProcessoProps {
+  processo: MockProcesso;
+  onClose: () => void;
+}
+
+function ModalProcesso({ processo, onClose }: ModalProcessoProps) {
+  // Encontrar o prazo correspondente para exibir a data formatada
+  const dataFormatada = formatDateBR(processo.proximoPrazo);
+
+  return (
+    // Backdrop
+    <div 
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+      onClick={onClose} // Fecha ao clicar no backdrop
+    >
+      {/* Conteúdo do Modal */}
+      <Card 
+        className="w-full max-w-lg bg-white border-2 border-[#a16535] shadow-2xl"
+        onClick={(e) => e.stopPropagation()} // Impede que o clique no card feche o modal
+      >
+        <CardHeader className="flex flex-row items-center justify-between border-b-2 border-[#d4c4b0] bg-[#f6f3ee] p-4">
+          <CardTitle className="text-[#2d1f16]">Detalhes do Processo</CardTitle>
+          <Button variant="ghost" size="sm" onClick={onClose} className="text-[#a16535] hover:text-[#8b5329] hover:bg-white/50">
+            <X className="w-5 h-5" />
+          </Button>
+        </CardHeader>
+        <CardContent className="p-6 space-y-4">
+          <div>
+            <Label className="text-[#6b5544]">Nº do Processo</Label>
+            <p className="text-[#2d1f16] font-mono text-lg">{processo.numeroProcesso}</p>
+          </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <Label className="text-[#6b5544]">Cliente</Label>
+              <p className="text-[#2d1f16]">{processo.clienteNome}</p>
+            </div>
+            <div>
+              <Label className="text-[#6b5544]">Documento</Label>
+              <p className="text-[#2d1f16]">{processo.clienteDocumento}</p>
+            </div>
+          </div>
+          
+          <div>
+            <Label className="text-[#6b5544]">Advogado Responsável</Label>
+            <p className="text-[#2d1f16]">{processo.advogadoResponsavel}</p>
+          </div>
+
+          {dataFormatada && (
+            <div>
+              <Label className="text-[#6b5544]">Próximo Prazo</Label>
+              <p className="text-[#2d1f16] font-medium">{dataFormatada}</p>
+            </div>
+          )}
+
+          {/* Adicione mais campos aqui se necessário */}
+          {/* <div>
+            <Label className="text-[#6b5544]">Tipo da Ação</Label>
+            <p className="text-[#2d1f16]">{processo.tipoAcao || 'N/A'}</p>
+          </div>
+          */}
+
+          <Button 
+            onClick={onClose}
+            className="w-full sm:w-auto !bg-[#a16535] !text-white hover:!bg-[#8b5329] transition-all duration-200"
+          >
+            Fechar
+          </Button>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
 
 // Adicionar exportação default para o ambiente de preview
 export default PrazosView;

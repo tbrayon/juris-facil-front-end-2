@@ -1,59 +1,43 @@
 // src/App.tsx
 import { useState } from 'react';
 import { LoginForm } from './components/LoginForm';
-import Header from './components/Header'; // Importando o Header (o layout principal)
+import  Layout  from './components/layout'; // ← CORRETO: Layout com L maiúsculo
 import { WelcomePage } from './components/Welcome-page';
+import { Sac } from './components/Sac';
+import { PoliticaDeCookies } from './components/Politica-de-cookies';
+import { PoliticaDePrivacidade } from './components/Politica-de-privacidade';
+import { TermosDeUso } from './components/Termos-de-uso';
+
+import { UsuariosProvider } from './contexts/UsuariosContext';
 import { ClientesProvider } from './contexts/ClientesContext';
 import { ProcessosProvider } from './contexts/ProcessosContext';
 import { ContratosProvider } from './contexts/ContratosContext';
-import { Sac} from './components/Sac'
-import { UsuariosProvider } from './contexts/UsuariosContext';
 import { Toaster } from './components/ui/sonner';
 
+import { AppView } from './others/navigation';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [showLogin, setShowLogin] = useState(false);
   const [userName, setUserName] = useState('');
   const [userTipo, setUserTipo] = useState('');
+  const [currentView, setCurrentView] = useState<AppView>('welcome');
 
   const handleLoginSuccess = (name: string, tipo: string) => {
     setUserName(name);
     setUserTipo(tipo);
     setIsLoggedIn(true);
-    setShowLogin(false);
+    setCurrentView('home');
   };
 
   const handleLogout = () => {
     setIsLoggedIn(false);
     setUserName('');
     setUserTipo('');
-    setShowLogin(false);
+    setCurrentView('welcome');
   };
 
-  const handleBackToWelcome = () => {
-    setShowLogin(false);
-  };
-
-  const renderContent = () => {
-    if (isLoggedIn) {
-      // Se estiver logado, renderiza o layout principal (Header)
-      return (
-        <Header
-          userName={userName}
-          userTipo={userTipo}
-          onLogout={handleLogout}
-        />
-      );
-    }
-
-    if (showLogin) {
-      // Se estiver na tela de login, mostra o formulário
-      return <LoginForm onLoginSuccess={handleLoginSuccess} onBack={handleBackToWelcome} />;
-    }
-
-    // Por padrão, mostra a página inicial de boas-vindas
-    return <WelcomePage onAcessarSistema={() => setShowLogin(true)} />;
+  const handleNavigate = (view: AppView) => {
+    setCurrentView(view);
   };
 
   return (
@@ -62,7 +46,33 @@ function App() {
         <ProcessosProvider>
           <ContratosProvider>
             <Toaster position="top-right" richColors />
-            {renderContent()}
+            <div className="min-h-screen bg-[#f6f3ee]">
+              {isLoggedIn ? (
+                <Layout
+                  userName={userName}
+                  userTipo={userTipo}
+                  onLogout={handleLogout}
+                  currentView={currentView}
+                  onNavigate={handleNavigate}
+                />
+              ) : (
+                <>
+                  {currentView === 'welcome' && (
+                    <WelcomePage
+                      onAcessarSistema={() => setCurrentView('login')}
+                      onNavigate={handleNavigate}
+                    />
+                  )}
+                  {currentView === 'login' && (
+                    <LoginForm onLoginSuccess={handleLoginSuccess} onBack={() => setCurrentView('welcome')} />
+                  )}
+                  {currentView === 'suporte' && <Sac onNavigate={handleNavigate} />}
+                  {currentView === 'termos' && <TermosDeUso onNavigate={handleNavigate} />}
+                  {currentView === 'privacidade' && <PoliticaDePrivacidade onNavigate={handleNavigate} />}
+                  {currentView === 'cookies' && <PoliticaDeCookies onNavigate={handleNavigate} />}
+                </>
+              )}
+            </div>
           </ContratosProvider>
         </ProcessosProvider>
       </ClientesProvider>

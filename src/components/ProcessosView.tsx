@@ -17,7 +17,7 @@ import { Badge } from './ui/badge';
 import { Separator } from './ui/separator';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from './ui/command';
-import { formatDateBR, formatCurrency, formatPercentage, formatNumeroContrato, formatNumeroProcesso, formatCPF, formatCNPJ, removeNonNumeric } from '../utils/formatters';
+import { formatDateBR, formatCurrency, formatPercentage, formatNumeroContrato, formatNumeroProcesso, formatCPF, formatCNPJ, removeNonNumeric } from '../others/formatters';
 
 interface ProcessosViewProps {
   processoIdParaEditar?: string | null;
@@ -791,11 +791,12 @@ export function ProcessosView({ processoIdParaEditar, onClearProcessoIdParaEdita
           <Button
             variant="outline"
             onClick={onVoltar}
-            className="border-2 border-[#a16535] text-[#a16535] hover:bg-[#a16535] hover:text-white transition-all duration-200"
+            className="w-full sm:w-auto !bg-white !text-[#a16535] border-2 border-[#a16535] hover:!bg-[#a16535] hover:!text-white transition-all duration-200"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Página Inicial
           </Button>
+
         </div>
       </div>
 

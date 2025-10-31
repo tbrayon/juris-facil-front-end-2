@@ -1,101 +1,119 @@
 // src/components/Welcome-page.tsx
 import React from 'react';
-// Ícones necessários para esta página
-import { Scale, ArrowRight } from 'lucide-react'; 
+import { Scale, ArrowRight } from 'lucide-react';
 import { Button } from './ui/button';
-// Não importamos mais o Footer principal aqui
+import { Footer } from './Footer';
 
 interface WelcomePageProps {
   onAcessarSistema: () => void;
+  onNavigate: (view: 'home' | 'dashboard' | 'clientes' | 'processos' | 'prazos' | 'contratos' | 'relatorios' | 'usuarios' | 'suporte' | 'termos' | 'privacidade' | 'cookies') => void;
 }
 
-export function WelcomePage({ onAcessarSistema }: WelcomePageProps) {
+export function WelcomePage({ onAcessarSistema, onNavigate }: WelcomePageProps) {
   return (
-    // Container geral da página
-    <div className="w-full min-h-screen flex flex-col bg-[#f6f3ee]"> 
-      
-      {/* Conteúdo principal centralizado, ocupa espaço vertical */}
-      <div className="flex-1 flex flex-col items-center justify-start pt-12 sm:pt-16 md:pt-20 p-4"> 
-        
-        {/* Limitador de largura para o conteúdo */}
-        <div className="w-full max-w-xl lg:max-w-2xl text-center"> 
-
-          {/* --- BLOCO DO LOGO E TÍTULO --- */}
-          <div className="mb-8 md:mb-10">
-            <div className="flex justify-center mb-4">
-              <div className="bg-[#a16535] p-3 md:p-4 rounded-xl shadow-lg"> {/* Padding ajustado */}
-                <Scale className="w-8 h-8 md:w-10 md:h-10 text-white" /> {/* Tamanho ajustado */}
+    <div 
+      className="w-full min-h-screen flex flex-col bg-[#f6f3ee]"
+      style={{
+        '--banner-height': '48px',
+        '--banner-height-v2': '40px',
+        '--full-height-with-banner': 'calc(100dvh - var(--banner-height))',
+        '--100dvw': '100dvw',
+        '--100dvh': '100dvh',
+        '--font-sans': 'ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"',
+        '--font-mono': 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
+        fontSynthesis: 'none',
+        textAlign: 'left' as const,
+        fontFamily: 'var(--font-sans)',
+        fontSize: '16px',
+        lineHeight: 'inherit',
+        color: '#2d1f16',
+        boxSizing: 'border-box',
+        margin: 0,
+        padding: 0,
+      } as React.CSSProperties}
+    >
+      {/* Container principal */}
+      <div 
+        className="flex-1 flex flex-col items-center justify-center py-8 sm:py-12"
+        style={{ minHeight: 'var(--full-height-with-banner)' }}
+      >
+        <div className="w-full max-w-7xl mx-auto px-4 space-y-6 sm:space-y-8">
+          
+          {/* Logo + Título */}
+          <div className="flex flex-col items-center space-y-4 text-center pt-6 sm:pt-8">
+            <div className="flex flex-col items-center gap-2 sm:gap-3">
+              <div className="flex items-center gap-2 sm:gap-3">
+                <div className="bg-[#a16535] p-2.5 sm:p-3 rounded-lg shadow-lg">
+                  <Scale className="w-8 h-8 sm:w-10 sm:h-10 text-[#f6f3ee]" />
+                </div>
+                <h1 className="text-3xl sm:text-5xl text-[#2d1f16] tracking-tight font-bold">
+                  JURIS <span className="text-[#a16535]">FÁCIL</span>
+                </h1>
               </div>
             </div>
-            <h1 className="text-3xl md:text-4xl text-[#2d1f16] font-extrabold mb-1 tracking-tight">
-              JURIS <span className="text-[#a16535]">FÁCIL</span>
-            </h1>
-            <p className="text-sm md:text-base text-[#6b5544]">Sistema de Gestão Jurídica</p>
           </div>
 
-          {/* --- BLOCO DE TEXTOS E BOTÃO --- */}
-          <div className="mb-8 md:mb-10 space-y-3 md:space-y-4"> {/* Espaçamento ajustado */}
-            <h2 className="text-base md:text-lg text-[#4a3629] font-normal px-2"> {/* Padding horizontal pequeno */}
-              Soluções jurídicas completas para você e seu escritório.
-            </h2>
-            <p className="text-sm text-[#6b5544] px-2">
-              Expertise, confiança e resultados.
-            </p>
+          {/* Linha branca separadora */}
+          <div className="w-full h-0.5 bg-white my-4 sm:my-6"></div>
+
+          {/* Textos + Botão */}
+          <div className="flex flex-col items-center space-y-4 sm:space-y-6 text-center">
+            <div className="space-y-1.5 sm:space-y-2">
+              <p className="text-[#4a3629] max-w-2xl text-base sm:text-lg">
+                Soluções jurídicas completas para você e seu escritório.
+              </p>
+              <p className="text-[#6b5544] max-w-2xl text-sm sm:text-base">
+                Expertise, confiança e resultados.
+              </p>
+            </div>
+
             {/* Botão Acessar Sistema */}
-            <div className="pt-2"> {/* Espaço acima do botão */}
-              <Button
-                onClick={onAcessarSistema}
-                className="w-auto bg-[#a16535] hover:bg-[#8b5329] text-white shadow-lg shadow-[#a16535]/40 transition-all duration-300 transform hover:scale-[1.03] text-sm px-6 py-2.5 font-semibold inline-flex items-center justify-center rounded-md" // rounded-md para cantos menos arredondados
-              >
-                Acessar Sistema
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
-            </div>
+            <Button
+              onClick={onAcessarSistema}
+              className="inline-flex items-center justify-center gap-2 text-sm font-medium h-10 rounded-md bg-[#a16535] hover:bg-[#8b5329] text-white px-6 sm:px-8 py-5 sm:py-6 shadow-xl shadow-[#a16535]/30 transition-all duration-300 hover:shadow-2xl hover:shadow-[#a16535]/40"
+            >
+              Acessar Sistema
+              <ArrowRight className="w-4 h-4" />
+            </Button>
           </div>
 
-          {/* --- Área de Estatísticas (Imagem com Overlay) --- */}
-          <div className="relative rounded-xl md:rounded-2xl overflow-hidden shadow-xl border border-[#d4c4b0]/50 w-full mx-auto"> {/* Borda mais sutil, cantos ajustados */}
-            <img
-              src="/src/assets/Welcome-Page.jpeg" // VERIFIQUE ESTE CAMINHO!
-              alt="Escritório de Advocacia"
-              className="object-cover w-full block" // block para remover espaço extra
-              style={{ aspectRatio: '16/7', maxHeight: '450px' }} // Proporção e altura máxima
-            />
-            {/* Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#2d1f16]/80 via-[#2d1f16]/40 to-transparent"></div>
+          {/* Imagem com Overlay + Estatísticas */}
+          <div className="relative">
+            {/* Blur de fundo */}
+            <div className="absolute inset-0 bg-[#a16535] rounded-2xl blur-3xl opacity-15 -z-10"></div>
             
-            {/* Conteúdo das Estatísticas */}
-            <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6">
-              <div className="grid grid-cols-3 gap-2 md:gap-4 text-white">
-                <div className="text-center">
-                  <span className="text-xl md:text-2xl font-bold block text-[#e8b882]">500+</span>
-                  <span className="text-[10px] md:text-xs text-white/80 uppercase tracking-wide">Casos resolvidos</span> {/* Estilo ajustado */}
-                </div>
-                <div className="text-center">
-                  <span className="text-xl md:text-2xl font-bold block text-[#e8b882]">98%</span>
-                  <span className="text-[10px] md:text-xs text-white/80 uppercase tracking-wide">Taxa de sucesso</span> {/* Estilo ajustado */}
-                </div>
-                <div className="text-center">
-                  <span className="text-xl md:text-2xl font-bold block text-[#e8b882]">24/7</span>
-                  <span className="text-[10px] md:text-xs text-white/80 uppercase tracking-wide">Atendimento</span> {/* Estilo ajustado */}
+            <div className="relative rounded-2xl overflow-hidden shadow-2xl border-2 border-[#d4c4b0]">
+              <img
+                src="/src/assets/Welcome-Page.jpeg"
+                alt="Escritório de Advocacia Sofisticado"
+                className="w-full h-48 sm:h-64 md:h-[400px] object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#2d1f16]/90 via-[#2d1f16]/50 to-transparent"></div>
+              
+              {/* Estatísticas - Responsivas */}
+              <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 md:p-8">
+                <div className="grid grid-cols-3 gap-4 sm:gap-6 md:gap-12 text-white text-center">
+                  <div>
+                    <span className="block text-xl sm:text-2xl md:text-3xl font-bold text-[#e8b882]">500+</span>
+                    <span className="block text-xs sm:text-sm md:text-base text-white/80 mt-0.5 sm:mt-1 uppercase tracking-wide">Casos resolvidos</span>
+                  </div>
+                  <div>
+                    <span className="block text-xl sm:text-2xl md:text-3xl font-bold text-[#e8b882]">98%</span>
+                    <span className="block text-xs sm:text-sm md:text-base text-white/80 mt-0.5 sm:mt-1 uppercase tracking-wide">Taxa de sucesso</span>
+                  </div>
+                  <div>
+                    <span className="block text-xl sm:text-2xl md:text-3xl font-bold text-[#e8b882]">24/7</span>
+                    <span className="block text-xs sm:text-sm md:text-base text-white/80 mt-0.5 sm:mt-1 uppercase tracking-wide">Atendimento</span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div> {/* Fim do max-w container */}
-      </div> {/* Fim do container principal do conteúdo */}
+        </div>
+      </div>
 
-      {/* Footer Básico (Copyright e Desenvolvedores) */}
-      <footer className="w-full py-6 text-center border-t border-[#d4c4b0]/50 mt-8 flex-shrink-0"> {/* Adicionado flex-shrink-0 */}
-        <p className="text-sm text-[#6b5544] mb-2">© {new Date().getFullYear()} Sistema de Gestão Jurídica</p> {/* Ano dinâmico */}
-        <p className="text-xs text-[#6b5544]">
-          Desenvolvido por Alexandre Guzmán, Ana Paula Sena, Brayon Duarte, Gina Rocha e Salomão Lobato
-        </p>
-      </footer>
-
-      {/* O Footer principal com links NÃO está incluído */}
-      {/* <Footer onNavigate={dummyNavigate} /> */}
-
-    </div> // Fim da div da página inteira
+      {/* Footer Oficial */}
+      <Footer onNavigate={onNavigate} />
+    </div>
   );
 }

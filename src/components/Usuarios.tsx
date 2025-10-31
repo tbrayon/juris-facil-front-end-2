@@ -389,14 +389,11 @@ export function UsuariosView({ onVoltar }: UsuariosViewProps) {
           <Button
             variant="outline"
             onClick={onVoltar}
-            // ALTERAÇÃO: self-start e sm:self-auto
-            className="border-2 border-[#a16535] text-[#a16535] hover:bg-[#a16535] hover:text-white transition-all duration-200 self-start sm:self-auto"
-          >
-            {/* ALTERAÇÃO: mr-0 sm:mr-2 */}
-            <ArrowLeft className="w-4 h-4 mr-0 sm:mr-2" />
-            {/* ALTERAÇÃO: hidden sm:inline */}
-            <span className="hidden sm:inline">Página Inicial</span>
-          </Button>
+            className="border-2 border-[#a16535] !text-[#a16535] hover:!bg-[#a16535] hover:!text-white transition-all duration-200"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Página Inicial
+           </Button>
         </div>
 
         <Card className="bg-white border-[#d4c4b0]">

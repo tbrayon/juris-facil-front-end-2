@@ -4,7 +4,7 @@ import * as React from "react";
 import * as RechartsPrimitive from "recharts";
 import type { TooltipProps, LegendProps } from "recharts"; 
 
-import { cn } from "../../utils";
+import { cn } from "../../lib/utils";
 
 // FIX: Define unstable Recharts utility types as 'any' or derive minimally.
 // This resolves the persistent TS Errors (2305, 2339, 2344, 7006) caused by generic parameter conflicts.

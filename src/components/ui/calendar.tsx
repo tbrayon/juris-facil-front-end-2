@@ -5,7 +5,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 // FIX: Removed 'CustomComponents' import as it was causing a type conflict/strictness error (Error 2353).
 import { DayPicker } from "react-day-picker"; 
 
-import { cn } from "../../utils";
+import { cn }  from "../../lib/utils" ;
 import { buttonVariants } from "./button";
 
 // Define the expected icon component props

@@ -1,4 +1,6 @@
 import { useState } from 'react';
+// TENTATIVA 9: Voltando para a estrutura de importação ORIGINAL do usuário
+// e corrigindo os erros de 'any' type do TypeScript.
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -13,7 +15,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Label } from './ui/label';
 import { Separator } from './ui/separator';
 import { ScrollArea } from './ui/scroll-area';
-import { formatDateBR, getLocalDateString, formatCPF, formatCNPJ } from '../utils/formatters';
+import { formatDateBR, getLocalDateString, formatCPF, formatCNPJ } from '../others/formatters';
 
 // Estados brasileiros
 const estadosBrasileiros = [
@@ -133,6 +135,7 @@ export function RelatoriosView({ onEditarCliente, onEditarProcesso, onVoltar }: 
   };
 
   const getStatusBadge = (status: string) => {
+    // Correção de sintaxe
     const statusMap: { [key: string]: { color: string; label: string } } = {
       // Novos formatos sem traços
       'Em elaboração': { color: 'bg-purple-500/30 text-purple-700 border-purple-600', label: 'Em elaboração' },
@@ -156,21 +159,21 @@ export function RelatoriosView({ onEditarCliente, onEditarProcesso, onVoltar }: 
       'arquivado': { color: 'bg-[#8b5329]/30 text-[#6b5544] border-[#8b5329]', label: 'Arquivado' },
     };
     const s = statusMap[status] || { color: 'bg-gray-500/30 text-gray-700 border-gray-600', label: status };
-    return <Badge className={s.color}>{s.label}</Badge>;
+    return <Badge className={`${s.color} text-xs px-2 py-0.5`}>{s.label}</Badge>;
   };
 
   const getPrioridadeBadge = (prioridade: string) => {
     switch (prioridade) {
       case 'urgente':
-        return <Badge className="bg-red-500/30 text-red-700 border-red-600">🔴 Urgente</Badge>;
+        return <Badge className="bg-red-500/30 text-red-700 border-red-600 text-xs px-2 py-0.5">🔴 Urgente</Badge>;
       case 'alta':
-        return <Badge className="bg-orange-500/30 text-orange-700 border-orange-600">🟠 Alta</Badge>;
+        return <Badge className="bg-orange-500/30 text-orange-700 border-orange-600 text-xs px-2 py-0.5">🟠 Alta</Badge>;
       case 'normal':
-        return <Badge className="bg-yellow-500/30 text-yellow-700 border-yellow-600">🟡 Normal</Badge>;
+        return <Badge className="bg-yellow-500/30 text-yellow-700 border-yellow-600 text-xs px-2 py-0.5">🟡 Normal</Badge>;
       case 'baixa':
-        return <Badge className="bg-green-500/30 text-green-700 border-green-600">🟢 Baixa</Badge>;
+        return <Badge className="bg-green-500/30 text-green-700 border-green-600 text-xs px-2 py-0.5">🟢 Baixa</Badge>;
       default:
-        return <Badge>{prioridade}</Badge>;
+        return <Badge className="text-xs px-2 py-0.5">{prioridade}</Badge>;
     }
   };
 
@@ -221,11 +224,13 @@ export function RelatoriosView({ onEditarCliente, onEditarProcesso, onVoltar }: 
   };
 
   return (
-    <div className="max-w-7xl mx-auto">
+    // Adicionado padding responsivo
+    <div className="max-w-7xl mx-auto p-4 md:p-6">
       <div className="mb-6">
-        <div className="flex items-center justify-between">
+        {/* Header com layout responsivo */}
+        <div className="flex flex-col items-start sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h2 className="text-[#2d1f16] flex items-center gap-2">
+            <h2 className="text-[#2d1f16] flex items-center gap-2 text-2xl font-bold">
               <FileText className="w-6 h-6 text-[#a16535]" />
               Relatórios
             </h2>
@@ -234,7 +239,7 @@ export function RelatoriosView({ onEditarCliente, onEditarProcesso, onVoltar }: 
           <Button
             variant="outline"
             onClick={onVoltar}
-            className="border-2 border-[#a16535] text-[#a16535] hover:bg-[#a16535] hover:text-white transition-all duration-200"
+            className="border-2 border-[#a16535] text-[#a16535] hover:bg-[#a16535] hover:text-white transition-all duration-200 mt-4 sm:mt-0 w-full sm:w-auto" // Responsivo
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Página Inicial
@@ -243,20 +248,23 @@ export function RelatoriosView({ onEditarCliente, onEditarProcesso, onVoltar }: 
       </div>
 
       <Tabs defaultValue="clientes" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-2 bg-[#f6f3ee] border-2 border-[#d4c4b0] p-1 rounded-full h-14">
+        <TabsList className="grid w-full grid-cols-2 bg-[#f6f3ee] border-2 border-[#d4c4b0] p-1 rounded-full h-auto md:h-14"> {/* Altura auto no mobile */}
           <TabsTrigger 
             value="clientes"
-            className="data-[state=open]:bg-[#a16535] data-[state=open]:text-white text-[#6b5544] hover:text-[#a16535] rounded-full h-full transition-all"
+            // *** CORREÇÃO PRINCIPAL AQUI ***
+            // Trocado data-[state=open] por data-[state=active] para o estado correto do Tab
+            className="data-[state=active]:bg-[#a16535] data-[state=active]:text-white text-[#6b5544] hover:text-[#a16535] rounded-full h-full py-2 md:py-0 transition-all text-sm" // Padding vertical no mobile
           >
-            <Users className="w-4 h-4 mr-2" />
-            Relatório de Clientes
+            <Users className="w-4 h-4 mr-0 sm:mr-2" /> {/* Margem responsiva */}
+            <span className="hidden sm:inline">Relatório de </span>Clientes {/* Texto responsivo */}
           </TabsTrigger>
           <TabsTrigger 
             value="processos"
-            className="data-[state=open]:bg-[#a16535] data-[state=open]:text-white text-[#6b5544] hover:text-[#a16535] rounded-full h-full transition-all"
+            // *** CORREÇÃO PRINCIPAL AQUI ***
+            className="data-[state=active]:bg-[#a16535] data-[state=active]:text-white text-[#6b5544] hover:text-[#a16535] rounded-full h-full py-2 md:py-0 transition-all text-sm" // Padding vertical no mobile
           >
-            <FileText className="w-4 h-4 mr-2" />
-            Relatório de Processos
+            <FileText className="w-4 h-4 mr-0 sm:mr-2" /> {/* Margem responsiva */}
+            <span className="hidden sm:inline">Relatório de </span>Processos {/* Texto responsivo */}
           </TabsTrigger>
         </TabsList>
 
@@ -264,7 +272,8 @@ export function RelatoriosView({ onEditarCliente, onEditarProcesso, onVoltar }: 
         <TabsContent value="clientes">
           <Card className="bg-white border-[#d4c4b0]">
             <CardHeader>
-              <div className="flex items-center justify-between">
+              {/* Header do Card responsivo */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-center sm:justify-between w-full gap-4">
                 <div className="space-y-1">
                   <CardTitle className="text-[#2d1f16]">Clientes Cadastrados</CardTitle>
                   <CardDescription className="text-[#6b5544]">
@@ -272,12 +281,12 @@ export function RelatoriosView({ onEditarCliente, onEditarProcesso, onVoltar }: 
                   </CardDescription>
                   <p className="text-xs text-[#a16535] flex items-center gap-1 mt-1">
                     <AlertCircle className="w-3 h-3" />
-                    Dados pessoais sensíveis ocultos em conformidade com a LGPD
+                    Dados sensíveis ocultos (LGPD)
                   </p>
                 </div>
                 <Button
                   onClick={exportarRelatorioClientes}
-                  className="bg-[#a16535] hover:bg-[#8b5329] text-white"
+                  className="bg-[#a16535] hover:bg-[#8b5329] text-white w-full sm:w-auto" // Responsivo
                   disabled={clientesFiltrados.length === 0}
                 >
                   <Download className="w-4 h-4 mr-2" />
@@ -292,7 +301,8 @@ export function RelatoriosView({ onEditarCliente, onEditarProcesso, onVoltar }: 
                   <Input
                     placeholder="Buscar por nome do cliente..."
                     value={buscaClientes}
-                    onChange={(e) => setBuscaClientes(e.target.value)}
+                    // *** CORREÇÃO TS AQUI ***
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setBuscaClientes(e.target.value)}
                     className="pl-10 bg-[#f6f3ee] border-[#d4c4b0] text-[#2d1f16] placeholder:text-[#6b5544] focus:border-[#a16535] focus:ring-[#a16535]/20"
                   />
                 </div>
@@ -369,7 +379,7 @@ export function RelatoriosView({ onEditarCliente, onEditarProcesso, onVoltar }: 
               </div>
 
               <div className="border border-[#d4c4b0] rounded-lg overflow-x-auto">
-                <Table className="min-w-[500px]"> {/* Adicionado min-width para mobile */}
+                <Table className="min-w-[500px]">
                   <TableHeader>
                     <TableRow className="bg-[#f6f3ee] hover:bg-[#f6f3ee]">
                       <TableHead className="text-[#4a3629]">Nome</TableHead>
@@ -388,20 +398,20 @@ export function RelatoriosView({ onEditarCliente, onEditarProcesso, onVoltar }: 
                     ) : (
                       clientesFiltrados.map((cliente) => (
                         <TableRow key={cliente.id} className="hover:bg-[#f6f3ee]/50">
-                          <TableCell className="text-[#2d1f16]">{cliente.nome}</TableCell>
+                          <TableCell className="text-[#2d1f16] font-medium">{cliente.nome}</TableCell>
                           <TableCell>
-                            <Badge variant="outline" className="border-[#a16535] text-[#a16535]">
+                            <Badge variant="outline" className="border-[#a16535] text-[#a16535] text-xs">
                               {getTipoCliente(cliente.tipo)}
                             </Badge>
                           </TableCell>
                           <TableCell className="text-[#6b5544]">{cliente.municipio}/{cliente.uf}</TableCell>
                           <TableCell className="text-right">
-                            <div className="flex gap-2 justify-end">
+                            <div className="flex gap-1 justify-end"> {/* Gap menor */}
                               <Button
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => handleVisualizarCliente(cliente)}
-                                className="text-[#a16535] hover:text-[#8b5329] hover:bg-[#f6f3ee]"
+                                className="text-[#a16535] hover:text-[#8b5329] hover:bg-[#f6f3ee] p-2" // Padding
                               >
                                 <Eye className="w-4 h-4" />
                               </Button>
@@ -409,7 +419,7 @@ export function RelatoriosView({ onEditarCliente, onEditarProcesso, onVoltar }: 
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => handleEditarClienteInterno(cliente)}
-                                className="text-[#a16535] hover:text-[#8b5329] hover:bg-[#f6f3ee]"
+                                className="text-[#a16535] hover:text-[#8b5329] hover:bg-[#f6f3ee] p-2" // Padding
                               >
                                 <Edit className="w-4 h-4" />
                               </Button>
@@ -429,7 +439,8 @@ export function RelatoriosView({ onEditarCliente, onEditarProcesso, onVoltar }: 
         <TabsContent value="processos">
           <Card className="bg-white border-[#d4c4b0]">
             <CardHeader>
-              <div className="flex items-center justify-between">
+              {/* Header do Card responsivo */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-center sm:justify-between w-full gap-4">
                 <div>
                   <CardTitle className="text-[#2d1f16]">Processos Cadastrados</CardTitle>
                   <CardDescription className="text-[#6b5544]">
@@ -438,7 +449,7 @@ export function RelatoriosView({ onEditarCliente, onEditarProcesso, onVoltar }: 
                 </div>
                 <Button
                   onClick={exportarRelatorioProcessos}
-                  className="bg-[#a16535] hover:bg-[#8b5329] text-white"
+                  className="bg-[#a16535] hover:bg-[#8b5329] text-white w-full sm:w-auto" // Responsivo
                   disabled={processosFiltrados.length === 0}
                 >
                   <Download className="w-4 h-4 mr-2" />
@@ -454,71 +465,76 @@ export function RelatoriosView({ onEditarCliente, onEditarProcesso, onVoltar }: 
                   <Input
                     placeholder="Buscar por número, cliente ou tipo de ação..."
                     value={buscaProcessos}
-                    onChange={(e) => setBuscaProcessos(e.target.value)}
+                    // *** CORREÇÃO TS AQUI ***
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setBuscaProcessos(e.target.value)}
                     className="pl-10 bg-[#f6f3ee] border-[#d4c4b0] text-[#2d1f16] placeholder:text-[#6b5544] focus:border-[#a16535] focus:ring-[#a16535]/20"
                   />
                 </div>
 
-                {/* Filtros adicionais */}
+                {/* Filtros adicionais - Agora com Select */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
                   {/* Filtro Fase */}
                   <div className="space-y-2">
                     <Label className="text-[#6b5544] text-sm">Fase</Label>
-                    <select
-                      value={filtroFase}
-                      onChange={(e) => setFiltroFase(e.target.value)}
-                      className="w-full h-10 px-3 rounded-md border border-[#d4c4b0] bg-[#f6f3ee] text-[#2d1f16] focus:border-[#a16535] focus:ring-2 focus:ring-[#a16535]/20 outline-none transition-colors"
-                    >
-                      <option value="todos">Todas as fases</option>
-                      {fasesUnicas.map(fase => (
-                        <option key={fase} value={fase}>{fase}</option>
-                      ))}
-                    </select>
+                    <Select value={filtroFase} onValueChange={setFiltroFase}>
+                      <SelectTrigger className="bg-[#f6f3ee] border-[#d4c4b0] text-[#2d1f16] focus:border-[#a16535] focus:ring-[#a16535]/20">
+                        <SelectValue placeholder="Todas as fases" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white border-[#d4c4b0]">
+                        <SelectItem value="todos" className="text-[#2d1f16] hover:bg-[#f6f3ee]">Todas as fases</SelectItem>
+                        {fasesUnicas.map(fase => (
+                          <SelectItem key={fase} value={fase} className="text-[#2d1f16] hover:bg-[#f6f3ee]">{fase}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
 
                   {/* Filtro Status */}
                   <div className="space-y-2">
                     <Label className="text-[#6b5544] text-sm">Status</Label>
-                    <select
-                      value={filtroStatus}
-                      onChange={(e) => setFiltroStatus(e.target.value)}
-                      className="w-full h-10 px-3 rounded-md border border-[#d4c4b0] bg-[#f6f3ee] text-[#2d1f16] focus:border-[#a16535] focus:ring-2 focus:ring-[#a16535]/20 outline-none transition-colors"
-                    >
-                      <option value="todos">Todos os status</option>
-                      {statusUnicos.map(status => (
-                        <option key={status} value={status}>{status}</option>
-                      ))}
-                    </select>
+                    <Select value={filtroStatus} onValueChange={setFiltroStatus}>
+                      <SelectTrigger className="bg-[#f6f3ee] border-[#d4c4b0] text-[#2d1f16] focus:border-[#a16535] focus:ring-[#a16535]/20">
+                        <SelectValue placeholder="Todos os status" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white border-[#d4c4b0]">
+                        <SelectItem value="todos" className="text-[#2d1f16] hover:bg-[#f6f3ee]">Todos os status</SelectItem>
+                        {statusUnicos.map(status => (
+                          <SelectItem key={status} value={status} className="text-[#2d1f16] hover:bg-[#f6f3ee]">{status}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
 
                   {/* Filtro Prioridade */}
                   <div className="space-y-2">
                     <Label className="text-[#6b5544] text-sm">Prioridade</Label>
-                    <select
-                      value={filtroPrioridade}
-                      onChange={(e) => setFiltroPrioridade(e.target.value)}
-                      className="w-full h-10 px-3 rounded-md border border-[#d4c4b0] bg-[#f6f3ee] text-[#2d1f16] focus:border-[#a16535] focus:ring-2 focus:ring-[#a16535]/20 outline-none transition-colors"
-                    >
-                      <option value="todos">Todas as prioridades</option>
-                      {prioridadesUnicas.map(prioridade => (
-                        <option key={prioridade} value={prioridade}>{prioridade}</option>
-                      ))}
-                    </select>
+                    <Select value={filtroPrioridade} onValueChange={setFiltroPrioridade}>
+                      <SelectTrigger className="bg-[#f6f3ee] border-[#d4c4b0] text-[#2d1f16] focus:border-[#a16535] focus:ring-[#a16535]/20">
+                        <SelectValue placeholder="Todas as prioridades" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white border-[#d4c4b0]">
+                        <SelectItem value="todos" className="text-[#2d1f16] hover:bg-[#f6f3ee]">Todas as prioridades</SelectItem>
+                        {prioridadesUnicas.map(prioridade => (
+                          <SelectItem key={prioridade} value={prioridade} className="text-[#2d1f16] hover:bg-[#f6f3ee]">{prioridade}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
 
                   {/* Filtro Tipo de Ação */}
                   <div className="space-y-2">
                     <Label className="text-[#6b5544] text-sm">Tipo de Ação</Label>
-                    <select
-                      value={filtroTipoAcao}
-                      onChange={(e) => setFiltroTipoAcao(e.target.value)}
-                      className="w-full h-10 px-3 rounded-md border border-[#d4c4b0] bg-[#f6f3ee] text-[#2d1f16] focus:border-[#a16535] focus:ring-2 focus:ring-[#a16535]/20 outline-none transition-colors"
-                    >
-                      <option value="todos">Todos os tipos</option>
-                      {tiposAcaoUnicos.map(tipo => (
-                        <option key={tipo} value={tipo}>{tipo}</option>
-                      ))}
-                    </select>
+                    <Select value={filtroTipoAcao} onValueChange={setFiltroTipoAcao}>
+                      <SelectTrigger className="bg-[#f6f3ee] border-[#d4c4b0] text-[#2d1f16] focus:border-[#a16535] focus:ring-[#a16535]/20">
+                        <SelectValue placeholder="Todos os tipos" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white border-[#d4c4b0]">
+                        <SelectItem value="todos" className="text-[#2d1f16] hover:bg-[#f6f3ee]">Todos os tipos</SelectItem>
+                        {tiposAcaoUnicos.map(tipo => (
+                          <SelectItem key={tipo} value={tipo} className="text-[#2d1f16] hover:bg-[#f6f3ee]">{tipo}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
 
@@ -526,7 +542,7 @@ export function RelatoriosView({ onEditarCliente, onEditarProcesso, onVoltar }: 
                 {(filtroFase !== 'todos' || filtroStatus !== 'todos' || filtroPrioridade !== 'todos' || filtroTipoAcao !== 'todos') && (
                   <div className="flex justify-end">
                     <Button
-                      variant="outline"
+                      variant="ghost" // Mudado para ghost para combinar com a outra aba
                       size="sm"
                       onClick={() => {
                         setFiltroFase('todos');
@@ -534,7 +550,7 @@ export function RelatoriosView({ onEditarCliente, onEditarProcesso, onVoltar }: 
                         setFiltroPrioridade('todos');
                         setFiltroTipoAcao('todos');
                       }}
-                      className="text-[#a16535] border-[#a16535] hover:bg-[#a16535] hover:text-white"
+                      className="text-[#a16535] hover:text-[#8b5329] hover:bg-[#f6f3ee]" // Estilo ghost
                     >
                       <X className="w-4 h-4 mr-2" />
                       Limpar Filtros
@@ -544,7 +560,7 @@ export function RelatoriosView({ onEditarCliente, onEditarProcesso, onVoltar }: 
               </div>
 
               <div className="border border-[#d4c4b0] rounded-lg overflow-x-auto">
-                <Table className="min-w-[800px]"> {/* Adicionado min-width para mobile */}
+                <Table className="min-w-[800px]">
                   <TableHeader>
                     <TableRow className="bg-[#f6f3ee] hover:bg-[#f6f3ee]">
                       <TableHead className="text-[#4a3629]">Número</TableHead>
@@ -566,25 +582,25 @@ export function RelatoriosView({ onEditarCliente, onEditarProcesso, onVoltar }: 
                     ) : (
                       processosFiltrados.map((processo) => (
                         <TableRow key={processo.id} className="hover:bg-[#f6f3ee]/50">
-                          <TableCell className="text-[#2d1f16]">
+                          <TableCell className="text-[#2d1f16] font-medium">
                             {processo.numeroProcesso || <span className="text-[#6b5544] italic">(Sem número)</span>}
                           </TableCell>
                           <TableCell className="text-[#6b5544]">{processo.clienteNome}</TableCell>
                           <TableCell className="text-[#6b5544]">{processo.tipoAcao}</TableCell>
                           <TableCell>
-                            <Badge variant="outline" className="border-[#a16535] text-[#a16535]">
+                            <Badge variant="outline" className="border-[#a16535] text-[#a16535] text-xs">
                               {processo.faseProcessual}
                             </Badge>
                           </TableCell>
                           <TableCell>{getStatusBadge(processo.status)}</TableCell>
                           <TableCell>{getPrioridadeBadge(processo.prioridade)}</TableCell>
                           <TableCell className="text-right">
-                            <div className="flex gap-2 justify-end">
+                            <div className="flex gap-1 justify-end"> {/* Gap menor */}
                               <Button
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => handleVisualizarProcesso(processo)}
-                                className="text-[#a16535] hover:text-[#8b5329] hover:bg-[#f6f3ee]"
+                                className="text-[#a16535] hover:text-[#8b5329] hover:bg-[#f6f3ee] p-2" // Padding
                               >
                                 <Eye className="w-4 h-4" />
                               </Button>
@@ -592,7 +608,7 @@ export function RelatoriosView({ onEditarCliente, onEditarProcesso, onVoltar }: 
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => handleEditarProcessoInterno(processo)}
-                                className="text-[#a16535] hover:text-[#8b5329] hover:bg-[#f6f3ee]"
+                                className="text-[#a16535] hover:text-[#8b5329] hover:bg-[#f6f3ee] p-2" // Padding
                               >
                                 <Edit className="w-4 h-4" />
                               </Button>
@@ -611,7 +627,7 @@ export function RelatoriosView({ onEditarCliente, onEditarProcesso, onVoltar }: 
 
       {/* Dialog de Visualização/Edição de Cliente */}
       <Dialog open={dialogClienteAberto} onOpenChange={setDialogClienteAberto}>
-        <DialogContent className="bg-white border-2 border-[#d4c4b0] max-w-3xl max-h-[80vh]">
+        <DialogContent className="bg-white border-2 border-[#d4c4b0] max-w-3xl w-[95vw] max-h-[85vh]"> {/* Responsivo */}
           <DialogHeader>
             <DialogTitle className="text-[#2d1f16] flex items-center gap-2">
               <Users className="w-5 h-5 text-[#a16535]" />
@@ -625,30 +641,36 @@ export function RelatoriosView({ onEditarCliente, onEditarProcesso, onVoltar }: 
           </DialogHeader>
 
           {clienteSelecionado && (
-            <ScrollArea className="max-h-[calc(80vh-120px)] pr-4">
+            <ScrollArea className="max-h-[calc(85vh-120px)] pr-4"> {/* Ajustado */}
               <div className="space-y-6">
                 {/* Dados Pessoais */}
                 <div>
-                  <h3 className="text-[#4a3629] mb-3 flex items-center gap-2">
+                  <h3 className="text-[#4a3629] mb-3 flex items-center gap-2 font-semibold">
                     <Users className="w-4 h-4 text-[#a16535]" />
                     Dados Pessoais
                   </h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4"> {/* Grid responsivo */}
-                    <div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="sm:col-span-2">
                       <Label className="text-[#6b5544] text-sm">Nome</Label>
                       <p className="text-[#2d1f16]">{clienteSelecionado.nome}</p>
                     </div>
                     <div>
                       <Label className="text-[#6b5544] text-sm">Tipo</Label>
-                      <Badge variant="outline" className="border-[#a16535] text-[#a16535]">
-                        {getTipoCliente(clienteSelecionado.tipo)}
-                      </Badge>
+                      <p>
+                        <Badge variant="outline" className="border-[#a16535] text-[#a16535]">
+                          {getTipoCliente(clienteSelecionado.tipo)}
+                        </Badge>
+                      </p>
                     </div>
                     <div>
                       <Label className="text-[#6b5544] text-sm">
                         {clienteSelecionado.tipo === 'cpf' ? 'CPF' : 'CNPJ'}
                       </Label>
-                      <p className="text-[#2d1f16]">{clienteSelecionado.documento}</p>
+                      <p className="text-[#2d1f16]">
+                        {clienteSelecionado.tipo === 'cpf' 
+                          ? formatCPF(clienteSelecionado.documento) 
+                          : formatCNPJ(clienteSelecionado.documento)}
+                      </p>
                     </div>
                     {clienteSelecionado.tipo === 'cpf' && clienteSelecionado.rg && (
                       <div>
@@ -696,11 +718,11 @@ export function RelatoriosView({ onEditarCliente, onEditarProcesso, onVoltar }: 
                   <>
                     <Separator className="bg-[#d4c4b0]" />
                     <div>
-                      <h3 className="text-[#4a3629] mb-3 flex items-center gap-2">
+                      <h3 className="text-[#4a3629] mb-3 flex items-center gap-2 font-semibold">
                         <FileCheck className="w-4 h-4 text-[#a16535]" />
                         Dados Profissionais
                       </h3>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4"> {/* Grid responsivo */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {clienteSelecionado.profissao && (
                           <div>
                             <Label className="text-[#6b5544] text-sm">Profissão</Label>
@@ -728,19 +750,19 @@ export function RelatoriosView({ onEditarCliente, onEditarProcesso, onVoltar }: 
 
                 {/* Contatos */}
                 <div>
-                  <h3 className="text-[#4a3629] mb-3 flex items-center gap-2">
+                  <h3 className="text-[#4a3629] mb-3 flex items-center gap-2 font-semibold">
                     <Phone className="w-4 h-4 text-[#a16535]" />
                     Contatos
                   </h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4"> {/* Grid responsivo */}
-                    <div className="col-span-2 sm:col-span-1">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="sm:col-span-1">
                       <Label className="text-[#6b5544] text-sm flex items-center gap-2">
                         <Mail className="w-3 h-3" />
                         Email
                       </Label>
-                      <p className="text-[#2d1f16]">{clienteSelecionado.email || '-'}</p>
+                      <p className="text-[#2d1f16] break-words">{clienteSelecionado.email || '-'}</p>
                     </div>
-                    <div className="col-span-2 sm:col-span-1">
+                    <div className="sm:col-span-1">
                       <Label className="text-[#6b5544] text-sm flex items-center gap-2">
                         <Phone className="w-3 h-3" />
                         Telefones
@@ -762,11 +784,11 @@ export function RelatoriosView({ onEditarCliente, onEditarProcesso, onVoltar }: 
 
                 {/* Endereço */}
                 <div>
-                  <h3 className="text-[#4a3629] mb-3 flex items-center gap-2">
+                  <h3 className="text-[#4a3629] mb-3 flex items-center gap-2 font-semibold">
                     <MapPin className="w-4 h-4 text-[#a16535]" />
                     Endereço
                   </h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4"> {/* Grid responsivo */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <Label className="text-[#6b5544] text-sm">CEP</Label>
                       <p className="text-[#2d1f16]">{clienteSelecionado.cep || '-'}</p>
@@ -775,15 +797,15 @@ export function RelatoriosView({ onEditarCliente, onEditarProcesso, onVoltar }: 
                       <Label className="text-[#6b5544] text-sm">UF</Label>
                       <p className="text-[#2d1f16]">{clienteSelecionado.uf || '-'}</p>
                     </div>
-                    <div className="col-span-2">
+                    <div className="sm:col-span-2">
                       <Label className="text-[#6b5544] text-sm">Município</Label>
                       <p className="text-[#2d1f16]">{clienteSelecionado.municipio || '-'}</p>
                     </div>
-                    <div className="col-span-2">
+                    <div className="sm:col-span-2">
                       <Label className="text-[#6b5544] text-sm">Bairro</Label>
                       <p className="text-[#2d1f16]">{clienteSelecionado.bairro || '-'}</p>
                     </div>
-                    <div className="col-span-2">
+                    <div className="sm:col-span-2">
                       <Label className="text-[#6b5544] text-sm">Logradouro</Label>
                       <p className="text-[#2d1f16]">
                         {clienteSelecionado.logradouro ? 
@@ -791,7 +813,7 @@ export function RelatoriosView({ onEditarCliente, onEditarProcesso, onVoltar }: 
                       </p>
                     </div>
                     {clienteSelecionado.complemento && (
-                      <div className="col-span-2">
+                      <div className="sm:col-span-2">
                         <Label className="text-[#6b5544] text-sm">Complemento</Label>
                         <p className="text-[#2d1f16]">{clienteSelecionado.complemento}</p>
                       </div>
@@ -803,11 +825,11 @@ export function RelatoriosView({ onEditarCliente, onEditarProcesso, onVoltar }: 
                   <>
                     <Separator className="bg-[#d4c4b0]" />
                     <div>
-                      <h3 className="text-[#4a3629] mb-3 flex items-center gap-2">
+                      <h3 className="text-[#4a3629] mb-3 flex items-center gap-2 font-semibold">
                         <AlertCircle className="w-4 h-4 text-[#a16535]" />
                         Observações
                       </h3>
-                      <p className="text-[#6b5544] text-sm leading-relaxed">
+                      <p className="text-[#6b5544] text-sm leading-relaxed whitespace-pre-wrap"> {/* Preserva quebras de linha */}
                         {clienteSelecionado.observacoes}
                       </p>
                     </div>
@@ -831,7 +853,7 @@ export function RelatoriosView({ onEditarCliente, onEditarProcesso, onVoltar }: 
             </ScrollArea>
           )}
 
-          <div className="flex gap-2 justify-end pt-4 border-t border-[#d4c4b0]">
+          <div className="flex gap-2 justify-end pt-4 border-t border-[#d4c4b0] mt-6">
             <Button
               variant="outline"
               onClick={() => setDialogClienteAberto(false)}
@@ -845,7 +867,7 @@ export function RelatoriosView({ onEditarCliente, onEditarProcesso, onVoltar }: 
 
       {/* Dialog de Visualização/Edição de Processo */}
       <Dialog open={dialogProcessoAberto} onOpenChange={setDialogProcessoAberto}>
-        <DialogContent className="bg-white border-2 border-[#d4c4b0] max-w-4xl max-h-[80vh]">
+        <DialogContent className="bg-white border-2 border-[#d4c4b0] max-w-4xl w-[95vw] max-h-[85vh]"> {/* Responsivo */}
           <DialogHeader>
             <DialogTitle className="text-[#2d1f16] flex items-center gap-2">
               <Scale className="w-5 h-5 text-[#a16535]" />
@@ -859,18 +881,18 @@ export function RelatoriosView({ onEditarCliente, onEditarProcesso, onVoltar }: 
           </DialogHeader>
 
           {processoSelecionado && (
-            <ScrollArea className="max-h-[calc(80vh-120px)] pr-4">
+            <ScrollArea className="max-h-[calc(85vh-120px)] pr-4"> {/* Ajustado */}
               <div className="space-y-6">
                 {/* Dados Básicos */}
                 <div>
-                  <h3 className="text-[#4a3629] mb-3 flex items-center gap-2">
+                  <h3 className="text-[#4a3629] mb-3 flex items-center gap-2 font-semibold">
                     <FileCheck className="w-4 h-4 text-[#a16535]" />
                     Dados Básicos
                   </h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4"> {/* Grid responsivo */}
-                    <div className="col-span-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="sm:col-span-2">
                       <Label className="text-[#6b5544] text-sm">Número do Processo</Label>
-                      <p className="text-[#2d1f16]">
+                      <p className="text-[#2d1f16] font-medium">
                         {processoSelecionado.numeroProcesso || <span className="text-[#6b5544] italic">(Processo sem número - pré-processual)</span>}
                       </p>
                     </div>
@@ -890,9 +912,11 @@ export function RelatoriosView({ onEditarCliente, onEditarProcesso, onVoltar }: 
                     </div>
                     <div>
                       <Label className="text-[#6b5544] text-sm">Polo</Label>
-                      <Badge variant="outline" className="border-[#a16535] text-[#a16535]">
-                        {processoSelecionado.polo}
-                      </Badge>
+                      <p>
+                        <Badge variant="outline" className="border-[#a16535] text-[#a16535]">
+                          {processoSelecionado.polo}
+                        </Badge>
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -901,18 +925,18 @@ export function RelatoriosView({ onEditarCliente, onEditarProcesso, onVoltar }: 
 
                 {/* Informações Processuais */}
                 <div>
-                  <h3 className="text-[#4a3629] mb-3 flex items-center gap-2">
+                  <h3 className="text-[#4a3629] mb-3 flex items-center gap-2 font-semibold">
                     <FileText className="w-4 h-4 text-[#a16535]" />
                     Informações Processuais
                   </h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4"> {/* Grid responsivo */}
-                    <div className="col-span-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="sm:col-span-2">
                       <Label className="text-[#6b5544] text-sm">Tipo de Ação</Label>
                       <p className="text-[#2d1f16]">{processoSelecionado.tipoAcao}</p>
                     </div>
-                    <div className="col-span-2">
+                    <div className="sm:col-span-2">
                       <Label className="text-[#6b5544] text-sm">Objeto da Ação</Label>
-                      <p className="text-[#6b5544] text-sm leading-relaxed">
+                      <p className="text-[#6b5544] text-sm leading-relaxed whitespace-pre-wrap">
                         {processoSelecionado.objetoAcao}
                       </p>
                     </div>
@@ -926,9 +950,11 @@ export function RelatoriosView({ onEditarCliente, onEditarProcesso, onVoltar }: 
                     </div>
                     <div>
                       <Label className="text-[#6b5544] text-sm">Fase Processual</Label>
-                      <Badge variant="outline" className="border-[#a16535] text-[#a16535]">
-                        {processoSelecionado.faseProcessual}
-                      </Badge>
+                      <p>
+                        <Badge variant="outline" className="border-[#a16535] text-[#a16535]">
+                          {processoSelecionado.faseProcessual}
+                        </Badge>
+                      </p>
                     </div>
                     <div>
                       <Label className="text-[#6b5544] text-sm">Status</Label>
@@ -977,11 +1003,11 @@ export function RelatoriosView({ onEditarCliente, onEditarProcesso, onVoltar }: 
 
                 {/* Dados Financeiros */}
                 <div>
-                  <h3 className="text-[#4a3629] mb-3 flex items-center gap-2">
+                  <h3 className="text-[#4a3629] mb-3 flex items-center gap-2 font-semibold">
                     <FileText className="w-4 h-4 text-[#a16535]" />
                     Dados Financeiros
                   </h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4"> {/* Grid responsivo */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <Label className="text-[#6b5544] text-sm">Valor do Contrato</Label>
                       <p className="text-[#2d1f16]">{processoSelecionado.valorContrato}</p>
@@ -1000,9 +1026,11 @@ export function RelatoriosView({ onEditarCliente, onEditarProcesso, onVoltar }: 
                     </div>
                     <div>
                       <Label className="text-[#6b5544] text-sm">Status Financeiro</Label>
-                      <Badge variant="outline" className="border-[#a16535] text-[#a16535]">
-                        {processoSelecionado.statusFinanceiro}
-                      </Badge>
+                      <p>
+                        <Badge variant="outline" className="border-[#a16535] text-[#a16535]">
+                          {processoSelecionado.statusFinanceiro}
+                        </Badge>
+                      </p>
                     </div>
                     <div>
                       <Label className="text-[#6b5544] text-sm">Data de Vencimento</Label>
@@ -1019,11 +1047,11 @@ export function RelatoriosView({ onEditarCliente, onEditarProcesso, onVoltar }: 
                   <>
                     <Separator className="bg-[#d4c4b0]" />
                     <div>
-                      <h3 className="text-[#4a3629] mb-3 flex items-center gap-2">
+                      <h3 className="text-[#4a3629] mb-3 flex items-center gap-2 font-semibold">
                         <AlertCircle className="w-4 h-4 text-[#a16535]" />
                         Observações do Processo
                       </h3>
-                      <p className="text-[#6b5544] text-sm leading-relaxed">
+                      <p className="text-[#6b5544] text-sm leading-relaxed whitespace-pre-wrap">
                         {processoSelecionado.observacoesProcesso}
                       </p>
                     </div>
@@ -1039,7 +1067,7 @@ export function RelatoriosView({ onEditarCliente, onEditarProcesso, onVoltar }: 
                         href={processoSelecionado.linkProcesso} 
                         target="_blank" 
                         rel="noopener noreferrer"
-                        className="text-[#a16535] hover:text-[#8b5329] hover:underline text-sm"
+                        className="text-[#a16535] hover:text-[#8b5329] hover:underline text-sm break-all"
                       >
                         {processoSelecionado.linkProcesso}
                       </a>
@@ -1050,7 +1078,7 @@ export function RelatoriosView({ onEditarCliente, onEditarProcesso, onVoltar }: 
             </ScrollArea>
           )}
 
-          <div className="flex gap-2 justify-end pt-4 border-t border-[#d4c4b0]">
+          <div className="flex gap-2 justify-end pt-4 border-t border-[#d4c4b0] mt-6">
             <Button
               variant="outline"
               onClick={() => setDialogProcessoAberto(false)}
@@ -1064,3 +1092,4 @@ export function RelatoriosView({ onEditarCliente, onEditarProcesso, onVoltar }: 
     </div>
   );
 }
+

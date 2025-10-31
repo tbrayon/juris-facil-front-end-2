@@ -1,18 +1,18 @@
 import { useState, useRef } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card'; // Corrigido
-import { Input } from '../components/ui/input'; // Corrigido
-import { Label } from '../components/ui/label'; // Corrigido
-import { Button } from '../components/ui/button'; // Corrigido
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card'; // Corrigido
+import { Input } from './ui/input'; // Corrigido
+import { Label } from './ui/label'; // Corrigido
+import { Button } from './ui/button'; // Corrigido
 import { FileText, Printer, Upload, Edit, Save, X, Plus, Search, CheckCircle, ArrowLeft } from 'lucide-react';
 import { useContratos } from '../contexts/ContratosContext'; // Corrigido
 import { useProcessos } from '../contexts/ProcessosContext'; // Corrigido
 import { useClientes } from '../contexts/ClientesContext'; // Corrigido
-import { Textarea } from '../components/ui/textarea'; // Corrigido
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select'; // Corrigido
+import { Textarea } from './ui/textarea'; // Corrigido
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select'; // Corrigido
 import { toast } from 'sonner';
-import { Badge } from '../components/ui/badge'; // Corrigido
-import { Separator } from '../components/ui/separator'; // Corrigido
-import { formatDateBR, formatDateTimeBR, getLocalDateString, getLocalDateTimeString } from '../utils/formatters'; // Corrigido
+import { Badge } from './ui/badge'; // Corrigido
+import { Separator } from './ui/separator'; // Corrigido
+import { formatDateBR, formatDateTimeBR, getLocalDateString, getLocalDateTimeString } from '../others/formatters'; // Corrigido
 
 const gerarTemplateContrato = (processo: any, cliente: any) => {
   const hoje = formatDateBR(getLocalDateString());
@@ -398,12 +398,12 @@ export function ContratosView({ onVoltar }: ContratosViewProps) {
             <Button
               variant="outline"
               onClick={onVoltar}
-              // ALTERAÇÃO: Botão full-width no mobile (w-full) e auto (sm:w-auto) no desktop
-              className="w-full sm:w-auto border-2 border-[#a16535] text-[#a16535] hover:bg-[#a16535] hover:text-white transition-all duration-200"
+              className="w-full sm:w-auto !bg-white !text-[#a16535] border-2 border-[#a16535] hover:!bg-[#a16535] hover:!text-white transition-all duration-200"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Página Inicial
             </Button>
+
           ) : (
             <Button
               variant="outline"
