@@ -20,7 +20,7 @@ import { ProcessosView } from './ProcessosView';
 import PrazosView from './PrazosView';
 import { ContratosView } from './Contratos';
 import { DashboardView } from './Dashboard';
-import { RelatoriosView } from './RelatoriosView.';
+import { RelatoriosView } from './RelatoriosView';
 import { UsuariosView } from './Usuarios';
 import { Home } from './Home';
 import Header from './Header';

@@ -1,11 +1,11 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card'; // Caminho Ajustado
 import { BarChart, Bar, PieChart, Pie, Cell, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { useClientes } from '../contexts/ClientesContext';
-import { useProcessos } from '../contexts/ProcessosContext';
-import { useContratos } from '../contexts/ContratosContext';
+import { useClientes } from '../contexts/ClientesContext'; // Caminho Ajustado
+import { useProcessos } from '../contexts/ProcessosContext'; // Caminho Ajustado
+import { useContratos } from '../contexts/ContratosContext'; // Caminho Ajustado
 import { FileText, Users, DollarSign, AlertCircle, TrendingUp, Scale, Calendar, CheckCircle, ArrowLeft, Target, Briefcase, RefreshCw } from 'lucide-react';
-import { Badge } from './ui/badge';
-import { Button } from './ui/button';
+import { Badge } from './ui/badge'; // Caminho Ajustado
+import { Button } from './ui/button'; // Caminho Ajustado
 import { toast } from 'sonner';
 import {
   AlertDialog,
@@ -17,7 +17,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from './ui/alert-dialog';
+} from './ui/alert-dialog'; // Caminho Ajustado
 
 interface DashboardViewProps {
   onVoltar: () => void;
@@ -137,7 +137,7 @@ export function DashboardView({ onVoltar, usuarioTipo }: DashboardViewProps) {
   ).length;
   
   const totalFinalizados = processosProcedentes + processosImprocedentes + 
-                          processosParcialmenteProcedentes + processosAcordo;
+                           processosParcialmenteProcedentes + processosAcordo;
   
   const taxaSucesso = totalFinalizados > 0 
     ? ((processosProcedentes + processosParcialmenteProcedentes + processosAcordo) / totalFinalizados * 100).toFixed(1)
@@ -287,7 +287,12 @@ export function DashboardView({ onVoltar, usuarioTipo }: DashboardViewProps) {
   return (
     <div className="max-w-7xl mx-auto space-y-6">
       <div className="mb-6">
-        <div className="flex items-center justify-between">
+        {/*
+          Ajustado para mobile/tablet:
+          - flex-col em telas pequenas, sm:flex-row em telas maiores.
+          - items-start em telas pequenas para alinhar texto.
+        */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center sm:justify-between gap-4">
           <div>
             <h2 className="text-[#2d1f16] flex items-center gap-2">
               <TrendingUp className="w-6 h-6 text-[#a16535]" />
@@ -295,13 +300,14 @@ export function DashboardView({ onVoltar, usuarioTipo }: DashboardViewProps) {
             </h2>
             <p className="text-[#6b5544]">Métricas e indicadores para tomada de decisão</p>
           </div>
-          <div className="flex gap-2">
+          {/* Botões: w-full em telas pequenas, sm:w-auto para quebrar a linha e ocupar a largura total */}
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
             {usuarioTipo === 'administrador' && (
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <Button
                     variant="outline"
-                    className="border-2 border-[#d4a574] text-[#a16535] hover:bg-[#d4a574] hover:text-white transition-all duration-200"
+                    className="w-full sm:w-auto border-2 border-[#d4a574] text-[#a16535] hover:bg-[#d4a574] hover:text-white transition-all duration-200"
                   >
                     <RefreshCw className="w-4 h-4 mr-2" />
                     Resetar Dados
@@ -330,15 +336,14 @@ export function DashboardView({ onVoltar, usuarioTipo }: DashboardViewProps) {
                 </AlertDialogContent>
               </AlertDialog>
             )}
-          <Button
-            variant="outline"
-            onClick={onVoltar}
-            className="w-full sm:w-auto !bg-white !text-[#a16535] border-2 border-[#a16535] hover:!bg-[#a16535] hover:!text-white transition-all duration-200"
-          >
-           <ArrowLeft className="w-4 h-4 mr-2" />
-             Página Inicial
-          </Button>
-
+            <Button
+              variant="outline"
+              onClick={onVoltar}
+              className="w-full sm:w-auto !bg-white !text-[#a16535] border-2 border-[#a16535] hover:!bg-[#a16535] hover:!text-white transition-all duration-200"
+            >
+             <ArrowLeft className="w-4 h-4 mr-2" />
+               Página Inicial
+            </Button>
           </div>
         </div>
       </div>
@@ -423,7 +428,7 @@ export function DashboardView({ onVoltar, usuarioTipo }: DashboardViewProps) {
             </div>
             <div>
               <h3 className="text-[#2d1f16] text-xl">Análise de Desempenho Processual</h3>
-              <p className="text-[#6b5544] text-sm">Resultados dos processos finalizados</p>
+              <p className="text-[#6b5544] text-sm"> Resultados dos processos finalizados</p>
             </div>
           </div>
           
@@ -615,7 +620,7 @@ export function DashboardView({ onVoltar, usuarioTipo }: DashboardViewProps) {
               <CardContent className="p-3">
                 <div className="text-center">
                   <div className="text-2xl text-[#8b5329] mb-1">{areasPrioritarias['Ação de Alimentos']}</div>
-                  <div className="text-xs text-[#4a3629]">👨‍👩‍👧 Alimentos</div>
+                  <div className="text-xs text-[#4a3629]">🍽️ Alimentos</div>
                   <Badge className="mt-1 bg-[#e8b882] text-white text-[10px] px-2 py-0">Prioridade 3</Badge>
                 </div>
               </CardContent>
@@ -665,7 +670,7 @@ export function DashboardView({ onVoltar, usuarioTipo }: DashboardViewProps) {
                 {Number(percentualFoco) >= 70 
                   ? '✓ Excelente! O escritório está altamente focado nas suas áreas de especialização (Cível, Trabalhista e Alimentos).'
                   : Number(percentualFoco) >= 50
-                  ? '���️ Atenção! Considere redirecionar esforços para as áreas prioritárias do escritório.'
+                  ? '⚠️ Atenção! Considere redirecionar esforços para as áreas prioritárias do escritório.'
                   : '❌ Alerta! Muitos processos fora das áreas de especialização. Revise a estratégia de captação de clientes.'}
               </p>
             </div>
