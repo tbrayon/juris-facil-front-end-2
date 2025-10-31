@@ -1,73 +1,146 @@
-# React + TypeScript + Vite
+# ⚖️ Juris Fácil Front-End
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🧠 Tecnologias utilizadas
 
-## React Compiler
+- **React + TypeScript + SWC (via Vite)**
+- **TailwindCSS + PostCSS + Autoprefixer**
+- **Shadcn UI + Radix UI + Lucide**
+- **Validação e formulários:** React Hook Form + Zod  
+- **Gráficos e componentes dinâmicos:** Recharts, Embla, Sonner, etc.
+- **Banco de dados : Context API do React.**
 
-The React Compiler is currently not compatible with SWC. See [this issue](https://github.com/vitejs/vite-plugin-react/issues/428) for tracking the progress.
+### ✨ Funcionalidades
 
-## Expanding the ESLint configuration
+* 🧑‍🤝‍🧑 **Gestão de Clientes:** Cadastro, consulta e edição de clientes (Pessoa Física e Jurídica).
+* ⚖️ **Gestão de Processos:** Detalhamento completo de processos.
+* 🗓️ **Controle de Prazos:** Visualização e acompanhamento de prazos e audiências.
+* ✍️ **Gestão de Contratos:** Geração automática e edição de contratos de honorários.
+* 📊 **Dashboard Analítico:** Gráficos e métricas sobre o status dos processos.
+* 📄 **Relatórios:** Geração e exportação de relatórios em formato CSV.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## ⚙️ Passo a passo de instalação
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+**Configurações recomendadas:**
+
+✔ mostra a pasta ```ls``` >> **Front-end-juris-facil**  
+✔ entrar na pasta ```cd``` >> **Front-end-juris-facil**  
+✔ **npm install vite**  
+✔ o **node** deve estar atualizado...
+
+### 1️⃣ Inicializar o NPM
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### 2️⃣ Instalar React e React DOM
+```bash
+npm install react react-dom
 ```
+
+---
+
+### 3️⃣ Criar projeto com Vite
+```bash
+npm install vite
+```
+faca ot teste: 
+
+```bash
+npm run dev
+```
+
+
+---
+
+### 4️⃣ Instalar Tailwind CSS e PostCSS
+```bash
+npm install -D tailwindcss postcss autoprefixer
+npx tailwindcss init -p
+```
+
+> Isso cria os arquivos `tailwind.config.js` e `postcss.config.js`.
+
+---
+
+### 5️⃣ Instalar Shadcn e utilitários principais
+```bash
+npm install class-variance-authority tailwind-merge
+```
+
+---
+
+### 6️⃣ Instalar Radix UI e Lucide
+```bash
+npm install @radix-ui/react-accordion @radix-ui/react-alert-dialog @radix-ui/react-avatar @radix-ui/react-checkbox @radix-ui/react-collapsible @radix-ui/react-dialog @radix-ui/react-dropdown-menu @radix-ui/react-hover-card @radix-ui/react-label @radix-ui/react-navigation-menu @radix-ui/react-popover @radix-ui/react-progress @radix-ui/react-radio-group @radix-ui/react-scroll-area @radix-ui/react-select @radix-ui/react-separator @radix-ui/react-slider @radix-ui/react-switch @radix-ui/react-tabs @radix-ui/react-toggle-group @radix-ui/react-tooltip @radix-ui/react-slot lucide-react
+```
+
+---
+
+### 7️⃣ Instalar outras bibliotecas usadas no projeto
+```bash
+npm install react-hook-form @hookform/resolvers zod react-day-picker date-fns recharts embla-carousel-react react-resizable-panels cmdk sonner input-otp vaul
+```
+
+---
+
+### 8️⃣ Instalar dependências de desenvolvimento
+```bash
+npm install -D @vitejs/plugin-react-swc @types/node
+```
+
+---
+
+### 9️⃣ Rodar o projeto
+```bash
+npm run dev
+```
+
+---
+
+
+## 💡 Observações
+
+- O **banco de dados** utiliza a **Context API do React**, permitindo gerenciamento de estado global e simulação de dados locais.
+- Para integração futura com um **back-end (API real)**, é possível conectar via Axios ou Fetch.
+
+---
+
+
+## 🏁 Como executar
+
+1. Clone este repositório:
+   ```bash
+   git clone https://github.com/tbrayon/juris-facil-front-end.git
+   cd juris-facil-front-end
+   ```
+
+2. Instale as dependências:
+   ```bash
+   npm install
+   ```
+
+3. Inicie o servidor de desenvolvimento:
+   ```bash
+   npm run dev
+   ```
+
+4. Acesse no navegador:
+   ```
+   http://localhost:5173
+   ```
+
+---
+
+
+✨ **Juris Fácil — Simplificando o acesso à informação jurídica.**
+
+
+
