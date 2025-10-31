@@ -791,7 +791,7 @@ export function ProcessosView({ processoIdParaEditar, onClearProcessoIdParaEdita
           <Button
             variant="outline"
             onClick={onVoltar}
-            className="w-full sm:w-auto !bg-white !text-[#a16535] border-2 border-[#a16535] hover:!bg-[#a16535] hover:!text-white transition-all duration-200"
+            className="w-full sm:w-auto !bg-white !text-[#a16535] border-2 border-[#955d30] hover:!bg-[#a16535] hover:!text-white transition-all duration-200"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Página Inicial

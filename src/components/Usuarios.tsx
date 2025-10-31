@@ -387,13 +387,13 @@ export function UsuariosView({ onVoltar }: UsuariosViewProps) {
             <p className="text-[#6b5544]">Gerencie os usuários com acesso ao sistema</p>
           </div>
           <Button
-            variant="outline"
-            onClick={onVoltar}
-            className="border-2 border-[#a16535] !text-[#a16535] hover:!bg-[#a16535] hover:!text-white transition-all duration-200"
+              variant="outline"
+              onClick={onVoltar}
+              className="w-full sm:w-auto !bg-white !text-[#a16535] border-2 border-[#955d30] hover:!bg-[#a16535] hover:!text-white transition-all duration-200"
             >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Página Inicial
-           </Button>
+             <ArrowLeft className="w-4 h-4 mr-2" />
+               Página Inicial
+            </Button>
         </div>
 
         <Card className="bg-white border-[#d4c4b0]">

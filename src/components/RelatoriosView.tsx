@@ -1092,4 +1092,3 @@ export function RelatoriosView({ onEditarCliente, onEditarProcesso, onVoltar }: 
     </div>
   );
 }
-
