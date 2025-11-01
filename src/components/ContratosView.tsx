@@ -46,7 +46,7 @@ ${processoInfo}
 Tipo de Ação: ${processo.tipoAcao || '[TIPO DE AÇÃO]'}
 Tribunal/Vara: ${processo.tribunal || '[TRIBUNAL]'} - ${processo.vara || '[VARA]'}
 Comarca: ${processo.comarca || '[COMARCA]'}
-Polo Processual: ${polo || '[POLO]'}
+Polo Processual: ${polo}
 Parte Contrária: ${processo.parteContraria || '[PARTE CONTRÁRIA]'}
 Valor da Causa: ${processo.valorCausa || '[VALOR DA CAUSA]'}
 
@@ -105,46 +105,22 @@ E, por estarem assim justos e contratados, assinam o presente instrumento em 02 
 
 ${cliente.municipio}, ${hoje}.
 
-{/* ==== ASSINATURA RESPONSIVA ==== */}
-<div className="mt-12 pt-8 border-t-2 border-[#a16535]">
-  <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 max-w-4xl mx-auto">
-    {/* CONTRATANTE */}
-    <div className="text-center">
-      <div className="h-20 mb-2 border-b border-gray-400"></div>
-      <p className="font-bold text-[#2d1f16]">CONTRATANTE</p>
-      <p className="text-sm">{cliente.nome}</p>
-      <p className="text-xs text-[#6b5544]">
-        ${cliente.tipo === 'cpf' ? `CPF: ${cliente.documento}` : `CNPJ: ${cliente.documento}`}
-      </p>
-      ${cliente.tipo === 'cpf' && cliente.rg ? `<p className="text-xs text-[#6b5544]">RG: ${cliente.rg}</p>` : ''}
-    </div>
+CONTRATANTE
+${cliente.nome}
+${cliente.tipo === 'cpf' ? `CPF: ${cliente.documento}` : `CNPJ: ${cliente.documento}`}
+${cliente.tipo === 'cpf' ? `RG: ${cliente.rg || 'Não informado'}` : ''}
 
-    {/* CONTRATADA */}
-    <div className="text-center">
-      <div className="h-20 mb-2 border-b border-gray-400"></div>
-      <p className="font-bold text-[#2d1f16]">CONTRATADA</p>
-      <p className="text-sm">Anna Laura Rocha Gomes</p>
-      <p className="text-xs text-[#6b5544]">OAB: [NÚMERO]</p>
-    </div>
-  </div>
-</div>
+CONTRATADA
+Anna Laura Rocha Gomes
+OAB: [NÚMERO OAB]
 
-{/* ==== TESTEMUNHAS RESPONSIVAS ==== */}
-<div className="mt-16">
-  <p className="font-bold text-[#2d1f16] mb-6 text-center">Testemunhas:</p>
-  <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 max-w-4xl mx-auto">
-    <div>
-      <div className="h-20 mb-2 border-b border-gray-400"></div>
-      <p className="text-xs">1. Nome: _______________________________</p>
-      <p className="text-xs text-[#6b5544]">CPF: _______________________________</p>
-    </div>
-    <div>
-      <div className="h-20 mb-2 border-b border-gray-400"></div>
-      <p className="text-xs">2. Nome: _______________________________</p>
-      <p className="text-xs text-[#6b5544]">CPF: _______________________________</p>
-    </div>
-  </div>
-</div>
+TESTEMUNHAS
+
+1. Nome:
+CPF:
+
+2. Nome:
+CPF:
 `;
 };
 
@@ -250,18 +226,10 @@ export function ContratosView({ onVoltar }: ContratosViewProps) {
               .logo-texto p { font-family: Georgia, serif; margin: 4px 0 0 0; color: #4a3629; }
               .logo-subtitle { font-size: 9pt; letter-spacing: 0.12em; }
               .logo-areas { font-size: 7pt; letter-spacing: 0.15em; color: #6b5544; }
-              pre.contrato-texto { white-space: pre-wrap; font-family: 'Courier New', monospace; font-size: 11pt; line-height: 1.6; margin: 0; padding: 0; overflow-x: auto; text-align: justify; }
-              .assinatura { margin-top: 3cm; padding-top: 1.5cm; border-top: 2px solid #a16535; }
-              .assinatura-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2cm; max-width: 18cm; margin: 0 auto; }
-              .assinatura-bloco { text-align: center; }
-              .linha-assinatura { height: 3cm; border-bottom: 1px solid #666; margin-bottom: 0.5cm; }
+              pre.contrato-texto { white-space: pre-wrap; font-family: Arial, sans-serif; font-size: 12pt; line-height: 1.8; margin: 0; padding: 0; overflow-x: auto; text-align: justify; }
               @media print {
                 body { margin: 0; }
-                pre.contrato-texto { white-space: pre-wrap; overflow-x: visible; font-size: 11pt; }
-                .assinatura-grid { grid-template-columns: 1fr 1fr; }
-              }
-              @media screen and (max-width: 640px) {
-                .assinatura-grid { grid-template-columns: 1fr; gap: 1.5cm; }
+                pre.contrato-texto { white-space: pre-wrap; overflow-x: visible; font-size: 12pt; }
               }
             </style>
           </head>
@@ -444,11 +412,6 @@ export function ContratosView({ onVoltar }: ContratosViewProps) {
                                   Assinado
                                 </Badge>
                               )}
-                              {!contrato.numeroProcesso && numeroProcessoAtual && (
-                                <Badge className="bg-blue-100 text-blue-700 border-blue-300 hover:bg-blue-100">
-                                  Número adicionado após assinatura
-                                </Badge>
-                              )}
                             </div>
                             <p className="text-sm text-[#4a3629]">
                               <strong>Cliente:</strong> {contrato.clienteNome} ({contrato.clienteDocumento})
@@ -461,11 +424,6 @@ export function ContratosView({ onVoltar }: ContratosViewProps) {
                             <p className="text-sm text-[#6b5544]">
                               Criado em: {formatDateTimeBR(contrato.dataCriacao)}
                             </p>
-                            {contrato.dataEdicao && (
-                              <p className="text-sm text-[#6b5544]">
-                                Última edição: {formatDateTimeBR(contrato.dataEdicao)}
-                              </p>
-                            )}
                             {contrato.arquivoAssinado && (
                               <p className="text-green-700 text-sm mt-1">
                                 {contrato.arquivoAssinado.nome}
@@ -529,22 +487,19 @@ export function ContratosView({ onVoltar }: ContratosViewProps) {
           </CardHeader>
           <CardContent className="space-y-6 p-4 sm:p-6">
             <div className="space-y-2">
-              <Label className="text-[#4a3629]">Selecione o Processo <span className="text-[#6b5544] text-sm">(opcional)</span></Label>
+              <Label className="text-[#4a3629]">Selecione o Processo</Label>
               <Select value={processoSelecionado} onValueChange={setProcessoSelecionado}>
                 <SelectTrigger className="bg-[#f6f3ee] border-[#d4c4b0] text-[#2d1f16] focus:border-[#a16535] focus:ring-[#a16535]/20">
-                  <SelectValue placeholder="Escolha um processo (ou deixe vazio para contrato sem processo)" />
+                  <SelectValue placeholder="Escolha um processo" />
                 </SelectTrigger>
                 <SelectContent className="bg-white border-[#d4c4b0] max-h-[300px]">
                   {processosDisponiveis.map((processo) => (
                     <SelectItem key={processo.id} value={processo.id} className="text-[#2d1f16] hover:bg-[#f6f3ee]">
-                      {processo.numeroProcesso ? processo.numeroProcesso : '(Sem número) - ' + processo.tipoAcao} - {processo.clienteNome}
+                      {processo.numeroProcesso || '(Sem número)'} - {processo.tipoAcao} - {processo.clienteNome}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-              <p className="text-sm text-[#6b5544]">
-                Dica: Para processos ainda não ajuizados, você pode gerar o contrato mesmo sem o número do processo.
-              </p>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-2">
@@ -557,11 +512,8 @@ export function ContratosView({ onVoltar }: ContratosViewProps) {
               </Button>
               <Button
                 variant="outline"
-                onClick={() => {
-                  setModoVisualizacao('lista');
-                  setProcessoSelecionado('');
-                }}
-                className="border-2 border-[#a16535] text-[#a16535] hover:bg-[#a16535] hover:text-white transition-all duration-200"
+                onClick={() => setModoVisualizacao('lista')}
+                className="border-2 border-[#a16535] text-[#a16535] hover:bg-[#a16535] hover:text-white"
               >
                 <X className="w-4 h-4 mr-2" />
                 Cancelar
@@ -572,226 +524,145 @@ export function ContratosView({ onVoltar }: ContratosViewProps) {
       )}
 
       {/* Editor de Contrato */}
-      {modoVisualizacao === 'editar' && contratoAtual && (() => {
-        const processoAtual = processos.find(p => p.id === contratoAtual.processoId);
-        const numeroProcessoAtual = processoAtual?.numeroProcesso || contratoAtual.numeroProcesso;
+      {modoVisualizacao === 'editar' && contratoAtual && (
+        <Card className="bg-white border-2 border-[#d4c4b0] shadow-sm">
+          <CardHeader className="border-b-2 border-[#d4c4b0] bg-gradient-to-r from-[#f6f3ee] to-white p-4 sm:p-6">
+            <CardTitle className="text-lg sm:text-xl text-[#2d1f16]">
+              {contratoAtual?.id ? 'Editar Contrato' : 'Novo Contrato'}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6 p-4 sm:p-6">
+            <div className="space-y-2">
+              <Label className="text-[#4a3629]">Texto do Contrato</Label>
+              <Textarea
+                value={textoEditavel}
+                onChange={(e) => setTextoEditavel(e.target.value)}
+                rows={30}
+                className="bg-[#f6f3ee] border-[#d4c4b0] text-[#2d1f16] focus:border-[#a16535] resize-none text-sm"
+                style={{ fontFamily: 'Arial, sans-serif', lineHeight: '1.8' }}
+              />
+            </div>
 
-        return (
-          <Card className="bg-white border-2 border-[#d4c4b0] shadow-sm">
-            <CardHeader className="border-b-2 border-[#d4c4b0] bg-gradient-to-r from-[#f6f3ee] to-white p-4 sm:p-6">
-              <CardTitle className="text-lg sm:text-xl text-[#2d1f16]">
-                {contratoAtual?.id ? 'Editar Contrato' : 'Novo Contrato'}
-              </CardTitle>
-              <CardDescription className="text-sm text-[#6b5544]">
-                {numeroProcessoAtual
-                  ? (
-                    <span>
-                      Processo: <strong>{numeroProcessoAtual}</strong> - {contratoAtual.clienteNome}
-                      {!contratoAtual.numeroProcesso && (
-                        <span className="ml-2 text-blue-600 text-xs">
-                          (número adicionado após criação do contrato)
-                        </span>
-                      )}
-                    </span>
-                  )
-                  : `Cliente: ${contratoAtual.clienteNome} (Processo sem número)`
-                }
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6 p-4 sm:p-6">
+            <Separator className="bg-[#d4c4b0]" />
+
+            {contratoAtual?.id && (
               <div className="space-y-2">
-                <Label className="text-[#4a3629]">Texto do Contrato</Label>
-                <Textarea
-                  value={textoEditavel}
-                  onChange={(e) => setTextoEditavel(e.target.value)}
-                  rows={25}
-                  className="bg-[#f6f3ee] border-[#d4c4b0] text-[#2d1f16] placeholder:text-[#6b5544] focus:border-[#a16535] focus:ring-[#a16535]/20 resize-none text-sm sm:text-base"
-                  style={{ fontFamily: 'Arial, sans-serif', lineHeight: '1.6', textAlign: 'justify' }}
+                <Label className="text-[#4a3629]">Anexar Contrato Assinado</Label>
+                <div className="flex flex-col sm:flex-row gap-2 items-start sm:items-center">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="w-full sm:w-auto border-2 border-[#a16535] text-[#a16535] hover:bg-[#a16535] hover:text-white"
+                  >
+                    <Upload className="w-4 h-4 mr-2" />
+                    {contratoAtual.arquivoAssinado ? 'Substituir' : 'Upload PDF/Imagem'}
+                  </Button>
+                  {contratoAtual.arquivoAssinado && (
+                    <span className="text-green-700 flex items-center gap-2 text-sm">
+                      <CheckCircle className="w-4 h-4" />
+                      {contratoAtual.arquivoAssinado.nome}
+                    </span>
+                  )}
+                </div>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".pdf,.jpg,.jpeg,.png"
+                  onChange={handleUploadArquivo}
+                  className="hidden"
                 />
               </div>
+            )}
 
-              <Separator className="bg-[#d4c4b0]" />
-
-              {contratoAtual?.id && (
-                <div className="space-y-2">
-                  <Label className="text-[#4a3629]">Anexar Contrato Assinado</Label>
-                  <div className="flex flex-col sm:flex-row gap-2 items-start sm:items-center">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => fileInputRef.current?.click()}
-                      className="w-full sm:w-auto border-2 border-[#a16535] text-[#a16535] hover:bg-[#a16535] hover:text-white transition-all duration-200"
-                    >
-                      <Upload className="w-4 h-4 mr-2" />
-                      {contratoAtual.arquivoAssinado ? 'Substituir Arquivo' : 'Upload PDF/Imagem'}
-                    </Button>
-                    {contratoAtual.arquivoAssinado && (
-                      <span className="text-green-700 flex items-center gap-2 text-sm">
-                        <CheckCircle className="w-4 h-4" />
-                        {contratoAtual.arquivoAssinado.nome}
-                      </span>
-                    )}
-                  </div>
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept=".pdf,.jpg,.jpeg,.png"
-                    onChange={handleUploadArquivo}
-                    className="hidden"
-                  />
-                  <p className="text-[#6b5544] text-sm">
-                    Formatos aceitos: PDF, JPG, PNG (máx. 10MB)
-                  </p>
-                </div>
-              )}
-
-              <div className="flex flex-col sm:flex-row gap-2">
-                <Button
-                  onClick={handleSalvarContrato}
-                  className="bg-blue-600 hover:bg-blue-700 text-white shadow-md"
-                >
-                  <Save className="w-4 h-4 mr-2" />
-                  Salvar Contrato
-                </Button>
-                <Button
-                  onClick={handleImprimirContrato}
-                  className="bg-[#a16535] hover:bg-[#8b5329] text-white shadow-md"
-                >
-                  <Printer className="w-4 h-4 mr-2" />
-                  Imprimir
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setModoVisualizacao('lista');
-                    setContratoAtual(null);
-                    setTextoEditavel('');
-                  }}
-                  className="border-2 border-[#a16535] text-[#a16535] hover:bg-[#a16535] hover:text-white transition-all duration-200"
-                >
-                  <X className="w-4 h-4 mr-2" />
-                  Cancelar
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        );
-      })()}
+            <div className="flex flex-col sm:flex-row gap-2">
+              <Button
+                onClick={handleSalvarContrato}
+                className="bg-blue-600 hover:bg-blue-700 text-white shadow-md"
+              >
+                <Save className="w-4 h-4 mr-2" />
+                Salvar
+              </Button>
+              <Button
+                onClick={handleImprimirContrato}
+                className="bg-[#a16535] hover:bg-[#8b5329] text-white shadow-md"
+              >
+                <Printer className="w-4 h-4 mr-2" />
+                Imprimir
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => setModoVisualizacao('lista')}
+                className="border-2 border-[#a16535] text-[#a16535] hover:bg-[#a16535] hover:text-white"
+              >
+                <X className="w-4 h-4 mr-2" />
+                Cancelar
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Visualizar Contrato */}
-      {modoVisualizacao === 'visualizar' && contratoAtual && (() => {
-        const processoAtual = processos.find(p => p.id === contratoAtual.processoId);
-        const numeroProcessoAtual = processoAtual?.numeroProcesso || contratoAtual.numeroProcesso;
+      {modoVisualizacao === 'visualizar' && contratoAtual && (
+        <Card className="bg-white border-2 border-[#d4c4b0] shadow-sm">
+          <CardHeader className="border-b-2 border-[#d4c4b0] bg-gradient-to-r from-[#f6f3ee] to-white p-4 sm:p-6">
+            <CardTitle className="text-lg sm:text-xl text-[#2d1f16]">Visualizar Contrato</CardTitle>
+          </CardHeader>
+          <CardContent className="p-6">
+            <div className="bg-white p-8 rounded-lg border-2 border-[#d4c4b0] shadow-inner">
+              <div className="mb-8 pb-6 border-b-2 border-[#a16535] text-center">
+                <h1 className="text-2xl tracking-wider text-[#2d1f16]" style={{ fontFamily: 'Georgia, serif' }}>
+                  ANNA LAURA ROCHA GOMES
+                </h1>
+                <p className="text-base text-[#4a3629]" style={{ fontFamily: 'Georgia, serif', letterSpacing: '0.15em' }}>
+                  ADVOCACIA E CONSULTORIA
+                </p>
+              </div>
+              <pre className="whitespace-pre-wrap text-[#2d1f16] text-sm leading-relaxed" style={{ fontFamily: 'Arial, sans-serif', lineHeight: '1.8', textAlign: 'justify' }}>
+                {textoEditavel}
+              </pre>
+            </div>
 
-        return (
-          <Card className="bg-white border-2 border-[#d4c4b0] shadow-sm">
-            <CardHeader className="border-b-2 border-[#d4c4b0] bg-gradient-to-r from-[#f6f3ee] to-white p-4 sm:p-6">
-              <CardTitle className="text-lg sm:text-xl text-[#2d1f16]">Visualizar Contrato</CardTitle>
-              <CardDescription className="text-sm text-[#6b5544]">
-                {numeroProcessoAtual
-                  ? (
-                    <span>
-                      Processo: <strong>{numeroProcessoAtual}</strong> - {contratoAtual.clienteNome}
-                      {!contratoAtual.numeroProcesso && (
-                        <span className="ml-2 text-blue-600 text-xs">
-                          (número adicionado após criação do contrato)
-                        </span>
-                      )}
-                    </span>
-                  )
-                  : `Cliente: ${contratoAtual.clienteNome} (Processo sem número)`
-                }
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6 p-4 sm:p-6">
-              <div className="bg-white p-4 sm:p-8 rounded-lg border-2 border-[#d4c4b0] shadow-inner">
-                <div className="mb-8 pb-6 border-b-2 border-[#a16535]">
-                  <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-                    <div className="flex flex-col items-center">
-                      <svg width="100" height="120" viewBox="0 0 100 120" className="text-[#a16535]">
-                        <line x1="10" y1="5" x2="90" y2="5" stroke="currentColor" strokeWidth="2"/>
-                        <line x1="10" y1="9" x2="90" y2="9" stroke="currentColor" strokeWidth="2"/>
-                        <line x1="10" y1="13" x2="90" y2="13" stroke="currentColor" strokeWidth="2"/>
-                        <path d="M 15 20 Q 20 15, 25 20 Q 30 15, 35 20 Q 40 15, 45 20 Q 50 15, 55 20 Q 60 15, 65 20 Q 70 15, 75 20 Q 80 15, 85 20"
-                              fill="none" stroke="currentColor" strokeWidth="2"/>
-                        <path d="M 15 25 Q 20 22, 25 25 Q 30 22, 35 25 Q 40 22, 45 25 Q 50 22, 55 25 Q 60 22, 65 25 Q 70 22, 75 25 Q 80 22, 85 25"
-                              fill="none" stroke="currentColor" strokeWidth="2"/>
-                        <line x1="30" y1="30" x2="30" y2="100" stroke="currentColor" strokeWidth="2"/>
-                        <line x1="40" y1="30" x2="40" y2="100" stroke="currentColor" strokeWidth="2"/>
-                        <line x1="50" y1="30" x2="50" y2="100" stroke="currentColor" strokeWidth="2"/>
-                        <line x1="60" y1="30" x2="60" y2="100" stroke="currentColor" strokeWidth="2"/>
-                        <line x1="70" y1="30" x2="70" y2="100" stroke="currentColor" strokeWidth="2"/>
-                        <rect x="20" y="100" width="60" height="4" fill="currentColor"/>
-                        <rect x="15" y="105" width="70" height="4" fill="currentColor"/>
-                        <rect x="10" y="110" width="80" height="5" fill="currentColor"/>
-                      </svg>
-                    </div>
-                    <div className="text-center sm:text-left">
-                      <h1 className="text-2xl sm:text-4xl tracking-wider text-[#2d1f16]" style={{ fontFamily: 'Georgia, serif', letterSpacing: '0.1em' }}>
-                        ANNA LAURA ROCHA GOMES
-                      </h1>
-                      <p className="text-base sm:text-lg text-[#4a3629] mt-2" style={{ fontFamily: 'Georgia, serif', letterSpacing: '0.15em' }}>
-                        ADVOCACIA E CONSULTORIA
-                      </p>
-                      <p className="text-xs sm:text-sm text-[#6b5544] mt-1" style={{ fontFamily: 'Georgia, serif', letterSpacing: '0.2em' }}>
-                        CÍVEL - CRIMINAL - FAMÍLIA
-                      </p>
-                    </div>
+            {contratoAtual.arquivoAssinado && (
+              <div className="mt-6 bg-green-50 border-2 border-green-300 rounded-lg p-4">
+                <div className="flex items-center gap-2 text-green-700">
+                  <CheckCircle className="w-5 h-5" />
+                  <div>
+                    <p><strong>Contrato Assinado Anexado</strong></p>
+                    <p className="text-sm">{contratoAtual.arquivoAssinado.nome}</p>
                   </div>
                 </div>
-
-                <pre className="whitespace-pre-wrap text-[#2d1f16] text-xs leading-relaxed" style={{ fontFamily: 'Arial, sans-serif', fontSize: '12pt', lineHeight: '1.8', textAlign: 'justify' }}
-                  dangerouslySetInnerHTML={{ __html: textoEditavel }}
-                />
               </div>
+            )}
 
-              {contratoAtual?.arquivoAssinado && (
-                <div className="bg-green-50 border-2 border-green-300 rounded-lg p-4">
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 text-green-700">
-                    <CheckCircle className="w-5 h-5 flex-shrink-0" />
-                    <div>
-                      <p><strong>Contrato Assinado Anexado</strong></p>
-                      <p className="text-sm break-all">
-                        Arquivo: {contratoAtual.arquivoAssinado.nome} -
-                        Upload em: {formatDateTimeBR(contratoAtual.arquivoAssinado.dataUpload)}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              <div className="flex flex-col sm:flex-row gap-2">
-                <Button
-                  onClick={handleImprimirContrato}
-                  className="bg-[#a16535] hover:bg-[#8b5329] text-white shadow-md"
-                >
-                  <Printer className="w-4 h-4 mr-2" />
-                  Imprimir
-                </Button>
-                <Button
-                  onClick={() => setModoVisualizacao('editar')}
-                  className="bg-blue-600 hover:bg-blue-700 text-white shadow-md"
-                >
-                  <Edit className="w-4 h-4 mr-2" />
-                  Editar
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setModoVisualizacao('lista');
-                    setContratoAtual(null);
-                    setTextoEditavel('');
-                  }}
-                  className="border-2 border-[#a16535] text-[#a16535] hover:bg-[#a16535] hover:text-white transition-all duration-200"
-                >
-                  <X className="w-4 h-4 mr-2" />
-                  Fechar
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        );
-      })()}
+            <div className="mt-6 flex flex-col sm:flex-row gap-2">
+              <Button
+                onClick={handleImprimirContrato}
+                className="bg-[#a16535] hover:bg-[#8b5329] text-white"
+              >
+                <Printer className="w-4 h-4 mr-2" />
+                Imprimir
+              </Button>
+              <Button
+                onClick={() => setModoVisualizacao('editar')}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                <Edit className="w-4 h-4 mr-2" />
+                Editar
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => setModoVisualizacao('lista')}
+                className="border-2 border-[#a16535] text-[#a16535] hover:bg-[#a16535] hover:text-white"
+              >
+                <X className="w-4 h-4 mr-2" />
+                Fechar
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

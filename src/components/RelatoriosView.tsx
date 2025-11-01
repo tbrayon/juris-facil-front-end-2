@@ -250,40 +250,90 @@ export function RelatoriosView({ onEditarCliente, onEditarProcesso, onVoltar }: 
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6b5544] w-4 h-4" />
                   <Input
-                    placeholder="Buscar por nome..."
+                    placeholder="Buscar por nome do cliente"
                     value={buscaClientes}
                     onChange={e => setBuscaClientes(e.target.value)}
-                    className="pl-10 bg-[#f6f3ee] border-[#d4c4b0] focus:border-[#a16535] text-sm"
+                    className="pl-10 bg-[#f6f3ee] border-[#d4c4b0] focus:border-[#2567f7] text-sm"
                   />
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  {/* Filtro Tipo Cliente */}
                   <Select value={filtroTipoCliente} onValueChange={setFiltroTipoCliente}>
-                    <SelectTrigger className="bg-[#f6f3ee] border-[#d4c4b0] text-sm">
-                      <SelectValue placeholder="Tipo" />
+                    <SelectTrigger className={`
+                      bg-[#f6f3ee] border-[#d4c4b0] text-sm transition-all duration-200
+                      focus:ring-2 focus:ring-[#2567f7] focus:ring-offset-1 focus:border-[#2567f7]
+                      ${filtroTipoCliente !== 'todos' 
+                        ? 'bg-blue-500 text-white border-blue-500' 
+                        : 'hover:bg-blue-500/10 hover:text-blue-600'
+                      }
+                    `}>
+                      <SelectValue placeholder="Tipo de Cliente" />
                     </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="todos">Todos</SelectItem>
-                      <SelectItem value="cpf">Pessoa Física</SelectItem>
-                      <SelectItem value="cnpj">Pessoa Jurídica</SelectItem>
+                    <SelectContent className="bg-white border-[#d4c4b0] shadow-lg">
+                      <SelectItem value="todos" className="hover:bg-blue-500 hover:text-white transition-colors">
+                        Todos
+                      </SelectItem>
+                      <SelectItem value="cpf" className="hover:bg-blue-500 hover:text-white transition-colors data-[state=checked]:bg-blue-600 data-[state=checked]:text-white">
+                        Pessoa Física
+                      </SelectItem>
+                      <SelectItem value="cnpj" className="hover:bg-blue-500 hover:text-white transition-colors data-[state=checked]:bg-blue-600 data-[state=checked]:text-white">
+                        Pessoa Jurídica
+                      </SelectItem>
                     </SelectContent>
                   </Select>
+
+                  {/* Filtro Cidade */}
                   <Select value={filtroCidade} onValueChange={setFiltroCidade}>
-                    <SelectTrigger className="bg-[#f6f3ee] border-[#d4c4b0] text-sm">
+                    <SelectTrigger className={`
+                      bg-[#f6f3ee] border-[#d4c4b0] text-sm transition-all duration-200
+                      focus:ring-2 focus:ring-[#2567f7] focus:ring-offset-1 focus:border-[#2567f7]
+                      ${filtroCidade !== 'todos' 
+                        ? 'bg-blue-500 text-white border-blue-500' 
+                        : 'hover:bg-blue-500/10 hover:text-blue-600'
+                      }
+                    `}>
                       <SelectValue placeholder="Cidade" />
                     </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="todos">Todas</SelectItem>
-                      {cidadesUnicas.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                    <SelectContent className="bg-white border-[#d4c4b0] shadow-lg">
+                      <SelectItem value="todos" className="hover:bg-blue-500 hover:text-white transition-colors">
+                        Todas as Cidades
+                      </SelectItem>
+                      {cidadesUnicas.map(c => (
+                        <SelectItem
+                          key={c}
+                          value={c}
+                          className="hover:bg-blue-500 hover:text-white transition-colors data-[state=checked]:bg-blue-600 data-[state=checked]:text-white"
+                        >
+                          {c}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
+
+                  {/* Filtro Estado */}
                   <Select value={filtroEstado} onValueChange={setFiltroEstado}>
-                    <SelectTrigger className="bg-[#f6f3ee] border-[#d4c4b0] text-sm">
+                    <SelectTrigger className={`
+                      bg-[#f6f3ee] border-[#d4c4b0] text-sm transition-all duration-200
+                      focus:ring-2 focus:ring-[#2567f7] focus:ring-offset-1 focus:border-[#2567f7]
+                      ${filtroEstado !== 'todos' 
+                        ? 'bg-blue-500 text-white border-blue-500' 
+                        : 'hover:bg-blue-500/10 hover:text-blue-600'
+                      }
+                    `}>
                       <SelectValue placeholder="Estado" />
                     </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="todos">Todos</SelectItem>
+                    <SelectContent className="bg-white border-[#d4c4b0] shadow-lg max-h-60">
+                      <SelectItem value="todos" className="hover:bg-blue-500 hover:text-white transition-colors">
+                        Todos
+                      </SelectItem>
                       {estadosBrasileiros.map(e => (
-                        <SelectItem key={e.sigla} value={e.sigla}>{e.sigla} - {e.nome}</SelectItem>
+                        <SelectItem
+                          key={e.sigla}
+                          value={e.sigla}
+                          className="hover:bg-blue-500 hover:text-white transition-colors data-[state=checked]:bg-blue-600 data-[state=checked]:text-white"
+                        >
+                          {e.sigla} - {e.nome}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -401,47 +451,114 @@ export function RelatoriosView({ onEditarCliente, onEditarProcesso, onVoltar }: 
                     placeholder="Buscar por número, cliente ou ação..."
                     value={buscaProcessos}
                     onChange={e => setBuscaProcessos(e.target.value)}
-                    className="pl-10 bg-[#f6f3ee] border-[#d4c4b0] focus:border-[#a16535] text-sm"
+                    className="pl-10 bg-[#f6f3ee] border-[#d4c4b0] focus:border-[#2567f7] text-sm"
                   />
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                  {/* Fase */}
                   <div className="space-y-1">
                     <Label className="text-[#6b5544] text-xs">Fase</Label>
                     <Select value={filtroFase} onValueChange={setFiltroFase}>
-                      <SelectTrigger className="bg-[#f6f3ee] border-[#d4c4b0] text-sm h-9"><SelectValue placeholder="Todas" /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="todos">Todas</SelectItem>
-                        {fasesUnicas.map(f => <SelectItem key={f} value={f}>{f}</SelectItem>)}
+                      <SelectTrigger className={`
+                        bg-[#f6f3ee] border-[#d4c4b0] text-sm h-9 transition-all duration-200
+                        focus:ring-2 focus:ring-[#2567f7] focus:ring-offset-1 focus:border-[#2567f7]
+                        ${filtroFase !== 'todos' 
+                          ? 'bg-blue-500 text-white border-blue-500' 
+                          : 'hover:bg-blue-500/10 hover:text-blue-600'
+                        }
+                      `}>
+                        <SelectValue placeholder="Todas" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white border-[#d4c4b0] shadow-lg">
+                        <SelectItem value="todos" className="hover:bg-blue-500 hover:text-white transition-colors">
+                          Todas
+                        </SelectItem>
+                        {fasesUnicas.map(f => (
+                          <SelectItem key={f} value={f} className="hover:bg-blue-500 hover:text-white transition-colors data-[state=checked]:bg-blue-600 data-[state=checked]:text-white">
+                            {f}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>
+
+                  {/* Status */}
                   <div className="space-y-1">
                     <Label className="text-[#6b5544] text-xs">Status</Label>
                     <Select value={filtroStatus} onValueChange={setFiltroStatus}>
-                      <SelectTrigger className="bg-[#f6f3ee] border-[#d4c4b0] text-sm h-9"><SelectValue placeholder="Todos" /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="todos">Todos</SelectItem>
-                        {statusUnicos.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                      <SelectTrigger className={`
+                        bg-[#f6f3ee] border-[#d4c4b0] text-sm h-9 transition-all duration-200
+                        focus:ring-2 focus:ring-[#2567f7] focus:ring-offset-1 focus:border-[#2567f7]
+                        ${filtroStatus !== 'todos' 
+                          ? 'bg-blue-500 text-white border-blue-500' 
+                          : 'hover:bg-blue-500/10 hover:text-blue-600'
+                        }
+                      `}>
+                        <SelectValue placeholder="Todos" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white border-[#d4c4b0] shadow-lg">
+                        <SelectItem value="todos" className="hover:bg-blue-500 hover:text-white transition-colors">
+                          Todos
+                        </SelectItem>
+                        {statusUnicos.map(s => (
+                          <SelectItem key={s} value={s} className="hover:bg-blue-500 hover:text-white transition-colors data-[state=checked]:bg-blue-600 data-[state=checked]:text-white">
+                            {s}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>
+
+                  {/* Prioridade */}
                   <div className="space-y-1">
                     <Label className="text-[#6b5544] text-xs">Prioridade</Label>
                     <Select value={filtroPrioridade} onValueChange={setFiltroPrioridade}>
-                      <SelectTrigger className="bg-[#f6f3ee] border-[#d4c4b0] text-sm h-9"><SelectValue placeholder="Todas" /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="todos">Todas</SelectItem>
-                        {prioridadesUnicas.map(p => <SelectItem key={p} value={p}>{p}</SelectItem>)}
+                      <SelectTrigger className={`
+                        bg-[#f6f3ee] border-[#d4c4b0] text-sm h-9 transition-all duration-200
+                        focus:ring-2 focus:ring-[#2567f7] focus:ring-offset-1 focus:border-[#2567f7]
+                        ${filtroPrioridade !== 'todos' 
+                          ? 'bg-blue-500 text-white border-blue-500' 
+                          : 'hover:bg-blue-500/10 hover:text-blue-600'
+                        }
+                      `}>
+                        <SelectValue placeholder="Todas" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white border-[#d4c4b0] shadow-lg">
+                        <SelectItem value="todos" className="hover:bg-blue-500 hover:text-white transition-colors">
+                          Todas
+                        </SelectItem>
+                        {prioridadesUnicas.map(p => (
+                          <SelectItem key={p} value={p} className="hover:bg-blue-500 hover:text-white transition-colors data-[state=checked]:bg-blue-600 data-[state=checked]:text-white">
+                            {p}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>
+
+                  {/* Tipo de Ação */}
                   <div className="space-y-1">
                     <Label className="text-[#6b5544] text-xs">Tipo de Ação</Label>
                     <Select value={filtroTipoAcao} onValueChange={setFiltroTipoAcao}>
-                      <SelectTrigger className="bg-[#f6f3ee] border-[#d4c4b0] text-sm h-9"><SelectValue placeholder="Todos" /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="todos">Todos</SelectItem>
-                        {tiposAcaoUnicos.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                      <SelectTrigger className={`
+                        bg-[#f6f3ee] border-[#d4c4b0] text-sm h-9 transition-all duration-200
+                        focus:ring-2 focus:ring-[#2567f7] focus:ring-offset-1 focus:border-[#2567f7]
+                        ${filtroTipoAcao !== 'todos' 
+                          ? 'bg-blue-500 text-white border-blue-500' 
+                          : 'hover:bg-blue-500/10 hover:text-blue-600'
+                        }
+                      `}>
+                        <SelectValue placeholder="Todos" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white border-[#d4c4b0] shadow-lg">
+                        <SelectItem value="todos" className="hover:bg-blue-500 hover:text-white transition-colors">
+                          Todos
+                        </SelectItem>
+                        {tiposAcaoUnicos.map(t => (
+                          <SelectItem key={t} value={t} className="hover:bg-blue-500 hover:text-white transition-colors data-[state=checked]:bg-blue-600 data-[state=checked]:text-white">
+                            {t}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>
@@ -455,7 +572,7 @@ export function RelatoriosView({ onEditarCliente, onEditarProcesso, onVoltar }: 
                 )}
               </div>
 
-              {/* Mobile: Cards - PROCESSOS (SEM VAZAMENTO) */}
+              {/* Mobile: Cards - PROCESSOS */}
               <div className="sm:hidden space-y-4">
                 {processosFiltrados.length === 0 ? (
                   <div className="text-center py-16 text-[#6b5544] bg-white rounded-xl border border-[#d4c4b0]/30">
@@ -464,60 +581,37 @@ export function RelatoriosView({ onEditarCliente, onEditarProcesso, onVoltar }: 
                   </div>
                 ) : (
                   processosFiltrados.map((processo: Processo) => (
-                    <div
-                      key={processo.id}
-                      className="bg-white border border-[#d4c4b0]/40 rounded-2xl p-5 shadow-sm hover:shadow transition-all duration-200"
-                    >
-                      {/* Cabeçalho: Número + Ações (dentro do card) */}
+                    <div key={processo.id} className="bg-white border border-[#d4c4b0]/40 rounded-2xl p-5 shadow-sm hover:shadow transition-all duration-200">
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex-1 min-w-0">
                           <p className="font-mono text-lg font-bold text-[#2d1f16] tracking-tight truncate">
                             {processo.numeroProcesso || '(Sem número)'}
                           </p>
-                          <p className="text-sm text-[#6b5544] mt-0.5 truncate">
-                            {processo.clienteNome}
-                          </p>
+                          <p className="text-sm text-[#6b5544] mt-0.5 truncate">{processo.clienteNome}</p>
                         </div>
                         <div className="flex gap-1.5 ml-3">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleVisualizarProcesso(processo)}
-                            className="h-9 w-9 text-[#a16535] hover:bg-[#f6f3ee] rounded-lg"
-                          >
+                          <Button variant="ghost" size="icon" onClick={() => handleVisualizarProcesso(processo)} className="h-9 w-9 text-[#a16535] hover:bg-[#f6f3ee] rounded-lg">
                             <Eye className="w-4.5 h-4.5" />
                           </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleEditarProcesso(processo)}
-                            className="h-9 w-9 text-[#a16535] hover:bg-[#f6f3ee] rounded-lg"
-                          >
+                          <Button variant="ghost" size="icon" onClick={() => handleEditarProcesso(processo)} className="h-9 w-9 text-[#a16535] hover:bg-[#f6f3ee] rounded-lg">
                             <Edit className="w-4.5 h-4.5" />
                           </Button>
                         </div>
                       </div>
 
-                      {/* Linha: Ação + Fase */}
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex-1">
                           <span className="text-xs font-medium text-[#6b5544]">Ação:</span>
-                          <p className="text-sm font-medium text-[#2d1f16] truncate mt-0.5">
-                            {processo.tipoAcao}
-                          </p>
+                          <p className="text-sm font-medium text-[#2d1f16] truncate mt-0.5">{processo.tipoAcao}</p>
                         </div>
                         <div className="flex items-center ml-4">
                           <span className="text-xs font-medium text-[#6b5544] mr-2">Fase:</span>
-                          <Badge
-                            variant="outline"
-                            className="text-xs px-3 py-1 border-[#a16535] text-[#a16535] font-medium rounded-full"
-                          >
+                          <Badge variant="outline" className="text-xs px-3 py-1 border-[#a16535] text-[#a16535] font-medium rounded-full">
                             {processo.faseProcessual}
                           </Badge>
                         </div>
                       </div>
 
-                      {/* Linha: Status + Prioridade */}
                       <div className="flex items-center justify-between">
                         <div className="flex items-center">
                           <span className="text-xs font-medium text-[#6b5544] mr-2">Status:</span>
@@ -663,15 +757,14 @@ export function RelatoriosView({ onEditarCliente, onEditarProcesso, onVoltar }: 
               </div>
             </ScrollArea>
           )}
-          {/* Botões lado a lado em mobile */}
           <div className="flex flex-row gap-2">
-  <Button variant="outline" onClick={() => setDialogClienteAberto(false)} className="text-sm">
-    Fechar
-  </Button>
-  <Button onClick={() => clienteSelecionado && handleEditarCliente(clienteSelecionado)} className="text-sm bg-[#a16535] hover:bg-[#8b5329]">
-    Editar
-  </Button>
-</div>
+            <Button variant="outline" onClick={() => setDialogClienteAberto(false)} className="text-sm">
+              Fechar
+            </Button>
+            <Button onClick={() => clienteSelecionado && handleEditarCliente(clienteSelecionado)} className="text-sm bg-[#a16535] hover:bg-[#8b5329]">
+              Editar
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
 
@@ -748,12 +841,11 @@ export function RelatoriosView({ onEditarCliente, onEditarProcesso, onVoltar }: 
               </div>
             </ScrollArea>
           )}
-          {/* Botões lado a lado em mobile */}
-          <div className="flex flex-col sm:flex-row gap-2 mt-4 pt-4 border-t border-[#d4c4b0]/20">
-            <Button variant="outline" onClick={() => setDialogProcessoAberto(false)} className="flex-1 sm:flex-none text-sm">
+          <div className="flex flex-row gap-2">
+            <Button variant="outline" onClick={() => setDialogClienteAberto(false)} className="text-sm">
               Fechar
             </Button>
-            <Button onClick={() => processoSelecionado && handleEditarProcesso(processoSelecionado)} className="flex-1 sm:flex-none text-sm bg-[#a16535] hover:bg-[#8b5329]">
+            <Button onClick={() => clienteSelecionado && handleEditarCliente(clienteSelecionado)} className="text-sm bg-[#a16535] hover:bg-[#8b5329]">
               Editar
             </Button>
           </div>

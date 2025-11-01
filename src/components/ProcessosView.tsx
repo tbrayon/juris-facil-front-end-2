@@ -782,7 +782,7 @@ export function ProcessosView({ processoIdParaEditar, onClearProcessoIdParaEdita
       <div className="mb-6">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-[#2d1f16] flex items-center gap-2">
+            <h2 className="text-xl md:text-2xl text-[#2d1f16] flex items-center gap-2">
               <FileText className="w-6 h-6 text-[#a16535]" />
               Gestão de Processos
             </h2>

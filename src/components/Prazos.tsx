@@ -439,7 +439,7 @@ function PrazosView({ onVoltar }: PrazosViewProps) {
       */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
-          <h2 className="text-2xl font-bold text-[#2d1f16] flex items-center gap-2"> {/* Aumentei a fonte do título */}
+          <h2 className="text-xl md:text-2xl text-[#2d1f16] flex items-center gap-2">
             <Calendar className="w-6 h-6 text-[#a16535]" />
             Prazos e Audiências
           </h2>
