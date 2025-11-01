@@ -409,7 +409,7 @@ export function UsuariosView({ onVoltar }: UsuariosViewProps) {
               <Button
                 onClick={handleNovoCadastro}
                 // ALTERAÇÃO: w-full sm:w-auto
-                className="bg-[#9b6236] hover:bg-[#9b6236] text-white w-full sm:w-auto"
+                className="!bg-[#9b6236] !hover:bg-[#9b6236] !text-white w-full sm:w-auto"
               >
                 <UserPlus className="w-4 h-4 mr-2  bg-[#a16535]" />
                 Novo Usuário
