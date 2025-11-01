@@ -548,7 +548,7 @@ export function DashboardView({ onVoltar, usuarioTipo }: DashboardViewProps) {
               <CardContent className="p-3">
                 <div className="text-center">
                   <div className="text-2xl text-[#a16535] mb-1">{areasPrioritarias['Ação Trabalhista']}</div>
-                  <div className="text-xs text-[#4a3629]">Trabalhista</div>
+                  <div className="text-xs text-[#4a3629]">⚖️Trabalhista</div>
                   <Badge className="mt-1 bg-[#a16535] text-white text-[10px] px-2 py-0">Prioridade 1</Badge>
                 </div>
               </CardContent>
@@ -558,7 +558,7 @@ export function DashboardView({ onVoltar, usuarioTipo }: DashboardViewProps) {
               <CardContent className="p-3">
                 <div className="text-center">
                   <div className="text-2xl text-[#8b5329] mb-1">{areasPrioritarias['Ação de Indenização']}</div>
-                  <div className="text-xs text-[#4a3629]">Indenização</div>
+                  <div className="text-xs text-[#4a3629]">💰Indenização</div>
                   <Badge className="mt-1 bg-[#d4a574] text-white text-[10px] px-2 py-0">Prioridade 2</Badge>
                 </div>
               </CardContent>
@@ -568,7 +568,7 @@ export function DashboardView({ onVoltar, usuarioTipo }: DashboardViewProps) {
               <CardContent className="p-3">
                 <div className="text-center">
                   <div className="text-2xl text-[#8b5329] mb-1">{areasPrioritarias['Ação de Alimentos']}</div>
-                  <div className="text-xs text-[#4a3629]">Alimentos</div>
+                  <div className="text-xs text-[#4a3629]">🍽️Alimentos</div>
                   <Badge className="mt-1 bg-[#e8b882] text-white text-[10px] px-2 py-0">Prioridade 3</Badge>
                 </div>
               </CardContent>
@@ -578,7 +578,7 @@ export function DashboardView({ onVoltar, usuarioTipo }: DashboardViewProps) {
               <CardContent className="p-3">
                 <div className="text-center">
                   <div className="text-2xl text-[#6b5544] mb-1">{areasPrioritarias['Ação de Divórcio']}</div>
-                  <div className="text-xs text-[#4a3629]">Divórcio</div>
+                  <div className="text-xs text-[#4a3629]">💔Divórcio</div>
                   <Badge className="mt-1 bg-[#8b5329] text-white text-[10px] px-2 py-0">Prioridade 4</Badge>
                 </div>
               </CardContent>
@@ -588,7 +588,7 @@ export function DashboardView({ onVoltar, usuarioTipo }: DashboardViewProps) {
               <CardContent className="p-3">
                 <div className="text-center">
                   <div className="text-2xl text-[#4a3629] mb-1">{areasPrioritarias['Ação de Cobrança']}</div>
-                  <div className="text-xs text-[#4a3629]">Cobrança</div>
+                  <div className="text-xs text-[#4a3629]"> 💵 Cobrança</div>
                   <Badge className="mt-1 bg-[#6b5544] text-white text-[10px] px-2 py-0">Prioridade 5</Badge>
                 </div>
               </CardContent>
