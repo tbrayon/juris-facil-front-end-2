@@ -17,7 +17,7 @@ import { Toaster } from './ui/sonner';
 
 import { ClientesView } from './Clientes';
 import { ProcessosView } from './ProcessosView';
-import PrazosView from './PrazosView';
+import PrazosView from './Prazos';
 import { ContratosView } from './ContratosView';
 import { DashboardView } from './Dashboard';
 import { RelatoriosView } from './RelatoriosView';
