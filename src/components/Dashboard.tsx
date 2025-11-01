@@ -1,11 +1,36 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card'; // Caminho Ajustado
-import { BarChart, Bar, PieChart, Pie, Cell, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { useClientes } from '../contexts/ClientesContext'; // Caminho Ajustado
-import { useProcessos } from '../contexts/ProcessosContext'; // Caminho Ajustado
-import { useContratos } from '../contexts/ContratosContext'; // Caminho Ajustado
-import { FileText, Users, DollarSign, AlertCircle, TrendingUp, Scale, Calendar, CheckCircle, ArrowLeft, Target, Briefcase, RefreshCw } from 'lucide-react';
-import { Badge } from './ui/badge'; // Caminho Ajustado
-import { Button } from './ui/button'; // Caminho Ajustado
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
+import {
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
+  Cell,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from 'recharts';
+import { useClientes } from '../contexts/ClientesContext';
+import { useProcessos } from '../contexts/ProcessosContext';
+import { useContratos } from '../contexts/ContratosContext';
+import {
+  FileText,
+  Users,
+  DollarSign,
+  AlertCircle,
+  TrendingUp,
+  Scale,
+  Calendar,
+  CheckCircle,
+  ArrowLeft,
+  Target,
+  Briefcase,
+  RefreshCw,
+} from 'lucide-react';
+import { Badge } from './ui/badge';
+import { Button } from './ui/button';
 import { toast } from 'sonner';
 import {
   AlertDialog,
@@ -17,7 +42,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from './ui/alert-dialog'; // Caminho Ajustado
+} from './ui/alert-dialog';
 
 interface DashboardViewProps {
   onVoltar: () => void;
@@ -41,38 +66,39 @@ export function DashboardView({ onVoltar, usuarioTipo }: DashboardViewProps) {
     }, 1500);
   };
 
-  // Métricas básicas
+  // ---------- Métricas básicas ----------
   const totalClientes = clientes.length;
   const totalProcessos = processos.length;
-  const clientesPJ = clientes.filter(c => c.documento.includes('/')).length;
+  const clientesPJ = clientes.filter((c) => c.documento.includes('/')).length;
   const clientesPF = totalClientes - clientesPJ;
 
-  // Taxa de Sucesso - apenas processos finalizados (procedente vs improcedente)
+  // ---------- Taxa de Sucesso ----------
   const processosPorStatus = processos.reduce((acc, p) => {
     const status = p.status || 'Não definido';
     acc[status] = (acc[status] || 0) + 1;
     return acc;
   }, {} as Record<string, number>);
 
-  // Filtrar apenas finalizados procedentes e improcedentes
   const dadosStatus = [
-    { 
-      name: 'Finalizado Procedente', 
-      value: (processosPorStatus['Finalizado procedente'] || 0) + 
-             (processosPorStatus['finalizado---procedente'] || 0) + 
-             (processosPorStatus['finalizado-procedente'] || 0),
-      fill: '#a16535' // terracota
+    {
+      name: 'Finalizado Procedente',
+      value:
+        (processosPorStatus['Finalizado procedente'] || 0) +
+        (processosPorStatus['finalizado---procedente'] || 0) +
+        (processosPorStatus['finalizado-procedente'] || 0),
+      fill: '#a16535',
     },
-    { 
-      name: 'Finalizado Improcedente', 
-      value: (processosPorStatus['Finalizado improcedente'] || 0) + 
-             (processosPorStatus['finalizado---improcedente'] || 0) + 
-             (processosPorStatus['finalizado-improcedente'] || 0),
-      fill: '#6b5544' // terracota mais escuro
-    }
-  ].filter(item => item.value > 0);
+    {
+      name: 'Finalizado Improcedente',
+      value:
+        (processosPorStatus['Finalizado improcedente'] || 0) +
+        (processosPorStatus['finalizado---improcedente'] || 0) +
+        (processosPorStatus['finalizado-improcedente'] || 0),
+      fill: '#6b5544',
+    },
+  ].filter((item) => item.value > 0);
 
-  // Processos por fase
+  // ---------- Processos por fase ----------
   const processosPorFase = processos.reduce((acc, p) => {
     const fase = p.faseProcessual || 'Não definido';
     acc[fase] = (acc[fase] || 0) + 1;
@@ -84,70 +110,73 @@ export function DashboardView({ onVoltar, usuarioTipo }: DashboardViewProps) {
     value,
   }));
 
-  // Processos por tipo de ação (top 5)
-  const processosPorTipo = processos.reduce((acc, p) => {
-    const tipo = p.tipoAcao || 'Não definido';
-    acc[tipo] = (acc[tipo] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
-
-  const dadosTipoAcao = Object.entries(processosPorTipo)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 5)
-    .map(([name, value]) => ({
-      name,
-      quantidade: value,
-    }));
-
-  // Valor total em contratos
+  // ---------- Valor total em contratos ----------
   const valorTotalContratos = processos.reduce((acc, p) => {
     const valor = parseFloat(p.valorContrato.replace(/[^\d,]/g, '').replace(',', '.')) || 0;
     return acc + valor;
   }, 0);
 
-  // Processos urgentes (prioridade urgente ou alta)
-  const processosUrgentes = processos.filter(p => p.prioridade === 'urgente' || p.prioridade === 'alta').length;
+  // ---------- Processos urgentes ----------
+  const processosUrgentes = processos.filter(
+    (p) => p.prioridade === 'urgente' || p.prioridade === 'alta'
+  ).length;
 
-  // Prazos próximos (próximos 7 dias)
+  // ---------- Prazos próximos ----------
   const hoje = new Date();
   const proximosDias = new Date();
   proximosDias.setDate(hoje.getDate() + 7);
-  
-  const prazosProximos = processos.filter(p => {
+
+  const prazosProximos = processos.filter((p) => {
     if (!p.proximoPrazo) return false;
     const dataPrazo = new Date(p.proximoPrazo);
     return dataPrazo >= hoje && dataPrazo <= proximosDias;
   }).length;
 
-  // Análise de sucesso e insucesso do escritório
-  const processosProcedentes = processos.filter(p => 
-    p.status === 'Finalizado procedente' || p.status === 'finalizado-procedente' || p.status === 'finalizado---procedente'
+  // ---------- Análise de sucesso ----------
+  const processosProcedentes = processos.filter(
+    (p) =>
+      p.status === 'Finalizado procedente' ||
+      p.status === 'finalizado-procedente' ||
+      p.status === 'finalizado---procedente'
   ).length;
-  
-  const processosImprocedentes = processos.filter(p => 
-    p.status === 'Finalizado improcedente' || p.status === 'finalizado-improcedente' || p.status === 'finalizado---improcedente'
-  ).length;
-  
-  const processosParcialmenteProcedentes = processos.filter(p => 
-    p.status === 'Finalizado parcialmente procedente' || p.status === 'finalizado-parcialmente-procedente' || p.status === 'finalizado---parcialmente-procedente'
-  ).length;
-  
-  const processosAcordo = processos.filter(p => 
-    p.status === 'Finalizado acordo' || p.status === 'finalizado-acordo' || p.status === 'finalizado---acordo'
-  ).length;
-  
-  const totalFinalizados = processosProcedentes + processosImprocedentes + 
-                           processosParcialmenteProcedentes + processosAcordo;
-  
-  const taxaSucesso = totalFinalizados > 0 
-    ? ((processosProcedentes + processosParcialmenteProcedentes + processosAcordo) / totalFinalizados * 100).toFixed(1)
-    : 0;
 
-  // Distribuição de Processos por Tipo de Ação (Áreas de Especialização)
-  // Mostrando TODOS os processos para refletir o volume total de trabalho
-  const processosParaAnalise = processos;
+  const processosImprocedentes = processos.filter(
+    (p) =>
+      p.status === 'Finalizado improcedente' ||
+      p.status === 'finalizado-improcedente' ||
+      p.status === 'finalizado---improcedente'
+  ).length;
 
-  // Áreas prioritárias do escritório (Cível, Trabalhista, Alimentos)
+  const processosParcialmenteProcedentes = processos.filter(
+    (p) =>
+      p.status === 'Finalizado parcialmente procedente' ||
+      p.status === 'finalizado-parcialmente-procedente' ||
+      p.status === 'finalizado---parcialmente-procedente'
+  ).length;
+
+  const processosAcordo = processos.filter(
+    (p) =>
+      p.status === 'Finalizado acordo' ||
+      p.status === 'finalizado-acordo' ||
+      p.status === 'finalizado---acordo'
+  ).length;
+
+  const totalFinalizados =
+    processosProcedentes +
+    processosImprocedentes +
+    processosParcialmenteProcedentes +
+    processosAcordo;
+
+  const taxaSucesso =
+    totalFinalizados > 0
+      ? (
+          ((processosProcedentes + processosParcialmenteProcedentes + processosAcordo) /
+            totalFinalizados) *
+          100
+        ).toFixed(1)
+      : 0;
+
+  // ---------- Áreas prioritárias ----------
   const areasPrioritarias = {
     'Ação Trabalhista': 0,
     'Ação de Indenização': 0,
@@ -155,10 +184,10 @@ export function DashboardView({ onVoltar, usuarioTipo }: DashboardViewProps) {
     'Ação de Divórcio': 0,
     'Ação de Cobrança': 0,
     'Ação de Despejo': 0,
-    'Outros': 0
+    Outros: 0,
   };
 
-  processosParaAnalise.forEach(p => {
+  processos.forEach((p) => {
     const tipo = p.tipoAcao || 'Outros';
     if (tipo in areasPrioritarias) {
       areasPrioritarias[tipo as keyof typeof areasPrioritarias]++;
@@ -167,131 +196,76 @@ export function DashboardView({ onVoltar, usuarioTipo }: DashboardViewProps) {
     }
   });
 
-  // Calcular total de processos nas 5 áreas principais
-  const processosPrincipais = 
+  const processosPrincipais =
     areasPrioritarias['Ação Trabalhista'] +
     areasPrioritarias['Ação de Indenização'] +
     areasPrioritarias['Ação de Alimentos'] +
     areasPrioritarias['Ação de Divórcio'] +
     areasPrioritarias['Ação de Cobrança'];
 
-  const totalParaAnalise = processosParaAnalise.length;
-  const percentualFoco = totalParaAnalise > 0 
-    ? ((processosPrincipais / totalParaAnalise) * 100).toFixed(1)
-    : 0;
+  const totalParaAnalise = processos.length;
+  const percentualFoco = totalParaAnalise > 0 ? ((processosPrincipais / totalParaAnalise) * 100).toFixed(1) : 0;
 
-  // Dados para o gráfico de distribuição
   const dadosDistribuicao = [
-    { 
-      name: 'Ação Trabalhista', 
-      value: areasPrioritarias['Ação Trabalhista'],
-      fill: '#a16535',
-      prioridade: 1
-    },
-    { 
-      name: 'Ação de Indenização', 
-      value: areasPrioritarias['Ação de Indenização'],
-      fill: '#d4a574',
-      prioridade: 2
-    },
-    { 
-      name: 'Ação de Alimentos', 
-      value: areasPrioritarias['Ação de Alimentos'],
-      fill: '#e8b882',
-      prioridade: 3
-    },
-    { 
-      name: 'Ação de Divórcio', 
-      value: areasPrioritarias['Ação de Divórcio'],
-      fill: '#8b5329',
-      prioridade: 4
-    },
-    { 
-      name: 'Ação de Cobrança', 
-      value: areasPrioritarias['Ação de Cobrança'],
-      fill: '#6b5544',
-      prioridade: 5
-    },
-    { 
-      name: 'Ação de Despejo', 
-      value: areasPrioritarias['Ação de Despejo'],
-      fill: '#9d7f66',
-      prioridade: 6
-    },
-    { 
-      name: 'Outros', 
-      value: areasPrioritarias['Outros'],
-      fill: '#d4c4b0',
-      prioridade: 7
-    }
-  ].filter(item => item.value > 0)
-   .sort((a, b) => b.value - a.value);
+    { name: 'Ação Trabalhista', value: areasPrioritarias['Ação Trabalhista'], fill: '#a16535', prioridade: 1 },
+    { name: 'Ação de Indenização', value: areasPrioritarias['Ação de Indenização'], fill: '#d4a574', prioridade: 2 },
+    { name: 'Ação de Alimentos', value: areasPrioritarias['Ação de Alimentos'], fill: '#e8b882', prioridade: 3 },
+    { name: 'Ação de Divórcio', value: areasPrioritarias['Ação de Divórcio'], fill: '#8b5329', prioridade: 4 },
+    { name: 'Ação de Cobrança', value: areasPrioritarias['Ação de Cobrança'], fill: '#6b5544', prioridade: 5 },
+    { name: 'Ação de Despejo', value: areasPrioritarias['Ação de Despejo'], fill: '#9d7f66', prioridade: 6 },
+    { name: 'Outros', value: areasPrioritarias['Outros'], fill: '#d4c4b0', prioridade: 7 },
+  ]
+    .filter((item) => item.value > 0)
+    .sort((a, b) => b.value - a.value);
 
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-    }).format(value);
-  };
+  const formatCurrency = (value: number) =>
+    new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
 
-  // Renderizador customizado de label para o gráfico de pizza
+  // ---------- Label personalizado (pizza) ----------
   const renderCustomizedLabel = (props: any) => {
     const { cx, cy, midAngle, outerRadius, percent, index } = props;
     const RADIAN = Math.PI / 180;
     const radius = outerRadius + 35;
     const x = cx + radius * Math.cos(-midAngle * RADIAN);
     const y = cy + radius * Math.sin(-midAngle * RADIAN);
-    
+
     const entry = dadosStatus[index];
     const lines = entry.name.split(' ');
-    
+
     return (
       <g>
-        <text 
-          x={x} 
-          y={y - 18} 
-          textAnchor={x > cx ? 'start' : 'end'} 
-          dominantBaseline="central"
-          fill="#4a3629"
-          fontSize="13px"
-          fontWeight="500"
-        >
+        <text x={x} y={y - 18} textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central" fill="#4a3629" fontSize="13px" fontWeight="500">
           {lines[0]}
         </text>
-        <text 
-          x={x} 
-          y={y} 
-          textAnchor={x > cx ? 'start' : 'end'} 
-          dominantBaseline="central"
-          fill="#4a3629"
-          fontSize="13px"
-          fontWeight="500"
-        >
+        <text x={x} y={y} textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central" fill="#4a3629" fontSize="13px" fontWeight="500">
           {lines[1]}
         </text>
-        <text 
-          x={x} 
-          y={y + 18} 
-          textAnchor={x > cx ? 'start' : 'end'} 
-          dominantBaseline="central"
-          fill="#a16535"
-          fontSize="14px"
-          fontWeight="600"
-        >
-          {`${entry.value} (${(percent * 100).toFixed(0)}%)`}
+        <text x={x} y={y + 18} textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central" fill="#a16535" fontSize="14px" fontWeight="600">
+          {`${entry.value} processo${entry.value > 1 ? 's' : ''} (${(percent * 100).toFixed(0)}%)`}
         </text>
       </g>
     );
   };
 
+  // ---------- TOOLTIP CUSTOMIZADO (SEM value:) ----------
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-white p-3 border border-[#d4c4b0] rounded-lg shadow-lg">
+          <p className="text-[#2d1f16] font-semibold text-sm">{label}</p>
+          <p className="text-[#a16535] font-medium text-sm">
+            {payload[0].value} processo{payload[0].value > 1 ? 's' : ''}
+          </p>
+        </div>
+      );
+    }
+    return null;
+  };
+
   return (
     <div className="max-w-7xl mx-auto space-y-6">
+      {/* ---------- Cabeçalho ---------- */}
       <div className="mb-6">
-        {/*
-          Ajustado para mobile/tablet:
-          - flex-col em telas pequenas, sm:flex-row em telas maiores.
-          - items-start em telas pequenas para alinhar texto.
-        */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center sm:justify-between gap-4">
           <div>
             <h2 className="text-[#2d1f16] flex items-center gap-2">
@@ -300,7 +274,6 @@ export function DashboardView({ onVoltar, usuarioTipo }: DashboardViewProps) {
             </h2>
             <p className="text-[#6b5544]">Métricas e indicadores para tomada de decisão</p>
           </div>
-          {/* Botões: w-full em telas pequenas, sm:w-auto para quebrar a linha e ocupar a largura total */}
           <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
             {usuarioTipo === 'administrador' && (
               <AlertDialog>
@@ -317,8 +290,8 @@ export function DashboardView({ onVoltar, usuarioTipo }: DashboardViewProps) {
                   <AlertDialogHeader>
                     <AlertDialogTitle className="text-[#2d1f16]">Confirmar Reset de Dados</AlertDialogTitle>
                     <AlertDialogDescription className="text-[#6b5544]">
-                      Esta ação irá apagar TODOS os dados atuais (clientes, processos e contratos) e restaurar os dados de exemplo padrão. 
-                      <br /><br />
+                      Esta ação irá apagar TODOS os dados atuais e restaurar os dados de exemplo padrão. <br />
+                      <br />
                       <strong>Esta ação não pode ser desfeita!</strong>
                     </AlertDialogDescription>
                   </AlertDialogHeader>
@@ -326,7 +299,7 @@ export function DashboardView({ onVoltar, usuarioTipo }: DashboardViewProps) {
                     <AlertDialogCancel className="border-[#a16535] text-[#a16535] hover:bg-[#f6f3ee]">
                       Cancelar
                     </AlertDialogCancel>
-                    <AlertDialogAction 
+                    <AlertDialogAction
                       onClick={handleResetarDados}
                       className="bg-[#a16535] hover:bg-[#8b5329] text-white"
                     >
@@ -341,14 +314,14 @@ export function DashboardView({ onVoltar, usuarioTipo }: DashboardViewProps) {
               onClick={onVoltar}
               className="w-full sm:w-auto !bg-white !text-[#a16535] border-2 border-[#955d30] hover:!bg-[#a16535] hover:!text-white transition-all duration-200"
             >
-             <ArrowLeft className="w-4 h-4 mr-2" />
-               Página Inicial
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Página Inicial
             </Button>
           </div>
         </div>
       </div>
 
-      {/* Cards de métricas principais */}
+      {/* ---------- Cards de métricas ---------- */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card className="bg-white border-[#d4c4b0]">
           <CardHeader className="pb-2">
@@ -375,9 +348,7 @@ export function DashboardView({ onVoltar, usuarioTipo }: DashboardViewProps) {
             <div className="flex items-center justify-between">
               <div>
                 <div className="text-3xl text-[#a16535]">{totalProcessos}</div>
-                <div className="text-sm text-[#6b5544] mt-1">
-                  {processosUrgentes} urgentes
-                </div>
+                <div className="text-sm text-[#6b5544] mt-1">{processosUrgentes} urgentes</div>
               </div>
               <FileText className="w-10 h-10 text-[#a16535] opacity-20" />
             </div>
@@ -392,9 +363,7 @@ export function DashboardView({ onVoltar, usuarioTipo }: DashboardViewProps) {
             <div className="flex items-center justify-between">
               <div>
                 <div className="text-2xl text-[#a16535]">{formatCurrency(valorTotalContratos)}</div>
-                <div className="text-sm text-[#6b5544] mt-1">
-                  Total de honorários
-                </div>
+                <div className="text-sm text-[#6b5544] mt-1">Total de honorários</div>
               </div>
               <DollarSign className="w-10 h-10 text-[#a16535] opacity-20" />
             </div>
@@ -409,9 +378,7 @@ export function DashboardView({ onVoltar, usuarioTipo }: DashboardViewProps) {
             <div className="flex items-center justify-between">
               <div>
                 <div className="text-3xl text-[#a16535]">{prazosProximos}</div>
-                <div className="text-sm text-[#6b5544] mt-1">
-                  Próximos 7 dias
-                </div>
+                <div className="text-sm text-[#6b5544] mt-1">Próximos 7 dias</div>
               </div>
               <Calendar className="w-10 h-10 text-[#a16535] opacity-20" />
             </div>
@@ -419,7 +386,7 @@ export function DashboardView({ onVoltar, usuarioTipo }: DashboardViewProps) {
         </Card>
       </div>
 
-      {/* Cards de Análise de Sucesso */}
+      {/* ---------- Análise de Sucesso ---------- */}
       {totalFinalizados > 0 && (
         <div className="bg-gradient-to-r from-[#f6f3ee] to-white border-2 border-[#a16535] rounded-lg p-6">
           <div className="flex items-center gap-3 mb-4">
@@ -428,10 +395,10 @@ export function DashboardView({ onVoltar, usuarioTipo }: DashboardViewProps) {
             </div>
             <div>
               <h3 className="text-[#2d1f16] text-xl">Análise de Desempenho Processual</h3>
-              <p className="text-[#6b5544] text-sm"> Resultados dos processos finalizados</p>
+              <p className="text-[#6b5544] text-sm">Resultados dos processos finalizados</p>
             </div>
           </div>
-          
+
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
             <Card className="bg-white border-[#d4c4b0]">
               <CardContent className="p-4">
@@ -446,7 +413,7 @@ export function DashboardView({ onVoltar, usuarioTipo }: DashboardViewProps) {
               <CardContent className="p-4">
                 <div className="text-center">
                   <div className="text-3xl text-green-700 mb-1">{processosProcedentes}</div>
-                  <div className="text-xs text-green-600">✓ Procedentes</div>
+                  <div className="text-xs text-green-600">Procedentes</div>
                 </div>
               </CardContent>
             </Card>
@@ -455,7 +422,7 @@ export function DashboardView({ onVoltar, usuarioTipo }: DashboardViewProps) {
               <CardContent className="p-4">
                 <div className="text-center">
                   <div className="text-3xl text-yellow-700 mb-1">{processosParcialmenteProcedentes}</div>
-                  <div className="text-xs text-yellow-600">◑ Parcial</div>
+                  <div className="text-xs text-yellow-600">Parcial</div>
                 </div>
               </CardContent>
             </Card>
@@ -464,7 +431,7 @@ export function DashboardView({ onVoltar, usuarioTipo }: DashboardViewProps) {
               <CardContent className="p-4">
                 <div className="text-center">
                   <div className="text-3xl text-blue-700 mb-1">{processosAcordo}</div>
-                  <div className="text-xs text-blue-600">🤝 Acordos</div>
+                  <div className="text-xs text-blue-600">Acordos</div>
                 </div>
               </CardContent>
             </Card>
@@ -473,7 +440,7 @@ export function DashboardView({ onVoltar, usuarioTipo }: DashboardViewProps) {
               <CardContent className="p-4">
                 <div className="text-center">
                   <div className="text-3xl text-red-700 mb-1">{processosImprocedentes}</div>
-                  <div className="text-xs text-red-600">✗ Improcedentes</div>
+                  <div className="text-xs text-red-600">Improcedentes</div>
                 </div>
               </CardContent>
             </Card>
@@ -496,9 +463,9 @@ export function DashboardView({ onVoltar, usuarioTipo }: DashboardViewProps) {
         </div>
       )}
 
-      {/* Gráficos - Taxa de Sucesso e Processos por Fase lado a lado */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Taxa de Sucesso - Processos Finalizados */}
+      {/* ---------- Gráficos: Taxa de Sucesso + Processos por Fase ---------- */}
+      <div className="grid grid-cols-1 lg:grid-cols-1 gap-6">
+        {/* Taxa de Sucesso (Pizza) */}
         {dadosStatus.length > 0 && (
           <Card className="bg-white border-[#d4c4b0]">
             <CardHeader>
@@ -526,54 +493,36 @@ export function DashboardView({ onVoltar, usuarioTipo }: DashboardViewProps) {
                       <Cell key={`cell-${index}`} fill={entry.fill} />
                     ))}
                   </Pie>
-                  <Tooltip 
-                    contentStyle={{ 
-                      backgroundColor: '#ffffff', 
-                      border: '1px solid #d4c4b0',
-                      borderRadius: '8px'
-                    }}
-                  />
-                  <Legend 
-                    verticalAlign="bottom" 
-                    height={36}
-                    wrapperStyle={{ fontSize: '13px', paddingTop: '20px' }}
-                  />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Legend verticalAlign="bottom" height={36} wrapperStyle={{ fontSize: '13px', paddingTop: '20px' }} />
                 </PieChart>
               </ResponsiveContainer>
             </CardContent>
           </Card>
         )}
 
-        {/* Processos por Fase */}
+        {/* Processos por Fase (Barra) */}
         <Card className="bg-white border-[#d4c4b0]">
           <CardHeader>
             <CardTitle className="text-[#2d1f16] flex items-center gap-2">
               <Scale className="w-5 h-5 text-[#a16535]" />
               Processos por Fase Processual
             </CardTitle>
-            <CardDescription className="text-[#6b5544]">
-              Distribuição por fase do processo
-            </CardDescription>
+            <CardDescription className="text-[#6b5544]">Distribuição por fase do processo</CardDescription>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={dadosFase}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#d4c4b0" />
-                <XAxis 
-                  dataKey="name" 
+                <XAxis
+                  dataKey="name"
                   tick={{ fill: '#6b5544', fontSize: 12 }}
                   angle={-45}
                   textAnchor="end"
                   height={80}
                 />
                 <YAxis tick={{ fill: '#6b5544' }} allowDecimals={false} />
-                <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: '#ffffff', 
-                    border: '1px solid #d4c4b0',
-                    borderRadius: '8px'
-                  }}
-                />
+                <Tooltip content={<CustomTooltip />} />
                 <Bar dataKey="value" fill="#a16535" />
               </BarChart>
             </ResponsiveContainer>
@@ -581,7 +530,7 @@ export function DashboardView({ onVoltar, usuarioTipo }: DashboardViewProps) {
         </Card>
       </div>
 
-      {/* Distribuição por Áreas de Especialização */}
+      {/* ---------- Foco nas Áreas ---------- */}
       {totalParaAnalise > 0 && (
         <div className="bg-gradient-to-r from-white to-[#f6f3ee] border-2 border-[#a16535] rounded-lg p-6">
           <div className="flex items-center gap-3 mb-4">
@@ -594,13 +543,12 @@ export function DashboardView({ onVoltar, usuarioTipo }: DashboardViewProps) {
             </div>
           </div>
 
-          {/* Cards de Áreas Prioritárias */}
           <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-4">
             <Card className="bg-[#a16535]/10 border-[#a16535]">
               <CardContent className="p-3">
                 <div className="text-center">
                   <div className="text-2xl text-[#a16535] mb-1">{areasPrioritarias['Ação Trabalhista']}</div>
-                  <div className="text-xs text-[#4a3629]">⚖️ Trabalhista</div>
+                  <div className="text-xs text-[#4a3629]">Trabalhista</div>
                   <Badge className="mt-1 bg-[#a16535] text-white text-[10px] px-2 py-0">Prioridade 1</Badge>
                 </div>
               </CardContent>
@@ -610,7 +558,7 @@ export function DashboardView({ onVoltar, usuarioTipo }: DashboardViewProps) {
               <CardContent className="p-3">
                 <div className="text-center">
                   <div className="text-2xl text-[#8b5329] mb-1">{areasPrioritarias['Ação de Indenização']}</div>
-                  <div className="text-xs text-[#4a3629]">💰 Indenização</div>
+                  <div className="text-xs text-[#4a3629]">Indenização</div>
                   <Badge className="mt-1 bg-[#d4a574] text-white text-[10px] px-2 py-0">Prioridade 2</Badge>
                 </div>
               </CardContent>
@@ -620,7 +568,7 @@ export function DashboardView({ onVoltar, usuarioTipo }: DashboardViewProps) {
               <CardContent className="p-3">
                 <div className="text-center">
                   <div className="text-2xl text-[#8b5329] mb-1">{areasPrioritarias['Ação de Alimentos']}</div>
-                  <div className="text-xs text-[#4a3629]">🍽️ Alimentos</div>
+                  <div className="text-xs text-[#4a3629]">Alimentos</div>
                   <Badge className="mt-1 bg-[#e8b882] text-white text-[10px] px-2 py-0">Prioridade 3</Badge>
                 </div>
               </CardContent>
@@ -630,7 +578,7 @@ export function DashboardView({ onVoltar, usuarioTipo }: DashboardViewProps) {
               <CardContent className="p-3">
                 <div className="text-center">
                   <div className="text-2xl text-[#6b5544] mb-1">{areasPrioritarias['Ação de Divórcio']}</div>
-                  <div className="text-xs text-[#4a3629]">💔 Divórcio</div>
+                  <div className="text-xs text-[#4a3629]">Divórcio</div>
                   <Badge className="mt-1 bg-[#8b5329] text-white text-[10px] px-2 py-0">Prioridade 4</Badge>
                 </div>
               </CardContent>
@@ -640,26 +588,27 @@ export function DashboardView({ onVoltar, usuarioTipo }: DashboardViewProps) {
               <CardContent className="p-3">
                 <div className="text-center">
                   <div className="text-2xl text-[#4a3629] mb-1">{areasPrioritarias['Ação de Cobrança']}</div>
-                  <div className="text-xs text-[#4a3629]">💵 Cobrança</div>
+                  <div className="text-xs text-[#4a3629]">Cobrança</div>
                   <Badge className="mt-1 bg-[#6b5544] text-white text-[10px] px-2 py-0">Prioridade 5</Badge>
                 </div>
               </CardContent>
             </Card>
           </div>
 
-          {/* Análise de Foco */}
           <div className="mt-4 p-4 bg-[#a16535]/10 rounded-lg border border-[#a16535]/30">
             <div className="flex items-center justify-between mb-2">
               <span className="text-[#4a3629]">Processos nas 5 Áreas Prioritárias:</span>
               <div className="flex items-center gap-2">
                 <div className="text-2xl text-[#a16535]">{percentualFoco}%</div>
-                <Badge className={`${
-                  Number(percentualFoco) >= 70 
-                    ? 'bg-green-600' 
-                    : Number(percentualFoco) >= 50 
-                    ? 'bg-yellow-600' 
-                    : 'bg-red-600'
-                } text-white hover:opacity-90`}>
+                <Badge
+                  className={`${
+                    Number(percentualFoco) >= 70
+                      ? 'bg-green-600'
+                      : Number(percentualFoco) >= 50
+                      ? 'bg-yellow-600'
+                      : 'bg-red-600'
+                  } text-white hover:opacity-90`}
+                >
                   {processosPrincipais} de {totalParaAnalise} processos
                 </Badge>
               </div>
@@ -667,18 +616,18 @@ export function DashboardView({ onVoltar, usuarioTipo }: DashboardViewProps) {
             <div className="flex items-start gap-2 mt-2">
               <Briefcase className="w-4 h-4 text-[#a16535] mt-0.5 flex-shrink-0" />
               <p className="text-xs text-[#6b5544]">
-                {Number(percentualFoco) >= 70 
-                  ? '✓ Excelente! O escritório está altamente focado nas suas áreas de especialização (Cível, Trabalhista e Alimentos).'
+                {Number(percentualFoco) >= 70
+                  ? 'Excelente! O escritório está altamente focado nas suas áreas de especialização.'
                   : Number(percentualFoco) >= 50
-                  ? '⚠️ Atenção! Considere redirecionar esforços para as áreas prioritárias do escritório.'
-                  : '❌ Alerta! Muitos processos fora das áreas de especialização. Revise a estratégia de captação de clientes.'}
+                  ? 'Atenção! Considere redirecionar esforços para as áreas prioritárias.'
+                  : 'Alerta! Muitos processos fora das áreas de especialização. Revise a estratégia.'}
               </p>
             </div>
           </div>
         </div>
       )}
 
-      {/* Distribuição de Processos por Tipo de Ação - Gráfico de Barras Horizontal */}
+      {/* ---------- Distribuição por Tipo de Ação (Barra vertical) ---------- */}
       {dadosDistribuicao.length > 0 && (
         <Card className="bg-white border-[#d4c4b0]">
           <CardHeader>
@@ -687,7 +636,8 @@ export function DashboardView({ onVoltar, usuarioTipo }: DashboardViewProps) {
               Distribuição de Processos por Tipo de Ação
             </CardTitle>
             <CardDescription className="text-[#6b5544]">
-              5 áreas prioritárias: Trabalhista, Indenização, Alimentos, Divórcio e Cobrança ({totalParaAnalise} processos)
+              5 áreas prioritárias: Trabalhista, Indenização, Alimentos, Divórcio e Cobrança ({totalParaAnalise}{' '}
+              processos)
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -695,24 +645,9 @@ export function DashboardView({ onVoltar, usuarioTipo }: DashboardViewProps) {
               <BarChart data={dadosDistribuicao} layout="vertical">
                 <CartesianGrid strokeDasharray="3 3" stroke="#d4c4b0" />
                 <XAxis type="number" tick={{ fill: '#6b5544' }} allowDecimals={false} />
-                <YAxis 
-                  dataKey="name" 
-                  type="category" 
-                  tick={{ fill: '#6b5544', fontSize: 13 }}
-                  width={180}
-                />
-                <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: '#ffffff', 
-                    border: '1px solid #d4c4b0',
-                    borderRadius: '8px'
-                  }}
-                  formatter={(value: number) => [`${value} processo(s)`, 'Quantidade']}
-                />
-                <Bar 
-                  dataKey="value" 
-                  radius={[0, 8, 8, 0]}
-                >
+                <YAxis dataKey="name" type="category" tick={{ fill: '#6b5544', fontSize: 13 }} width={180} />
+                <Tooltip content={<CustomTooltip />} />
+                <Bar dataKey="value" radius={[0, 8, 8, 0]}>
                   {dadosDistribuicao.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.fill} />
                   ))}
@@ -721,16 +656,15 @@ export function DashboardView({ onVoltar, usuarioTipo }: DashboardViewProps) {
             </ResponsiveContainer>
             <div className="mt-4 p-3 bg-[#f6f3ee] rounded-lg border border-[#d4c4b0]">
               <p className="text-xs text-[#6b5544]">
-                <strong className="text-[#a16535]">💡 Insight:</strong> As 5 primeiras categorias (Trabalhista, Indenização, Alimentos, Divórcio e Cobrança) 
-                representam as áreas prioritárias do escritório. Se houver desvios significativos, 
-                considere reavaliar a estratégia de captação de clientes.
+                <strong className="text-[#a16535]">Insight:</strong> As 5 primeiras categorias representam as
+                áreas prioritárias do escritório.
               </p>
             </div>
           </CardContent>
         </Card>
       )}
 
-      {/* Alertas e Avisos */}
+      {/* ---------- Alertas ---------- */}
       {(processosUrgentes > 0 || prazosProximos > 0) && (
         <Card className="bg-[#a16535]/10 border-[#a16535]">
           <CardHeader>
