@@ -14,7 +14,7 @@ import {
   LifeBuoy,
 } from "lucide-react";
 
-import  { AppView }  from "./../others/navigation";
+import { AppView } from "../types/navigation";
 import { Button } from "./ui/button";
 import {
   Sheet,
@@ -22,45 +22,43 @@ import {
   SheetTrigger,
 } from "./ui/sheet";
 import { Separator } from "./ui/separator";
+import { useUsers } from "@/contexts/UsersContext";
 
 interface HeaderProps {
-  userName: string;
   onLogout: () => void;
-  onVoltarInicio: () => void;
+  onBack: () => void;
   onNavigate: (view: AppView) => void;
-  userTipo?: string;
 }
 
 export default function Header({
-  userName,
   onLogout,
-  onVoltarInicio,
+  onBack,
   onNavigate,
-  userTipo,
 }: HeaderProps) {
   const [menuAberto, setMenuAberto] = React.useState(false);
+  const { currentUser } = useUsers();
 
   // Tipagem explícita para evitar erro TS2345
-const menuItems: { view: AppView; label: string; icon: any }[] = [
-  { view: "home", label: "Página Inicial", icon: HomeIcon },
-  { view: "clientes", label: "Clientes", icon: Users },
-  { view: "processos", label: "Processos", icon: FileText },
-  { view: "prazos", label: "Prazos e Audiências", icon: Calendar },
-  { view: "contratos", label: "Contratos", icon: FileSignature },
-  { view: "relatorios", label: "Relatórios", icon: FileBarChart },
-  ...(userTipo === "administrador"
-    ? [{ view: "usuarios" as AppView, label: "Usuários", icon: UserSquare2 }]
-    : []),
-  { view: "dashboard", label: "Dashboard", icon: BarChart3 },
-  { view: "suporte", label: "Suporte", icon: LifeBuoy },
-];
+  const menuItems: { view: AppView; label: string; icon: any }[] = [
+    { view: "home", label: "Página Inicial", icon: HomeIcon },
+    { view: "clientes", label: "Clientes", icon: Users },
+    { view: "processos", label: "Processos", icon: FileText },
+    { view: "prazos", label: "Prazos e Audiências", icon: Calendar },
+    { view: "contratos", label: "Contratos", icon: FileSignature },
+    { view: "relatorios", label: "Relatórios", icon: FileBarChart },
+    ...(currentUser?.role === "admin"
+      ? [{ view: "usuarios" as AppView, label: "Usuários", icon: UserSquare2 }]
+      : []),
+    { view: "dashboard", label: "Dashboard", icon: BarChart3 },
+    { view: "suporte", label: "Suporte", icon: LifeBuoy },
+  ];
 
   return (
     <header className="bg-white border-b-2 border-[#d4c4b0] shadow-sm sticky top-0 z-50">
       <div className="max-w-7xl mx-auto w-full flex items-center justify-between px-6 py-4">
         {/* LOGO E TÍTULO */}
         <button
-          onClick={onVoltarInicio}
+          onClick={onBack}
           className="flex items-center gap-2 md:gap-3 cursor-pointer hover:opacity-80 transition-opacity group"
         >
           <div className="bg-gradient-to-br from-[#a16535] to-[#8b5329] p-2.5 rounded-lg shadow-lg group-hover:shadow-xl transition-shadow">
@@ -102,7 +100,7 @@ const menuItems: { view: AppView; label: string; icon: any }[] = [
               <div className="bg-[#f8f6f3] border border-[#e3d7c9] rounded-lg p-3 mb-3">
                 <p className="text-xs text-[#6b5544] mb-0.5">Bem-vindo(a),</p>
                 <p className="text-sm font-medium text-[#2d1f16] leading-tight">
-                  {userName}
+                  {currentUser?.name}
                 </p>
               </div>
 
@@ -139,7 +137,7 @@ const menuItems: { view: AppView; label: string; icon: any }[] = [
         <div className="hidden lg:flex items-center gap-4">
           <div className="text-right">
             <p className="text-xs text-[#6b5544]">Bem-vindo(a),</p>
-            <p className="text-sm font-medium text-[#2d1f16]">{userName}</p>
+            <p className="text-sm font-medium text-[#2d1f16]">{currentUser?.name}</p>
           </div>
           <Button
             variant="outline"

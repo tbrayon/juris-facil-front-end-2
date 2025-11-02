@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { toast } from 'sonner';
 import { Badge } from './ui/badge';
 import { Separator } from './ui/separator';
-import { formatDateBR, formatDateTimeBR, getLocalDateString, getLocalDateTimeString } from '../others/formatters';
+import { formatDateBR, formatDateTimeBR, getLocalDateString, getLocalDateTimeString } from '../utils/formatters';
 
 const gerarTemplateContrato = (processo: any, cliente: any) => {
   const hoje = formatDateBR(getLocalDateString());

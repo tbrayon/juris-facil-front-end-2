@@ -17,7 +17,7 @@ import { Badge } from './ui/badge';
 import { Separator } from './ui/separator';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from './ui/command';
-import { formatDateBR, formatCurrency, formatPercentage, formatNumeroContrato, formatNumeroProcesso, formatCPF, formatCNPJ, removeNonNumeric } from '../others/formatters';
+import { formatDateBR, formatCurrency, formatPercentage, formatNumeroContrato, formatNumeroProcesso, formatCPF, formatCNPJ } from '../utils/formatters';
 
 interface ProcessosViewProps {
   processoIdParaEditar?: string | null;
@@ -199,7 +199,7 @@ export function ProcessosView({ processoIdParaEditar, onClearProcessoIdParaEdita
       'Tribunal de Justiça Militar de São Paulo (TJMSP)',
     ].sort((a, b) => a.localeCompare(b, 'pt-BR')),
   };
-  
+
   const tiposTribunal = Object.keys(tribunaisData).sort((a, b) => a.localeCompare(b, 'pt-BR'));
   const [opcoesJurisdicao, setOpcoesJurisdicao] = useState([
     'Justiça Federal',
@@ -233,7 +233,7 @@ export function ProcessosView({ processoIdParaEditar, onClearProcessoIdParaEdita
     'Pix',
     'Transferência Bancária',
   ].sort((a, b) => a.localeCompare(b, 'pt-BR')));
-  
+
   // Estados brasileiros
   const estadosBrasileiros = [
     { sigla: 'AC', nome: 'Acre' },
@@ -275,7 +275,7 @@ export function ProcessosView({ processoIdParaEditar, onClearProcessoIdParaEdita
   const [campoGerenciar, setCampoGerenciar] = useState<string>('');
   const [opcaoParaExcluir, setOpcaoParaExcluir] = useState<string>('');
   const [alertExcluirAberto, setAlertExcluirAberto] = useState(false);
-  
+
   // Estado para o popover da fase processual
   const [fasePopoverAberto, setFasePopoverAberto] = useState(false);
 
@@ -308,7 +308,7 @@ export function ProcessosView({ processoIdParaEditar, onClearProcessoIdParaEdita
   const [percentualContrato, setPercentualContrato] = useState('');
   const [honorariosAdvocaticios, setHonorariosAdvocaticios] = useState('');
   const [honorariosSucumbencia, setHonorariosSucumbencia] = useState('');
-  const [despesas, setDespesas] = useState<Array<{id: string; valor: string; finalidade: string}>>([]);
+  const [despesas, setDespesas] = useState<Array<{ id: string; valor: string; finalidade: string }>>([]);
   const [valorReceber, setValorReceber] = useState('');
   const [dataVencimento, setDataVencimento] = useState('');
   const [formaPagamento, setFormaPagamento] = useState('');
@@ -318,7 +318,7 @@ export function ProcessosView({ processoIdParaEditar, onClearProcessoIdParaEdita
   const [observacoesFinanceiras, setObservacoesFinanceiras] = useState('');
 
   // Notificações
-  const [notificacoes, setNotificacoes] = useState<Array<{id: string; tipo: string; dataEnvio: string; dataRecebimento: string}>>([]);
+  const [notificacoes, setNotificacoes] = useState<Array<{ id: string; tipo: string; dataEnvio: string; dataRecebimento: string }>>([]);
   const [observacoesNotificacoes, setObservacoesNotificacoes] = useState('');
   const [tiposNotificacao, setTiposNotificacao] = useState(['Email', 'Carta com AR', 'WhatsApp']);
 
@@ -337,7 +337,7 @@ export function ProcessosView({ processoIdParaEditar, onClearProcessoIdParaEdita
   };
 
   const atualizarDespesa = (id: string, campo: 'valor' | 'finalidade', valor: string) => {
-    setDespesas(despesas.map(despesa => 
+    setDespesas(despesas.map(despesa =>
       despesa.id === id ? { ...despesa, [campo]: valor } : despesa
     ));
   };
@@ -522,13 +522,13 @@ export function ProcessosView({ processoIdParaEditar, onClearProcessoIdParaEdita
 
   const handleEditarProcesso = (processo: Processo) => {
     setProcessoEmEdicao(processo);
-    
+
     // Buscar e selecionar o cliente
     const cliente = buscarClientes({
       cpf: processo.clienteDocumento.includes('/') ? '' : processo.clienteDocumento,
       cnpj: processo.clienteDocumento.includes('/') ? processo.clienteDocumento : '',
     });
-    
+
     if (cliente.length > 0) {
       setClienteSelecionado(cliente[0]);
       setTipoDocumento(processo.clienteDocumento.includes('/') ? 'cnpj' : 'cpf');
@@ -645,15 +645,15 @@ export function ProcessosView({ processoIdParaEditar, onClearProcessoIdParaEdita
     } else {
       adicionarProcesso(dadosProcesso);
       toast.success('Processo cadastrado com sucesso!', {
-        description: numeroProcesso 
-          ? `Processo ${numeroProcesso} vinculado a ${clienteSelecionado.nome}` 
+        description: numeroProcesso
+          ? `Processo ${numeroProcesso} vinculado a ${clienteSelecionado.nome}`
           : `Processo pré-processual vinculado a ${clienteSelecionado.nome}`,
         duration: 4000,
       });
     }
 
     limparFormulario();
-    
+
     setTimeout(() => {
       setActiveTab('consultar');
     }, 1500);
@@ -920,15 +920,15 @@ export function ProcessosView({ processoIdParaEditar, onClearProcessoIdParaEdita
 
       <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'cadastrar' | 'consultar')}>
         <TabsList className="grid w-full grid-cols-2 bg-[#f6f3ee] border-2 border-[#d4c4b0] p-1 rounded-full h-14">
-          <TabsTrigger 
+          <TabsTrigger
             value="consultar"
             className="data-[state=active]:bg-[#a16535] data-[state=active]:text-white text-[#6b5544] hover:text-[#a16535] rounded-full h-full transition-all"
           >
             <Search className="w-4 h-4 mr-2" />
             Consultar Processos
           </TabsTrigger>
-          <TabsTrigger 
-            value="cadastrar" 
+          <TabsTrigger
+            value="cadastrar"
             className="data-[state=active]:bg-[#a16535] data-[state=active]:text-white text-[#6b5544] hover:text-[#a16535] rounded-full h-full transition-all"
           >
             <Plus className="w-4 h-4 mr-2" />
@@ -944,7 +944,7 @@ export function ProcessosView({ processoIdParaEditar, onClearProcessoIdParaEdita
                 {processoEmEdicao ? 'Editar Processo' : 'Novo Processo'}
               </CardTitle>
               <CardDescription className="text-[#6b5544]">
-                {processoEmEdicao 
+                {processoEmEdicao
                   ? 'Atualize as informações do processo'
                   : 'Primeiro, pesquise o cliente pelo CPF ou CNPJ para vincular ao processo'
                 }
@@ -983,11 +983,10 @@ export function ProcessosView({ processoIdParaEditar, onClearProcessoIdParaEdita
                     <Button
                       type="button"
                       onClick={() => setTipoDocumento('cpf')}
-                      className={`h-10 px-6 transition-all duration-200 ${
-                        tipoDocumento === 'cpf'
+                      className={`h-10 px-6 transition-all duration-200 ${tipoDocumento === 'cpf'
                           ? 'bg-[#a16535] hover:bg-[#8b5329] text-white border-2 border-[#a16535] shadow-md'
                           : 'bg-white hover:bg-[#f6f3ee] text-[#a16535] border-2 border-[#a16535]'
-                      }`}
+                        }`}
                     >
                       <span className={tipoDocumento === 'cpf' ? 'font-semibold' : 'font-medium'}>
                         CPF
@@ -996,11 +995,10 @@ export function ProcessosView({ processoIdParaEditar, onClearProcessoIdParaEdita
                     <Button
                       type="button"
                       onClick={() => setTipoDocumento('cnpj')}
-                      className={`h-10 px-6 transition-all duration-200 ${
-                        tipoDocumento === 'cnpj'
+                      className={`h-10 px-6 transition-all duration-200 ${tipoDocumento === 'cnpj'
                           ? 'bg-[#a16535] hover:bg-[#8b5329] text-white border-2 border-[#a16535] shadow-md'
                           : 'bg-white hover:bg-[#f6f3ee] text-[#a16535] border-2 border-[#a16535]'
-                      }`}
+                        }`}
                     >
                       <span className={tipoDocumento === 'cnpj' ? 'font-semibold' : 'font-medium'}>
                         CNPJ
@@ -1020,7 +1018,7 @@ export function ProcessosView({ processoIdParaEditar, onClearProcessoIdParaEdita
                       placeholder={tipoDocumento === 'cpf' ? '000.000.000-00' : '00.000.000/0000-00'}
                       value={documentoPesquisa}
                       onChange={(e) => {
-                        const formatted = tipoDocumento === 'cpf' 
+                        const formatted = tipoDocumento === 'cpf'
                           ? formatCPF(e.target.value)
                           : formatCNPJ(e.target.value);
                         setDocumentoPesquisa(formatted);
@@ -1133,8 +1131,8 @@ export function ProcessosView({ processoIdParaEditar, onClearProcessoIdParaEdita
                           Gerenciar
                         </Button>
                       </div>
-                      <Select 
-                        value={polo} 
+                      <Select
+                        value={polo}
                         onValueChange={(value) => {
                           if (value === '__adicionar_novo__') {
                             abrirDialogPersonalizacao('polo');
@@ -1153,8 +1151,8 @@ export function ProcessosView({ processoIdParaEditar, onClearProcessoIdParaEdita
                             </SelectItem>
                           ))}
                           <Separator className="my-1 bg-[#d4c4b0]" />
-                          <SelectItem 
-                            value="__adicionar_novo__" 
+                          <SelectItem
+                            value="__adicionar_novo__"
                             className="text-[#a16535] hover:bg-[#f6f3ee] hover:text-[#8b5329]"
                           >
                             <div className="flex items-center gap-2">
@@ -1200,8 +1198,8 @@ export function ProcessosView({ processoIdParaEditar, onClearProcessoIdParaEdita
                           Gerenciar
                         </Button>
                       </div>
-                      <Select 
-                        value={tipoAcao} 
+                      <Select
+                        value={tipoAcao}
                         onValueChange={(value) => {
                           if (value === '__adicionar_novo__') {
                             abrirDialogPersonalizacao('tipoAcao');
@@ -1220,8 +1218,8 @@ export function ProcessosView({ processoIdParaEditar, onClearProcessoIdParaEdita
                             </SelectItem>
                           ))}
                           <Separator className="my-1 bg-[#d4c4b0]" />
-                          <SelectItem 
-                            value="__adicionar_novo__" 
+                          <SelectItem
+                            value="__adicionar_novo__"
                             className="text-[#a16535] hover:bg-[#f6f3ee] hover:text-[#8b5329]"
                           >
                             <div className="flex items-center gap-2">
@@ -1278,8 +1276,8 @@ export function ProcessosView({ processoIdParaEditar, onClearProcessoIdParaEdita
                           Tipo de Tribunal
                         </Label>
                       </div>
-                      <Select 
-                        value={tipoTribunal} 
+                      <Select
+                        value={tipoTribunal}
                         onValueChange={(value) => {
                           setTipoTribunal(value);
                           setTribunal(''); // Limpa o tribunal específico ao mudar o tipo
@@ -1304,8 +1302,8 @@ export function ProcessosView({ processoIdParaEditar, onClearProcessoIdParaEdita
                           Tribunal Específico
                         </Label>
                       </div>
-                      <Select 
-                        value={tribunal} 
+                      <Select
+                        value={tribunal}
                         onValueChange={setTribunal}
                         disabled={!tipoTribunal}
                       >
@@ -1336,9 +1334,9 @@ export function ProcessosView({ processoIdParaEditar, onClearProcessoIdParaEdita
                         </SelectTrigger>
                         <SelectContent className="bg-white border-[#d4c4b0] max-h-[300px]">
                           {estadosBrasileiros.map((estado) => (
-                            <SelectItem 
-                              key={estado.sigla} 
-                              value={estado.sigla} 
+                            <SelectItem
+                              key={estado.sigla}
+                              value={estado.sigla}
                               className="text-[#2d1f16] hover:bg-[#f6f3ee]"
                             >
                               {estado.sigla} - {estado.nome}
@@ -1400,8 +1398,8 @@ export function ProcessosView({ processoIdParaEditar, onClearProcessoIdParaEdita
                           Gerenciar
                         </Button>
                       </div>
-                      <Select 
-                        value={tipoJurisdicao} 
+                      <Select
+                        value={tipoJurisdicao}
                         onValueChange={(value) => {
                           if (value === '__adicionar_novo__') {
                             abrirDialogPersonalizacao('jurisdicao');
@@ -1415,17 +1413,17 @@ export function ProcessosView({ processoIdParaEditar, onClearProcessoIdParaEdita
                         </SelectTrigger>
                         <SelectContent className="bg-white border-[#d4c4b0]">
                           {opcoesJurisdicao.map((opcao) => (
-                            <SelectItem 
-                              key={opcao} 
-                              value={opcao.toLowerCase()} 
+                            <SelectItem
+                              key={opcao}
+                              value={opcao.toLowerCase()}
                               className="text-[#2d1f16] hover:bg-[#f6f3ee]"
                             >
                               {opcao}
                             </SelectItem>
                           ))}
                           <Separator className="my-1 bg-[#d4c4b0]" />
-                          <SelectItem 
-                            value="__adicionar_novo__" 
+                          <SelectItem
+                            value="__adicionar_novo__"
                             className="text-[#a16535] hover:bg-[#f6f3ee] hover:text-[#8b5329]"
                           >
                             <div className="flex items-center gap-2">
@@ -1453,8 +1451,8 @@ export function ProcessosView({ processoIdParaEditar, onClearProcessoIdParaEdita
                           Gerenciar
                         </Button>
                       </div>
-                      <Select 
-                        value={competencia} 
+                      <Select
+                        value={competencia}
                         onValueChange={(value) => {
                           if (value === '__adicionar_novo__') {
                             abrirDialogPersonalizacao('competencia');
@@ -1468,17 +1466,17 @@ export function ProcessosView({ processoIdParaEditar, onClearProcessoIdParaEdita
                         </SelectTrigger>
                         <SelectContent className="bg-white border-[#d4c4b0]">
                           {opcoesCompetencia.map((opcao) => (
-                            <SelectItem 
-                              key={opcao} 
-                              value={opcao.toLowerCase().replace(/\s+/g, '-')} 
+                            <SelectItem
+                              key={opcao}
+                              value={opcao.toLowerCase().replace(/\s+/g, '-')}
                               className="text-[#2d1f16] hover:bg-[#f6f3ee]"
                             >
                               {opcao}
                             </SelectItem>
                           ))}
                           <Separator className="my-1 bg-[#d4c4b0]" />
-                          <SelectItem 
-                            value="__adicionar_novo__" 
+                          <SelectItem
+                            value="__adicionar_novo__"
                             className="text-[#a16535] hover:bg-[#f6f3ee] hover:text-[#8b5329]"
                           >
                             <div className="flex items-center gap-2">
@@ -1515,8 +1513,8 @@ export function ProcessosView({ processoIdParaEditar, onClearProcessoIdParaEdita
                           Gerenciar
                         </Button>
                       </div>
-                      <Select 
-                        value={status} 
+                      <Select
+                        value={status}
                         onValueChange={(value) => {
                           if (value === '__adicionar_novo__') {
                             abrirDialogPersonalizacao('statusProcesso');
@@ -1530,17 +1528,17 @@ export function ProcessosView({ processoIdParaEditar, onClearProcessoIdParaEdita
                         </SelectTrigger>
                         <SelectContent className="bg-white border-[#d4c4b0]">
                           {opcoesStatusProcesso.map((opcao) => (
-                            <SelectItem 
-                              key={opcao} 
-                              value={opcao} 
+                            <SelectItem
+                              key={opcao}
+                              value={opcao}
                               className="text-[#2d1f16] hover:bg-[#f6f3ee]"
                             >
                               {opcao}
                             </SelectItem>
                           ))}
                           <Separator className="my-1 bg-[#d4c4b0]" />
-                          <SelectItem 
-                            value="__adicionar_novo__" 
+                          <SelectItem
+                            value="__adicionar_novo__"
                             className="text-[#a16535] hover:bg-[#f6f3ee] hover:text-[#8b5329]"
                           >
                             <div className="flex items-center gap-2">
@@ -1582,8 +1580,8 @@ export function ProcessosView({ processoIdParaEditar, onClearProcessoIdParaEdita
                         </PopoverTrigger>
                         <PopoverContent className="w-[400px] p-0 bg-white border-[#d4c4b0]">
                           <Command className="bg-white">
-                            <CommandInput 
-                              placeholder="Buscar fase processual..." 
+                            <CommandInput
+                              placeholder="Buscar fase processual..."
                               className="border-0 focus:ring-0 text-[#2d1f16]"
                             />
                             <CommandList>
@@ -1602,9 +1600,8 @@ export function ProcessosView({ processoIdParaEditar, onClearProcessoIdParaEdita
                                     className="text-[#2d1f16] hover:bg-[#f6f3ee] cursor-pointer"
                                   >
                                     <Check
-                                      className={`mr-2 h-4 w-4 ${
-                                        faseProcessual === fase ? "opacity-100" : "opacity-0"
-                                      }`}
+                                      className={`mr-2 h-4 w-4 ${faseProcessual === fase ? "opacity-100" : "opacity-0"
+                                        }`}
                                     />
                                     {fase}
                                   </CommandItem>
@@ -1699,7 +1696,7 @@ export function ProcessosView({ processoIdParaEditar, onClearProcessoIdParaEdita
 
                 {/* DADOS FINANCEIROS */}
                 <Separator className="bg-[#d4c4b0]" />
-                
+
                 <div className="space-y-4">
                   <h3 className="text-[#a16535] flex items-center gap-2">
                     <DollarSign className="w-5 h-5" />
@@ -1723,8 +1720,8 @@ export function ProcessosView({ processoIdParaEditar, onClearProcessoIdParaEdita
                         onBlur={(e) => {
                           const valor = e.target.value;
                           if (valor && valor !== processoEmEdicao?.numeroContratoHonorarios) {
-                            const existe = processos.some(p => 
-                              p.numeroContratoHonorarios === valor && 
+                            const existe = processos.some(p =>
+                              p.numeroContratoHonorarios === valor &&
                               p.id !== processoEmEdicao?.id
                             );
                             if (existe) {
@@ -1913,8 +1910,8 @@ export function ProcessosView({ processoIdParaEditar, onClearProcessoIdParaEdita
                           Gerenciar
                         </Button>
                       </div>
-                      <Select 
-                        value={formaPagamento} 
+                      <Select
+                        value={formaPagamento}
                         onValueChange={(value) => {
                           if (value === '__adicionar_novo__') {
                             abrirDialogPersonalizacao('formaPagamento');
@@ -1933,8 +1930,8 @@ export function ProcessosView({ processoIdParaEditar, onClearProcessoIdParaEdita
                             </SelectItem>
                           ))}
                           <Separator className="my-1 bg-[#d4c4b0]" />
-                          <SelectItem 
-                            value="__adicionar_novo__" 
+                          <SelectItem
+                            value="__adicionar_novo__"
                             className="text-[#a16535] hover:bg-[#f6f3ee] hover:text-[#8b5329]"
                           >
                             <div className="flex items-center gap-2">
@@ -2456,7 +2453,7 @@ export function ProcessosView({ processoIdParaEditar, onClearProcessoIdParaEdita
                         </div>
                       )}
                     </div>
-                    
+
                     {/* Despesas Processuais */}
                     {processoVisualizacao.despesas && processoVisualizacao.despesas.length > 0 && (
                       <div className="mt-4">

@@ -1,17 +1,16 @@
-import React from 'react';
 import { LifeBuoy, Mail, ArrowLeft } from 'lucide-react';
 import { Button } from './ui/button';
+import { AppView } from '@/types/navigation';
 
-type AppView = 'home' | 'dashboard' | 'suporte' | 'termos' | 'privacidade' | 'cookies';
 type NavigateFunc = (view: AppView) => void;
 
-interface SacProps {
+interface CustomerServiceProps {
   onNavigate: NavigateFunc;
 }
 
 const WHATSAPP_URL = "https://chat.whatsapp.com/BU1iRDPbpzSK2T4bu4mj30";
 
-export function Sac({ onNavigate }: SacProps) {
+export function CustomerService({ onNavigate }: CustomerServiceProps) {
   return (
     <div className="max-w-2xl mx-auto mt-10">
       {/* Botão "Página Inicial" FORA DO CARD – ALINHADO À DIREITA */}

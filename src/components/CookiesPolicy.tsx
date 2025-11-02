@@ -1,15 +1,14 @@
-import React from 'react';
 import { Cookie, ArrowLeft } from 'lucide-react';
 import { Button } from './ui/button';
+import { AppView } from '@/types/navigation';
 
-type AppView = 'home' | 'dashboard' | 'suporte' | 'termos' | 'privacidade' | 'cookies';
 type NavigateFunc = (view: AppView) => void;
 
-interface PoliticaCookiesProps {
+interface CookiesPolicyProps {
   onNavigate: NavigateFunc;
 }
 
-export function PoliticaDeCookies({ onNavigate }: PoliticaCookiesProps) {
+export function CookiesPolicy({ onNavigate }: CookiesPolicyProps) {
   return (
     <div className="max-w-2xl sm:max-w-7xl mx-auto mt-10 px-4 sm:px-0">
       {/* Botão "Página Inicial" FORA DO CARD – RESPONSIVO */}

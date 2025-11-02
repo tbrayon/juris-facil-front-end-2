@@ -10,10 +10,10 @@ import {
   BarChart3,
   LifeBuoy
 } from 'lucide-react';
+import { useUsers } from '@/contexts/UsersContext';
 
 interface MenuProps {
   activeView: string;
-  userTipo: string;
   onNavigate: (
     view:
       | 'home'
@@ -28,9 +28,8 @@ interface MenuProps {
   ) => void;
 }
 
-export default function Menu({ activeView, userTipo, onNavigate }: MenuProps) {
-
-  // Detecta se a tela é mobile (usado para trocar ícones)
+export default function Menu({ activeView, onNavigate }: MenuProps) {
+  const { currentUser } = useUsers();
   const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
 
   const menuItems = [
@@ -55,7 +54,7 @@ export default function Menu({ activeView, userTipo, onNavigate }: MenuProps) {
   ];
 
   const filteredItems = menuItems.filter(
-    (item) => !item.adminOnly || userTipo === 'administrador'
+    (item) => !item.adminOnly || currentUser?.role === 'admin'
   );
 
   return (
@@ -67,20 +66,18 @@ export default function Menu({ activeView, userTipo, onNavigate }: MenuProps) {
         height: 'var(--banner-height)',
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center', // <-- Mantido para centralizar o menu
+        justifyContent: 'center',
         overflowX: 'auto',
-        paddingTop:'20 px',
-        margin:'20 px',
+        paddingTop: '20 px',
+        margin: '20 px',
       } as React.CSSProperties}
     >
       <div
         className="flex gap-1 h-full items-center"
-        style={{ paddingTop: '20px', paddingBottom: '20px' }} // <-- Padding movido para cá
+        style={{ paddingTop: '20px', paddingBottom: '20px' }}
       >
-        {filteredItems.map((item, index) => {
+        {filteredItems.map((item) => {
           const isActive = activeView === item.view;
-          // const isFirstActive = isActive && index === 0; // <-- Lógica removida
-          // const isLastActive = isActive && index === filteredItems.length - 1; // <-- Lógica removida
 
           return (
             <button
@@ -89,20 +86,18 @@ export default function Menu({ activeView, userTipo, onNavigate }: MenuProps) {
               className={`
                 flex items-center gap-2 px-4 h-full min-w-fit whitespace-nowrap
                 text-sm font-medium transition-all duration-200 rounded-md
-                ${
-                  isActive
-                    ? 'bg-[#a16535] text-white shadow-lg'
-                    : 'text-[#4a3629] hover:text-[#a16535] hover:bg-[#f6f3ee]'
+                ${isActive
+                  ? 'bg-[#a16535] text-white shadow-lg'
+                  : 'text-[#4a3629] hover:text-[#a16535] hover:bg-[#f6f3ee]'
                 }
-                ${
-                  isActive
-                    ? 'border-b-4 border-[#8b5329]'
-                    : 'border-b-4 border-transparent'
+                ${isActive
+                  ? 'border-b-4 border-[#8b5329]'
+                  : 'border-b-4 border-transparent'
                 }
               `}
               style={{
-                paddingTop: '0.75rem', // <-- Revertido para o original
-                paddingBottom: '0.75rem', // <-- Revertido para o original
+                paddingTop: '0.75rem',
+                paddingBottom: '0.75rem',
                 height: '100%'
               }}
             >

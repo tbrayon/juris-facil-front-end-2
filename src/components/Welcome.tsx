@@ -1,17 +1,16 @@
-// src/components/Welcome-page.tsx
 import React from 'react';
 import { Scale, ArrowRight } from 'lucide-react';
 import { Button } from './ui/button';
 import { Footer } from './Footer';
 
 interface WelcomePageProps {
-  onAcessarSistema: () => void;
+  onSystemAccess: () => void;
   onNavigate: (view: 'home' | 'dashboard' | 'clientes' | 'processos' | 'prazos' | 'contratos' | 'relatorios' | 'usuarios' | 'suporte' | 'termos' | 'privacidade' | 'cookies') => void;
 }
 
-export function WelcomePage({ onAcessarSistema, onNavigate }: WelcomePageProps) {
+export function WelcomePage({ onSystemAccess, onNavigate }: WelcomePageProps) {
   return (
-    <div 
+    <div
       className="w-full min-h-screen flex flex-col bg-[#f6f3ee]"
       style={{
         '--banner-height': '48px',
@@ -33,12 +32,12 @@ export function WelcomePage({ onAcessarSistema, onNavigate }: WelcomePageProps) 
       } as React.CSSProperties}
     >
       {/* Container principal */}
-      <div 
+      <div
         className="flex-1 flex flex-col items-center justify-center py-8 sm:py-12"
         style={{ minHeight: 'var(--full-height-with-banner)' }}
       >
         <div className="w-full max-w-7xl mx-auto px-4 space-y-6 sm:space-y-8">
-          
+
           {/* Logo + Título */}
           <div className="flex flex-col items-center space-y-4 text-center pt-6 sm:pt-8">
             <div className="flex flex-col items-center gap-2 sm:gap-3">
@@ -69,7 +68,7 @@ export function WelcomePage({ onAcessarSistema, onNavigate }: WelcomePageProps) 
 
             {/* Botão Acessar Sistema */}
             <Button
-              onClick={onAcessarSistema}
+              onClick={onSystemAccess}
               className="inline-flex items-center justify-center gap-2 text-sm font-medium h-10 rounded-md bg-[#a16535] hover:bg-[#8b5329] text-white px-6 sm:px-8 py-5 sm:py-6 shadow-xl shadow-[#a16535]/30 transition-all duration-300 hover:shadow-2xl hover:shadow-[#a16535]/40"
             >
               Acessar Sistema
@@ -81,15 +80,15 @@ export function WelcomePage({ onAcessarSistema, onNavigate }: WelcomePageProps) 
           <div className="relative">
             {/* Blur de fundo */}
             <div className="absolute inset-0 bg-[#a16535] rounded-2xl blur-3xl opacity-15 -z-10"></div>
-            
+
             <div className="relative rounded-2xl overflow-hidden shadow-2xl border-2 border-[#d4c4b0]">
               <img
-                src="/src/assets/Welcome-Page.jpeg"
+                src="/src/assets/Welcome.jpeg"
                 alt="Escritório de Advocacia Sofisticado"
                 className="w-full h-48 sm:h-64 md:h-[400px] object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#2d1f16]/90 via-[#2d1f16]/50 to-transparent"></div>
-              
+
               {/* Estatísticas - Responsivas */}
               <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 md:p-8">
                 <div className="grid grid-cols-3 gap-4 sm:gap-6 md:gap-12 text-white text-center">

@@ -13,7 +13,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Label } from './ui/label';
 import { Separator } from './ui/separator';
 import { ScrollArea } from './ui/scroll-area';
-import { formatDateBR, getLocalDateString, formatCPF, formatCNPJ } from '../others/formatters';
+import { formatDateBR, getLocalDateString, formatCPF, formatCNPJ } from '../utils/formatters';
 
 const estadosBrasileiros = [
   { sigla: 'AC', nome: 'Acre' }, { sigla: 'AL', nome: 'Alagoas' }, { sigla: 'AP', nome: 'Amapá' },
@@ -262,8 +262,8 @@ export function RelatoriosView({ onEditarCliente, onEditarProcesso, onVoltar }: 
                     <SelectTrigger className={`
                       bg-[#f6f3ee] border-[#d4c4b0] text-sm transition-all duration-200
                       focus:ring-2 focus:ring-[#2567f7] focus:ring-offset-1 focus:border-[#2567f7]
-                      ${filtroTipoCliente !== 'todos' 
-                        ? 'bg-blue-500 text-white border-blue-500' 
+                      ${filtroTipoCliente !== 'todos'
+                        ? 'bg-blue-500 text-white border-blue-500'
                         : 'hover:bg-blue-500/10 hover:text-blue-600'
                       }
                     `}>
@@ -287,8 +287,8 @@ export function RelatoriosView({ onEditarCliente, onEditarProcesso, onVoltar }: 
                     <SelectTrigger className={`
                       bg-[#f6f3ee] border-[#d4c4b0] text-sm transition-all duration-200
                       focus:ring-2 focus:ring-[#2567f7] focus:ring-offset-1 focus:border-[#2567f7]
-                      ${filtroCidade !== 'todos' 
-                        ? 'bg-blue-500 text-white border-blue-500' 
+                      ${filtroCidade !== 'todos'
+                        ? 'bg-blue-500 text-white border-blue-500'
                         : 'hover:bg-blue-500/10 hover:text-blue-600'
                       }
                     `}>
@@ -315,8 +315,8 @@ export function RelatoriosView({ onEditarCliente, onEditarProcesso, onVoltar }: 
                     <SelectTrigger className={`
                       bg-[#f6f3ee] border-[#d4c4b0] text-sm transition-all duration-200
                       focus:ring-2 focus:ring-[#2567f7] focus:ring-offset-1 focus:border-[#2567f7]
-                      ${filtroEstado !== 'todos' 
-                        ? 'bg-blue-500 text-white border-blue-500' 
+                      ${filtroEstado !== 'todos'
+                        ? 'bg-blue-500 text-white border-blue-500'
                         : 'hover:bg-blue-500/10 hover:text-blue-600'
                       }
                     `}>
@@ -462,8 +462,8 @@ export function RelatoriosView({ onEditarCliente, onEditarProcesso, onVoltar }: 
                       <SelectTrigger className={`
                         bg-[#f6f3ee] border-[#d4c4b0] text-sm h-9 transition-all duration-200
                         focus:ring-2 focus:ring-[#2567f7] focus:ring-offset-1 focus:border-[#2567f7]
-                        ${filtroFase !== 'todos' 
-                          ? 'bg-blue-500 text-white border-blue-500' 
+                        ${filtroFase !== 'todos'
+                          ? 'bg-blue-500 text-white border-blue-500'
                           : 'hover:bg-blue-500/10 hover:text-blue-600'
                         }
                       `}>
@@ -489,8 +489,8 @@ export function RelatoriosView({ onEditarCliente, onEditarProcesso, onVoltar }: 
                       <SelectTrigger className={`
                         bg-[#f6f3ee] border-[#d4c4b0] text-sm h-9 transition-all duration-200
                         focus:ring-2 focus:ring-[#2567f7] focus:ring-offset-1 focus:border-[#2567f7]
-                        ${filtroStatus !== 'todos' 
-                          ? 'bg-blue-500 text-white border-blue-500' 
+                        ${filtroStatus !== 'todos'
+                          ? 'bg-blue-500 text-white border-blue-500'
                           : 'hover:bg-blue-500/10 hover:text-blue-600'
                         }
                       `}>
@@ -516,8 +516,8 @@ export function RelatoriosView({ onEditarCliente, onEditarProcesso, onVoltar }: 
                       <SelectTrigger className={`
                         bg-[#f6f3ee] border-[#d4c4b0] text-sm h-9 transition-all duration-200
                         focus:ring-2 focus:ring-[#2567f7] focus:ring-offset-1 focus:border-[#2567f7]
-                        ${filtroPrioridade !== 'todos' 
-                          ? 'bg-blue-500 text-white border-blue-500' 
+                        ${filtroPrioridade !== 'todos'
+                          ? 'bg-blue-500 text-white border-blue-500'
                           : 'hover:bg-blue-500/10 hover:text-blue-600'
                         }
                       `}>
@@ -543,8 +543,8 @@ export function RelatoriosView({ onEditarCliente, onEditarProcesso, onVoltar }: 
                       <SelectTrigger className={`
                         bg-[#f6f3ee] border-[#d4c4b0] text-sm h-9 transition-all duration-200
                         focus:ring-2 focus:ring-[#2567f7] focus:ring-offset-1 focus:border-[#2567f7]
-                        ${filtroTipoAcao !== 'todos' 
-                          ? 'bg-blue-500 text-white border-blue-500' 
+                        ${filtroTipoAcao !== 'todos'
+                          ? 'bg-blue-500 text-white border-blue-500'
                           : 'hover:bg-blue-500/10 hover:text-blue-600'
                         }
                       `}>
@@ -708,8 +708,8 @@ export function RelatoriosView({ onEditarCliente, onEditarProcesso, onVoltar }: 
                     <div>
                       <Label className="text-[#6b5544] text-sm font-medium">{clienteSelecionado.tipo === 'cpf' ? 'CPF' : 'CNPJ'}</Label>
                       <p className="text-[#2d1f16] font-mono text-sm">
-                        {clienteSelecionado.tipo === 'cpf' 
-                          ? formatCPF(clienteSelecionado.documento) 
+                        {clienteSelecionado.tipo === 'cpf'
+                          ? formatCPF(clienteSelecionado.documento)
                           : formatCNPJ(clienteSelecionado.documento)}
                       </p>
                     </div>

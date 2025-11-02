@@ -1,22 +1,14 @@
-import * as React from 'react';
-// ATUALIZADO: Adicionados HomeIcon, LifeBuoy e UserSquare2. Removido Contact.
+import { useUsers } from '@/contexts/UsersContext';
 import {
-  Scale,
-  UserSquare2, // Ícone para Clientes da imagem anterior
-  FileText, Calendar, FileSignature, LogOut, BookOpen, Gavel, Award, BarChart3, FileBarChart, Shield,
-  HomeIcon,    // Ícone para Página Inicial
-  LifeBuoy,    // Ícone para Suporte
-  Users        // Ícone para Usuários da imagem anterior
+  Scale, UserSquare2, FileText, Calendar, FileSignature, BookOpen, Gavel, Award, BarChart3, FileBarChart, HomeIcon, LifeBuoy, Users
 } from 'lucide-react';
-import { Button } from './ui/button'; // Assuming Button is not needed directly here anymore, but keeping for safety
 
-// ATUALIZADO: Adicionados 'home' e 'suporte' ao tipo
 interface HomeProps {
-  userTipo: string;
   onNavigate: (view: 'home' | 'dashboard' | 'clientes' | 'processos' | 'prazos' | 'contratos' | 'relatorios' | 'usuarios' | 'suporte') => void;
 }
 
-export function Home({ userTipo, onNavigate }: HomeProps) {
+export function Home({ onNavigate }: HomeProps) {
+  const { currentUser } = useUsers();
   return (
     <div className="space-y-8">
       {/* Welcome Section */}
@@ -30,14 +22,14 @@ export function Home({ userTipo, onNavigate }: HomeProps) {
           Bem-vindo(a) ao <span className="text-[#a16535]">Sistema Jurídico</span>
         </h2>
         <p className="text-lg text-[#6b5544] max-w-2xl mx-auto">
-          {userTipo === 'administrador'
+          {currentUser?.role === 'admin'
             ? 'Gerencie usuários, clientes, processos, prazos e contratos de forma eficiente e profissional.'
             : 'Gerencie seus clientes, processos, prazos e contratos de forma eficiente e profissional.'}
         </p>
       </div>
 
       {/* Hero Image e Stats (Imagem de topo) */}
-       <div className="relative rounded-2xl overflow-hidden shadow-2xl border-2 border-[#d4c4b0]">
+      <div className="relative rounded-2xl overflow-hidden shadow-2xl border-2 border-[#d4c4b0]">
         <img
           src="https://images.unsplash.com/photo-1584556326561-c8746083993b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxsYXclMjBvZmZpY2UlMjBib29rcyUyMGp1c3RpY2V8ZW58MXx8fHwxNzYwNzE3MzM1fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
           alt="Escritório de Advocacia - Livros Jurídicos"
@@ -104,7 +96,7 @@ export function Home({ userTipo, onNavigate }: HomeProps) {
         ))}
 
         {/* Card de Usuários (condicional) */}
-        {userTipo === 'administrador' && (
+        {currentUser?.role === 'admin' && (
           <button
             onClick={() => onNavigate('usuarios')}
             className="group bg-white border-2 border-[#d4c4b0] rounded-xl p-6 hover:border-[#a16535] hover:shadow-xl hover:shadow-[#a16535]/20 transition-all duration-300"
@@ -136,7 +128,7 @@ export function Home({ userTipo, onNavigate }: HomeProps) {
       </div>
 
       {/* Informações Adicionais (Rodapé da Home) */}
-       <div className="bg-gradient-to-br from-[#a16535] to-[#8b5329] rounded-2xl p-8 text-white shadow-xl">
+      <div className="bg-gradient-to-br from-[#a16535] to-[#8b5329] rounded-2xl p-8 text-white shadow-xl">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
           <div className="space-y-2">
             <div className="flex items-center justify-center">

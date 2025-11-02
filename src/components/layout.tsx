@@ -1,19 +1,6 @@
-import React, { useState } from 'react';
-import {
-  FileText,
-  Calendar,
-  FileSignature,
-  LogOut,
-  BarChart3,
-  FileBarChart,
-  Shield,
-  HomeIcon,
-  Contact,
-  LifeBuoy,
-} from 'lucide-react';
+import { useState } from 'react';
 
 import { Toaster } from './ui/sonner';
-// import { useIsMobile } from '../others/use-mobile'; // <-- Removido, não é mais necessário para esta lógica
 
 import { ClientesView } from './Clientes';
 import { ProcessosView } from './ProcessosView';
@@ -27,30 +14,28 @@ import Header from './Header';
 import Menu from './Menu';
 import { CookieConsentBanner } from './CookieConsentBanner';
 import { Footer } from './Footer';
-import { Sac } from './Sac';
-import { TermosDeUso } from './Termos-de-uso';
-import { PoliticaDePrivacidade } from './Politica-de-privacidade';
-import { PoliticaDeCookies } from './Politica-de-cookies';
-import { AppView } from '../others/navigation';
+import { CustomerService } from './CustomerService';
+import { TermsOfUse } from './TermsOfUse';
+import { PrivacyPolicy } from './PrivacyPolicy';
+import { CookiesPolicy } from './CookiesPolicy';
+
+import { AppView } from '../types/navigation';
+import { useUsers } from '@/contexts/UsersContext';
 
 interface LayoutProps {
-  userName: string;
-  userTipo: string;
   onLogout: () => void;
   currentView: AppView;
   onNavigate: (view: AppView) => void;
 }
 
 export default function Layout({
-  userName,
-  userTipo,
   onLogout,
   currentView,
   onNavigate,
 }: LayoutProps) {
   const [clienteIdParaEditar, setClienteIdParaEditar] = useState<string | null>(null);
   const [processoIdParaEditar, setProcessoIdParaEditar] = useState<string | null>(null);
-  // const isMobile = useIsMobile(); // <-- Removido
+  const { currentUser } = useUsers();
 
   const handleVoltarInicio = () => {
     onNavigate('home');
@@ -71,9 +56,9 @@ export default function Layout({
   const CurrentView = () => {
     switch (currentView) {
       case 'home':
-        return <Home userTipo={userTipo} onNavigate={onNavigate} />;
+        return <Home onNavigate={onNavigate} />;
       case 'dashboard':
-        return <DashboardView onVoltar={handleVoltarInicio} usuarioTipo={userTipo} />;
+        return <DashboardView onVoltar={handleVoltarInicio} />;
       case 'clientes':
         return (
           <ClientesView
@@ -103,19 +88,19 @@ export default function Layout({
           />
         );
       case 'usuarios':
-        return userTipo === 'administrador' ? (
+        return currentUser?.role === 'admin' ? (
           <UsuariosView onVoltar={handleVoltarInicio} />
         ) : null;
       case 'suporte':
-        return <Sac onNavigate={onNavigate} />;
+        return <CustomerService onNavigate={onNavigate} />;
       case 'termos':
-        return <TermosDeUso onNavigate={onNavigate} />;
+        return <TermsOfUse onNavigate={onNavigate} />;
       case 'privacidade':
-        return <PoliticaDePrivacidade onNavigate={onNavigate} />;
+        return <PrivacyPolicy onNavigate={onNavigate} />;
       case 'cookies':
-        return <PoliticaDeCookies onNavigate={onNavigate} />;
+        return <CookiesPolicy onNavigate={onNavigate} />;
       default:
-        return <Home userTipo={userTipo} onNavigate={onNavigate} />;
+        return <Home onNavigate={onNavigate} />;
     }
   };
 
@@ -126,10 +111,8 @@ export default function Layout({
       <div className="min-h-screen bg-[#f6f3ee] flex flex-col">
         {/* HEADER — com menu mobile/tablet embutido */}
         <Header
-          userName={userName}
-          userTipo={userTipo}
           onLogout={onLogout}
-          onVoltarInicio={handleVoltarInicio}
+          onBack={handleVoltarInicio}
           onNavigate={onNavigate}
         />
 
@@ -137,7 +120,7 @@ export default function Layout({
         <div className="hidden lg:block"> {/* <-- LÓGICA ALTERADA */}
           {currentView &&
             !['termos', 'privacidade', 'cookies', 'suporte'].includes(currentView) && (
-              <Menu activeView={currentView} userTipo={userTipo} onNavigate={onNavigate} />
+              <Menu activeView={currentView} onNavigate={onNavigate} />
             )}
         </div>
 

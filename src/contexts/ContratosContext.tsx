@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { getLocalDateTimeString } from '../others/formatters';
+import { getLocalDateTimeString } from '../utils/formatters';
 
 export interface Contrato {
   id: string;

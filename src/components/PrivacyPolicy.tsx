@@ -1,15 +1,14 @@
-import React from 'react';
 import { Shield, ArrowLeft } from 'lucide-react';
 import { Button } from './ui/button';
+import { AppView } from '@/types/navigation';
 
-type AppView = 'home' | 'dashboard' | 'suporte' | 'termos' | 'privacidade' | 'cookies';
 type NavigateFunc = (view: AppView) => void;
 
-interface PoliticaPrivacidadeProps {
+interface PrivacyPolicyProps {
   onNavigate: NavigateFunc;
 }
 
-export function PoliticaDePrivacidade({ onNavigate }: PoliticaPrivacidadeProps) {
+export function PrivacyPolicy({ onNavigate }: PrivacyPolicyProps) {
   return (
     <div className="max-w-2xl sm:max-w-7xl mx-auto mt-10 px-4 sm:px-0">
       {/* Botão "Página Inicial" FORA DO CARD – RESPONSIVO */}
@@ -151,7 +150,7 @@ export function PoliticaDePrivacidade({ onNavigate }: PoliticaPrivacidadeProps) 
               >
                 suporte disponível
               </button>{' '}
-               ou envie um e-mail para:{' '}
+              ou envie um e-mail para:{' '}
               <a
                 href="mailto:suporte@jurisfacil.com.br"
                 className="text-[#a16535] hover:underline font-medium"
