@@ -225,14 +225,14 @@ export function ClientesProvider({ children }: { children: ReactNode }) {
 
   const buscarClientes = (filtros: { cpf?: string; cnpj?: string; nome?: string }) => {
     return clientes.filter((cliente) => {
-      const cpfMatch = filtros.cpf 
+      const cpfMatch = filtros.cpf
         ? cliente.tipo === 'cpf' && cliente.documento.includes(filtros.cpf)
         : true;
-      
+
       const cnpjMatch = filtros.cnpj
         ? cliente.tipo === 'cnpj' && cliente.documento.includes(filtros.cnpj)
         : true;
-      
+
       const nomeMatch = filtros.nome
         ? cliente.nome.toLowerCase().includes(filtros.nome.toLowerCase())
         : true;

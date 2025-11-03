@@ -1,10 +1,11 @@
 import { useUsers } from '@/contexts/UsersContext';
+import { AppView } from '@/types/navigation';
 import {
   Scale, UserSquare2, FileText, Calendar, FileSignature, BookOpen, Gavel, Award, BarChart3, FileBarChart, HomeIcon, LifeBuoy, Users
 } from 'lucide-react';
 
 interface HomeProps {
-  onNavigate: (view: 'home' | 'dashboard' | 'clientes' | 'processos' | 'prazos' | 'contratos' | 'relatorios' | 'usuarios' | 'suporte') => void;
+  onNavigate: (view: AppView) => void;
 }
 
 export function Home({ onNavigate }: HomeProps) {

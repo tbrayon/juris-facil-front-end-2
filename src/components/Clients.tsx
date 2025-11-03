@@ -1,279 +1,207 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Button } from './ui/button';
 import { Search, UserPlus, Users, CheckCircle, X, Plus, Edit, ArrowLeft } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
-import { useClientes, Cliente } from '../contexts/ClientesContext';
 import { Alert, AlertDescription } from './ui/alert';
 import { Separator } from './ui/separator';
-import { Textarea } from './ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { toast } from 'sonner';
-import { formatCPF, formatCNPJ, formatDateBR, formatTelefone, formatCEP, removeNonNumeric } from '../others/formatters';
 
-// Estados brasileiros
-const estadosBrasileiros = [
-  { sigla: 'AC', nome: 'Acre' },
-  { sigla: 'AL', nome: 'Alagoas' },
-  { sigla: 'AP', nome: 'Amapá' },
-  { sigla: 'AM', nome: 'Amazonas' },
-  { sigla: 'BA', nome: 'Bahia' },
-  { sigla: 'CE', nome: 'Ceará' },
-  { sigla: 'DF', nome: 'Distrito Federal' },
-  { sigla: 'ES', nome: 'Espírito Santo' },
-  { sigla: 'GO', nome: 'Goiás' },
-  { sigla: 'MA', nome: 'Maranhão' },
-  { sigla: 'MT', nome: 'Mato Grosso' },
-  { sigla: 'MS', nome: 'Mato Grosso do Sul' },
-  { sigla: 'MG', nome: 'Minas Gerais' },
-  { sigla: 'PA', nome: 'Pará' },
-  { sigla: 'PB', nome: 'Paraíba' },
-  { sigla: 'PR', nome: 'Paraná' },
-  { sigla: 'PE', nome: 'Pernambuco' },
-  { sigla: 'PI', nome: 'Piauí' },
-  { sigla: 'RJ', nome: 'Rio de Janeiro' },
-  { sigla: 'RN', nome: 'Rio Grande do Norte' },
-  { sigla: 'RS', nome: 'Rio Grande do Sul' },
-  { sigla: 'RO', nome: 'Rondônia' },
-  { sigla: 'RR', nome: 'Roraima' },
-  { sigla: 'SC', nome: 'Santa Catarina' },
-  { sigla: 'SP', nome: 'São Paulo' },
-  { sigla: 'SE', nome: 'Sergipe' },
-  { sigla: 'TO', nome: 'Tocantins' },
-];
+import { formatCPF, formatCNPJ, formatDateBR, formatPhone, formatCEP } from '@/utils/formatters';
+import { states } from '@/utils/states';
+import { AppView } from '@/types/navigation';
+import { useClients, Client } from '@/contexts/ClientsContext';
 
-interface ClientesViewProps {
-  clienteIdParaEditar?: string | null;
-  onClearClienteIdParaEditar?: () => void;
-  onVoltar: () => void;
+interface ClientsProps {
+  onNavigate: (view: AppView) => void;
 }
 
-export function ClientesView({ clienteIdParaEditar, onClearClienteIdParaEditar, onVoltar }: ClientesViewProps) {
-  // ATENÇÃO: Se useClientes, adicionarCliente, atualizarCliente, buscarClientes, e clientes não existem, 
-  // O componente pode estar quebrando aqui. Certifique-se de que os contexts estão funcionando.
-  const { adicionarCliente, atualizarCliente, buscarClientes, clientes } = useClientes();
-  
-  const [activeTab, setActiveTab] = useState<'consultar' | 'incluir'>('consultar');
-  const [consultaCpf, setConsultaCpf] = useState('');
-  const [consultaCnpj, setConsultaCnpj] = useState('');
-  const [consultaNome, setConsultaNome] = useState('');
-  const [resultadosConsulta, setResultadosConsulta] = useState<Cliente[]>([]);
-  const [consultaRealizada, setConsultaRealizada] = useState(false);
+export function Clients({ onNavigate }: ClientsProps) {
+  const { addClientMutation, updateClientMutation, clients } = useClients();
 
-  // Estado para edição
-  const [clienteEmEdicao, setClienteEmEdicao] = useState<Cliente | null>(null);
+  const [activeTab, setActiveTab] = useState<'search' | 'add'>('search');
 
-  // Campos do formulário de inclusão
-  const [incluirTipo, setIncluirTipo] = useState<'cpf' | 'cnpj'>('cpf');
-  const [incluirNome, setIncluirNome] = useState('');
-  const [incluirCpf, setIncluirCpf] = useState('');
-  const [incluirRg, setIncluirRg] = useState('');
-  const [incluirDataNascimento, setIncluirDataNascimento] = useState('');
-  const [incluirEstadoCivil, setIncluirEstadoCivil] = useState('');
-  const [incluirNacionalidade, setIncluirNacionalidade] = useState('');
-  const [incluirProfissao, setIncluirProfissao] = useState('');
-  const [incluirEmpresa, setIncluirEmpresa] = useState('');
-  const [incluirCargo, setIncluirCargo] = useState('');
-  const [incluirCnpj, setIncluirCnpj] = useState('');
-  const [incluirNomeFantasia, setIncluirNomeFantasia] = useState('');
-  const [incluirNomeResponsavel, setIncluirNomeResponsavel] = useState('');
-  const [incluirTelefones, setIncluirTelefones] = useState<string[]>(['']);
-  const [incluirEmail, setIncluirEmail] = useState('');
-  const [incluirCep, setIncluirCep] = useState('');
-  const [incluirUf, setIncluirUf] = useState('');
-  const [incluirMunicipio, setIncluirMunicipio] = useState('');
-  const [incluirBairro, setIncluirBairro] = useState('');
-  const [incluirLogradouro, setIncluirLogradouro] = useState('');
-  const [incluirNumero, setIncluirNumero] = useState('');
-  const [incluirComplemento, setIncluirComplemento] = useState('');
-  const [incluirObservacoes, setIncluirObservacoes] = useState('');
+  // Search state
+  const [searchCPF, setSearchCPF] = useState('');
+  const [searchCNPJ, setSearchCNPJ] = useState('');
+  const [searchName, setSearchName] = useState('');
+  const [searchResults, setSearchResults] = useState<Client[]>([]);
+  const [searchPerformed, setSearchPerformed] = useState(false);
 
-  const handleConsultar = (e: React.FormEvent) => {
+  // Edit state
+  const [editingClient, setEditingClient] = useState<Client | null>(null);
+
+  // Form fields
+  const [clientType, setClientType] = useState<'CPF' | 'CNPJ'>('CPF');
+  const [name, setName] = useState('');
+  const [cpf, setCPF] = useState('');
+  const [birthDate, setBirthDate] = useState('');
+  const [maritalStatus, setMaritalStatus] = useState('');
+  const [nationality, setNationality] = useState('');
+  const [profession, setProfession] = useState('');
+  const [company, setCompany] = useState('');
+  const [position, setPosition] = useState('');
+  const [cnpj, setCNPJ] = useState('');
+  const [fantasyName, setFantasyName] = useState('');
+  const [responsibleName, setResponsibleName] = useState('');
+  const [phones, setPhones] = useState<string[]>(['']);
+  const [email, setEmail] = useState('');
+  const [zipCode, setZipCode] = useState('');
+  const [state, setState] = useState('');
+  const [city, setCity] = useState('');
+  const [neighborhood, setNeighborhood] = useState('');
+  const [street, setStreet] = useState('');
+  const [number, setNumber] = useState('');
+  const [complement, setComplement] = useState('');
+
+  // Search handler
+  const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // ATENÇÃO: As funções de formatação (formatCPF, formatCNPJ, etc.) devem ser exportadas de src/utils/formatters.ts
-    const resultados = clientes.filter(cliente => 
-      (consultaNome && cliente.nome.toLowerCase().includes(consultaNome.toLowerCase())) ||
-      (consultaCpf && cliente.documento === consultaCpf) ||
-      (consultaCnpj && cliente.documento === consultaCnpj)
+
+    console.log(clients);
+    const results = clients.filter(client =>
+      (searchName && client.name.toLowerCase().includes(searchName.toLowerCase())) ||
+      (searchCPF && client.document === searchCPF) ||
+      (searchCNPJ && client.document === searchCNPJ)
     );
-    
-    setResultadosConsulta(resultados);
-    setConsultaRealizada(true);
+
+    setSearchResults(results);
+    setSearchPerformed(true);
   };
 
-  const adicionarCampoTelefone = () => {
-    setIncluirTelefones([...incluirTelefones, '']);
+  // Phone handlers
+  const addPhoneField = () => setPhones([...phones, '']);
+  const removePhoneField = (index: number) => {
+    const updated = phones.filter((_, i) => i !== index);
+    setPhones(updated.length ? updated : ['']);
+  };
+  const updatePhone = (index: number, value: string) => {
+    const updated = [...phones];
+    updated[index] = formatPhone(value);
+    setPhones(updated);
   };
 
-  const removerCampoTelefone = (index: number) => {
-    const novosTelefones = incluirTelefones.filter((_, i) => i !== index);
-    setIncluirTelefones(novosTelefones.length === 0 ? [''] : novosTelefones);
-  };
-
-  const atualizarTelefone = (index: number, valor: string) => {
-    const novosTelefones = [...incluirTelefones];
-    novosTelefones[index] = formatTelefone(valor);
-    setIncluirTelefones(novosTelefones);
-  };
-
-  const handleIncluir = (e: React.FormEvent) => {
+  // Add/Edit handler
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    const telefonesFiltrados = incluirTelefones.filter(tel => tel.trim() !== '');
-    
-    const dadosCliente = {
-      nome: incluirNome,
-      documento: incluirTipo === 'cpf' ? incluirCpf : incluirCnpj,
-      tipo: incluirTipo,
-      telefones: telefonesFiltrados,
-      email: incluirEmail,
-      cep: incluirCep,
-      uf: incluirUf,
-      municipio: incluirMunicipio,
-      bairro: incluirBairro,
-      logradouro: incluirLogradouro,
-      numero: incluirNumero,
-      complemento: incluirComplemento,
-      observacoes: incluirObservacoes,
-      // Dados específicos de PF
-      ...(incluirTipo === 'cpf' && {
-        rg: incluirRg,
-        dataNascimento: incluirDataNascimento,
-        estadoCivil: incluirEstadoCivil,
-        nacionalidade: incluirNacionalidade,
-        profissao: incluirProfissao,
-        empresa: incluirEmpresa,
-        cargo: incluirCargo,
+
+    const filteredPhones = phones.filter(p => p.trim() !== '');
+
+    const clientData = {
+      name,
+      document: clientType === 'CPF' ? cpf : cnpj,
+      type: clientType,
+      phones: filteredPhones,
+      email,
+      address: {
+        zipCode,
+        state,
+        city,
+        neighborhood,
+        street,
+        number,
+        complement,
+      },
+      ...(clientType === 'CPF' && {
+        birthDate,
+        maritalStatus,
+        nationality,
+        profession,
+        company,
+        position,
       }),
-      // Dados específicos de PJ
-      ...(incluirTipo === 'cnpj' && {
-        nomeFantasia: incluirNomeFantasia,
-        nomeResponsavel: incluirNomeResponsavel,
+      ...(clientType === 'CNPJ' && {
+        fantasyName,
+        responsibleName,
       }),
     };
 
-    if (clienteEmEdicao) {
-      // @ts-ignore - Ignorando erro de tipagem para simplificação
-      atualizarCliente(clienteEmEdicao.id, dadosCliente);
-      toast.success('Alteração realizada com sucesso!', {
-        description: `Cliente ${incluirNome} foi atualizado.`,
-        duration: 4000,
-      });
-      setClienteEmEdicao(null);
+    if (editingClient && !!editingClient.id) {
+      updateClientMutation.mutate({ id: editingClient.id, client: clientData });
+      setEditingClient(null);
     } else {
-      // @ts-ignore - Ignorando erro de tipagem para simplificação
-      adicionarCliente(dadosCliente);
-      toast.success('Cliente cadastrado com sucesso!', {
-        description: `${incluirNome} foi adicionado ao sistema.`,
-        duration: 4000,
-      });
+      addClientMutation.mutate(clientData);
     }
-    
-    limparFormulario();
-    
-    setTimeout(() => {
-      setActiveTab('consultar');
-    }, 1500);
+
+    // clearForm();
+    setTimeout(() => setActiveTab('search'), 1500);
   };
 
-  const handleEditar = (cliente: Cliente) => {
-    setClienteEmEdicao(cliente);
-    setIncluirTipo(cliente.tipo);
-    setIncluirNome(cliente.nome);
-    setIncluirEmail(cliente.email || '');
-    setIncluirTelefones(cliente.telefones && cliente.telefones.length > 0 ? cliente.telefones : ['']);
-    setIncluirCep(cliente.cep || '');
-    setIncluirUf(cliente.uf || '');
-    setIncluirMunicipio(cliente.municipio || '');
-    setIncluirBairro(cliente.bairro || '');
-    setIncluirLogradouro(cliente.logradouro || '');
-    setIncluirNumero(cliente.numero || '');
-    setIncluirComplemento(cliente.complemento || '');
-    setIncluirObservacoes(cliente.observacoes || '');
+  const handleUpdate = (client: Client) => {
+    console.log("client ",client);
+    setEditingClient(client);
+    setClientType(client.type);
+    setName(client.name);
+    setEmail(client.email || '');
+    setPhones(client.phones ? client.phones : ['']);
+    setZipCode(client.address?.zipCode || '');
+    setState(client.address?.state || '');
+    setCity(client.address?.city || '');
+    setNeighborhood(client.address?.neighborhood || '');
+    setStreet(client.address?.street || '');
+    setNumber(client.address?.number || '');
+    setComplement(client.address?.complement || '');
 
-    if (cliente.tipo === 'cpf') {
-      setIncluirCpf(cliente.documento);
+    if (client.type === 'CPF') {
+      setCPF(client.document || '');
+      setBirthDate(client.birthDate || '');
+      setMaritalStatus(client.maritalStatus || '');
+      setNationality(client.nationality || '');
+      setProfession(client.occupation || '');
       // @ts-ignore
-      setIncluirRg(cliente.rg || '');
-      // @ts-ignore
-      setIncluirDataNascimento(cliente.dataNascimento || '');
-      // @ts-ignore
-      setIncluirEstadoCivil(cliente.estadoCivil || '');
-      // @ts-ignore
-      setIncluirNacionalidade(cliente.nacionalidade || '');
-      // @ts-ignore
-      setIncluirProfissao(cliente.profissao || '');
-      // @ts-ignore
-      setIncluirEmpresa(cliente.empresa || '');
-      // @ts-ignore
-      setIncluirCargo(cliente.cargo || '');
+      // setCompany(client.company || '');
+      // // @ts-ignore
+      // setPosition(client.position || '');
     } else {
-      setIncluirCnpj(cliente.documento);
-      // @ts-ignore
-      setIncluirNomeFantasia(cliente.nomeFantasia || '');
-      // @ts-ignore
-      setIncluirNomeResponsavel(cliente.nomeResponsavel || '');
+      setCNPJ(client.document || '');
+      setFantasyName(client.fantasyName || '');
+      setResponsibleName(client.representativeName || '');
     }
 
-    setActiveTab('incluir');
+    setActiveTab('add');
   };
 
-  const cancelarEdicao = () => {
-    setClienteEmEdicao(null);
-    limparFormulario();
+  const cancelEdit = () => {
+    setEditingClient(null);
+    clearForm();
   };
 
-  const limparFormulario = () => {
-    setIncluirNome('');
-    setIncluirCpf('');
-    setIncluirRg('');
-    setIncluirDataNascimento('');
-    setIncluirEstadoCivil('');
-    setIncluirNacionalidade('');
-    setIncluirProfissao('');
-    setIncluirEmpresa('');
-    setIncluirCargo('');
-    setIncluirCnpj('');
-    setIncluirNomeFantasia('');
-    setIncluirNomeResponsavel('');
-    setIncluirTelefones(['']);
-    setIncluirEmail('');
-    setIncluirCep('');
-    setIncluirUf('');
-    setIncluirMunicipio('');
-    setIncluirBairro('');
-    setIncluirLogradouro('');
-    setIncluirNumero('');
-    setIncluirComplemento('');
-    setIncluirObservacoes('');
+  const clearForm = () => {
+    setName('');
+    setCPF('');
+    setBirthDate('');
+    setMaritalStatus('');
+    setNationality('');
+    setProfession('');
+    setCompany('');
+    setPosition('');
+    setCNPJ('');
+    setFantasyName('');
+    setResponsibleName('');
+    setPhones(['']);
+    setEmail('');
+    setZipCode('');
+    setState('');
+    setCity('');
+    setNeighborhood('');
+    setStreet('');
+    setNumber('');
+    setComplement('');
   };
 
-  const limparConsulta = () => {
-    setConsultaCpf('');
-    setConsultaCnpj('');
-    setConsultaNome('');
-    setResultadosConsulta([]);
-    setConsultaRealizada(false);
+  const clearSearch = () => {
+    setSearchCPF('');
+    setSearchCNPJ('');
+    setSearchName('');
+    setSearchResults([]);
+    setSearchPerformed(false);
   };
-
-  // Effect para carregar cliente para edição quando vindo do relatório
-  useEffect(() => {
-    if (clienteIdParaEditar) {
-      const cliente = clientes.find(c => c.id === clienteIdParaEditar);
-      if (cliente) {
-        handleEditar(cliente);
-        toast.info('Cliente carregado para edição');
-      }
-      // Limpar o ID após carregar
-      onClearClienteIdParaEditar?.();
-    }
-  }, [clienteIdParaEditar, clientes, onClearClienteIdParaEditar]);
 
   return (
-    <div className="max-w-xl mx-auto md:max-w-4xl px-4 sm:px-0"> 
+    <div className="max-w-xl mx-auto md:max-w-4xl px-4 sm:px-0">
       {/* ALTERAÇÃO: Padding horizontal (px-4) para telas pequenas, removido em sm+ */}
       <div className="mb-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
@@ -286,7 +214,7 @@ export function ClientesView({ clienteIdParaEditar, onClearClienteIdParaEditar, 
           </div>
           <Button
             variant="outline"
-            onClick={onVoltar}
+            onClick={() => onNavigate("home")}
             className="w-full sm:w-auto !bg-white !text-[#a16535] border-2 border-[#955d30] hover:!bg-[#a16535] hover:!text-white transition-all duration-200"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
@@ -296,11 +224,11 @@ export function ClientesView({ clienteIdParaEditar, onClearClienteIdParaEditar, 
         </div>
       </div>
 
-      <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'consultar' | 'incluir')} className="w-full">
+      <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'search' | 'add')} className="w-full">
         {/* TabsList com altura e padding otimizados para mobile */}
         <TabsList className="grid w-full grid-cols-2 bg-[#f6f3ee] border-2 border-[#d4c4b0] p-1 rounded-full h-11 sm:h-14">
-          <TabsTrigger 
-            value="consultar"
+          <TabsTrigger
+            value="search"
             className="data-[state=active]:bg-[#a16535] data-[state=active]:text-white text-[#6b5544] hover:text-[#a16535] rounded-full h-full transition-all text-sm"
           >
             {/* ALTERAÇÃO: Adicionado mr-2 base e texto "Consultar" visível apenas em mobile */}
@@ -308,19 +236,19 @@ export function ClientesView({ clienteIdParaEditar, onClearClienteIdParaEditar, 
             <span className="sm:hidden">Consultar</span>
             <span className="hidden sm:inline">Consultar Cliente</span>
           </TabsTrigger>
-          <TabsTrigger 
-            value="incluir"
+          <TabsTrigger
+            value="add"
             className="data-[state=active]:bg-[#a16535] data-[state=active]:text-white text-[#6b5544] hover:text-[#a16535] rounded-full h-full transition-all text-sm"
           >
             {/* ALTERAÇÃO: Adicionado mr-2 base e texto "Incluir/Editar" visível apenas em mobile */}
-            {clienteEmEdicao ? <Edit className="w-4 h-4 mr-2" /> : <UserPlus className="w-4 h-4 mr-2" />}
-            <span className="sm:hidden">{clienteEmEdicao ? 'Editar' : 'Incluir'}</span>
-            <span className="hidden sm:inline">{clienteEmEdicao ? 'Editar Cliente' : 'Incluir Cliente'}</span>
+            {editingClient ? <Edit className="w-4 h-4 mr-2" /> : <UserPlus className="w-4 h-4 mr-2" />}
+            <span className="sm:hidden">{editingClient ? 'Editar' : 'Incluir'}</span>
+            <span className="hidden sm:inline">{editingClient ? 'Editar Cliente' : 'Incluir Cliente'}</span>
           </TabsTrigger>
         </TabsList>
 
         {/* Tab Consultar */}
-        <TabsContent value="consultar">
+        <TabsContent value="search">
           <Card className="bg-white border-2 border-[#d4c4b0]">
             <CardHeader>
               <CardTitle className="text-[#2d1f16]">Consultar Cliente</CardTitle>
@@ -329,17 +257,17 @@ export function ClientesView({ clienteIdParaEditar, onClearClienteIdParaEditar, 
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleConsultar} className="space-y-4">
+              <form onSubmit={handleSearch} className="space-y-4">
                 {/* Inputs de consulta empilhados em mobile */}
-                <div className="space-y-4"> 
+                <div className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="consulta-cpf" className="text-[#4a3629]">CPF</Label>
                     <Input
                       id="consulta-cpf"
                       type="text"
                       placeholder="000.000.000-00"
-                      value={consultaCpf}
-                      onChange={(e) => setConsultaCpf(formatCPF(e.target.value))}
+                      value={searchCPF}
+                      onChange={(e) => setSearchCPF(formatCPF(e.target.value))}
                       className="bg-[#f6f3ee] border-[#d4c4b0] text-[#2d1f16] placeholder:text-[#6b5544] focus:border-[#a16535] focus:ring-[#a16535]/20"
                     />
                   </div>
@@ -350,20 +278,20 @@ export function ClientesView({ clienteIdParaEditar, onClearClienteIdParaEditar, 
                       id="consulta-cnpj"
                       type="text"
                       placeholder="00.000.000/0000-00"
-                      value={consultaCnpj}
-                      onChange={(e) => setConsultaCnpj(formatCNPJ(e.target.value))}
+                      value={searchCNPJ}
+                      onChange={(e) => setSearchCNPJ(formatCNPJ(e.target.value))}
                       className="bg-[#f6f3ee] border-[#d4c4b0] text-[#2d1f16] placeholder:text-[#6b5544] focus:border-[#a16535] focus:ring-[#a16535]/20"
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="consulta-nome" className="text-[#4a3629]">Nome</Label>
+                    <Label htmlFor="consulta-name" className="text-[#4a3629]">Nome</Label>
                     <Input
-                      id="consulta-nome"
+                      id="consulta-name"
                       type="text"
                       placeholder="Digite o nome do cliente"
-                      value={consultaNome}
-                      onChange={(e) => setConsultaNome(e.target.value)}
+                      value={searchName}
+                      onChange={(e) => setSearchName(e.target.value)}
                       className="bg-[#f6f3ee] border-[#d4c4b0] text-[#2d1f16] placeholder:text-[#6b5544] focus:border-[#a16535] focus:ring-[#a16535]/20"
                     />
                   </div>
@@ -378,11 +306,11 @@ export function ClientesView({ clienteIdParaEditar, onClearClienteIdParaEditar, 
                     <Search className="w-4 h-4 mr-2" />
                     Consultar
                   </Button>
-                  {consultaRealizada && (
+                  {searchPerformed && (
                     <Button
                       type="button"
                       variant="outline"
-                      onClick={limparConsulta}
+                      onClick={clearSearch}
                       className="flex-1 bg-[#f6f3ee] border-[#d4c4b0] text-[#6b5544] hover:bg-[#d4c4b0] hover:text-[#2d1f16]"
                     >
                       <X className="w-4 h-4 mr-2" />
@@ -393,13 +321,13 @@ export function ClientesView({ clienteIdParaEditar, onClearClienteIdParaEditar, 
               </form>
 
               {/* Resultados da Consulta */}
-              {consultaRealizada && (
+              {searchPerformed && (
                 <div className="mt-6 pt-6 border-t border-[#d4c4b0]">
                   <h3 className="text-[#2d1f16] mb-4 text-lg">
-                    Resultados da Consulta ({resultadosConsulta.length})
+                    Resultados da Consulta ({searchResults.length})
                   </h3>
-                  
-                  {resultadosConsulta.length === 0 ? (
+
+                  {searchResults.length === 0 ? (
                     <Alert className="bg-[#a16535]/10 border-[#a16535]/30">
                       <AlertDescription className="text-[#4a3629]">
                         Nenhum cliente encontrado com os critérios informados.
@@ -407,44 +335,44 @@ export function ClientesView({ clienteIdParaEditar, onClearClienteIdParaEditar, 
                     </Alert>
                   ) : (
                     <div className="space-y-3">
-                      {resultadosConsulta.map((cliente) => (
-                        <Card key={cliente.id} className="bg-[#a16535]/5 border-[#d4c4b0]">
+                      {searchResults.map((client) => (
+                        <Card key={client.id} className="bg-[#a16535]/5 border-[#d4c4b0]">
                           <CardContent className="p-4">
                             <div className="flex flex-col sm:flex-row items-start justify-between gap-3">
                               <div className="flex-1 space-y-1">
-                                <p className="text-[#2d1f16] font-semibold">{cliente.nome}</p>
+                                <p className="text-[#2d1f16] font-semibold">{client.name}</p>
                                 <p className="text-sm text-[#6b5544]">
-                                  {cliente.tipo === 'cpf' ? 'CPF' : 'CNPJ'}: {cliente.documento}
+                                  {client.type}: {client.document}
                                 </p>
-                                {cliente.tipo === 'cpf' && (
+                                {client.type === 'CPF' && (
                                   <>
                                     {/* @ts-ignore - Propriedades específicas de PF */}
-                                    {cliente.estadoCivil && (
-                                      <p className="text-sm text-[#6b5544]">Estado Civil: {cliente.estadoCivil}</p>
+                                    {client.maritalStatus && (
+                                      <p className="text-sm text-[#6b5544]">Estado Civil: {client.maritalStatus}</p>
                                     )}
                                     {/* @ts-ignore */}
-                                    {cliente.profissao && (
-                                      <p className="text-sm text-[#6b5544]">Profissão: {cliente.profissao}</p>
+                                    {client.occupation && (
+                                      <p className="text-sm text-[#6b5544]">Profissão: {client.occupation}</p>
                                     )}
                                   </>
                                 )}
-                                {cliente.email && (
-                                  <p className="text-sm text-[#6b5544]">E-mail: {cliente.email}</p>
+                                {client.email && (
+                                  <p className="text-sm text-[#6b5544]">E-mail: {client.email}</p>
                                 )}
-                                {cliente.telefones && cliente.telefones.length > 0 && (
+                                {client.phones && client.phones.length > 0 && (
                                   <p className="text-sm text-[#6b5544]">
-                                    Telefone: {cliente.telefones.join(', ')}
+                                    Telefone: {client.phones.join(', ')}
                                   </p>
                                 )}
                                 <p className="text-xs text-[#8b5329] pt-1">
-                                  Cadastrado em: {formatDateBR(cliente.dataCadastro)}
+                                  Cadastrado em: {formatDateBR(client.createdAt.toString())}
                                 </p>
                               </div>
                               <div className="w-full sm:w-auto flex justify-end items-center gap-2 mt-2 sm:mt-0">
                                 <Button
                                   size="icon"
                                   variant="ghost"
-                                  onClick={() => handleEditar(cliente)}
+                                  onClick={() => handleUpdate(client)}
                                   className="text-[#a16535] hover:text-[#8b5329] hover:bg-[#a16535]/10"
                                   title="Editar cliente"
                                 >
@@ -468,56 +396,54 @@ export function ClientesView({ clienteIdParaEditar, onClearClienteIdParaEditar, 
         </TabsContent>
 
         {/* Tab Incluir/Editar */}
-        <TabsContent value="incluir">
+        <TabsContent value="add">
           <Card className="bg-white border-2 border-[#d4c4b0]">
             <CardHeader>
               <CardTitle className="text-[#2d1f16] text-xl">
-                {clienteEmEdicao ? 'Editar Cliente' : 'Incluir Novo Cliente'}
+                {editingClient ? 'Editar Cliente' : 'Incluir Novo Cliente'}
               </CardTitle>
               <CardDescription className="text-[#6b5544] text-sm">
                 Preencha os dados básicos. Campos obrigatórios são marcados com *
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {clienteEmEdicao && (
+              {editingClient && (
                 <Alert className="mb-4 bg-[#a16535]/10 border-[#a16535]/50">
                   <Edit className="w-4 h-4 text-[#a16535]" />
                   <AlertDescription className="text-[#a16535]">
-                    Você está editando o cliente: <span className="font-semibold">{clienteEmEdicao.nome}</span>
+                    Você está editando o cliente: <span className="font-semibold">{editingClient.name}</span>
                   </AlertDescription>
                 </Alert>
               )}
 
-              <form onSubmit={handleIncluir} className="space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Tipo de Documento */}
                 <div className="space-y-3">
                   <Label className="text-[#4a3629]">Tipo de Documento *</Label>
                   <div className="flex flex-wrap gap-3">
                     <Button
                       type="button"
-                      onClick={() => setIncluirTipo('cpf')}
+                      onClick={() => setClientType('CPF')}
                       // Estilo responsivo para botões de tipo
-                      className={`flex-1 sm:flex-none h-11 px-6 transition-all duration-200 ${
-                        incluirTipo === 'cpf'
-                          ? 'bg-[#a16535] hover:bg-[#8b5329] text-white border-2 border-[#a16535] shadow-md'
-                          : 'bg-white hover:bg-[#f6f3ee] text-[#a16535] border-2 border-[#a16535]'
-                      }`}
+                      className={`flex-1 sm:flex-none h-11 px-6 transition-all duration-200 ${clientType === 'CPF'
+                        ? 'bg-[#a16535] hover:bg-[#8b5329] text-white border-2 border-[#a16535] shadow-md'
+                        : 'bg-white hover:bg-[#f6f3ee] text-[#a16535] border-2 border-[#a16535]'
+                        }`}
                     >
-                      <span className={incluirTipo === 'cpf' ? 'font-semibold' : 'font-medium'}>
+                      <span className={clientType === 'CPF' ? 'font-semibold' : 'font-medium'}>
                         CPF (Pessoa Física)
                       </span>
                     </Button>
                     <Button
                       type="button"
-                      onClick={() => setIncluirTipo('cnpj')}
+                      onClick={() => setClientType('CNPJ')}
                       // Estilo responsivo para botões de tipo
-                      className={`flex-1 sm:flex-none h-11 px-6 transition-all duration-200 ${
-                        incluirTipo === 'cnpj'
-                          ? 'bg-[#a16535] hover:bg-[#8b5329] text-white border-2 border-[#a16535] shadow-md'
-                          : 'bg-white hover:bg-[#f6f3ee] text-[#a16535] border-2 border-[#a16535]'
-                      }`}
+                      className={`flex-1 sm:flex-none h-11 px-6 transition-all duration-200 ${clientType === 'CNPJ'
+                        ? 'bg-[#a16535] hover:bg-[#8b5329] text-white border-2 border-[#a16535] shadow-md'
+                        : 'bg-white hover:bg-[#f6f3ee] text-[#a16535] border-2 border-[#a16535]'
+                        }`}
                     >
-                      <span className={incluirTipo === 'cnpj' ? 'font-semibold' : 'font-medium'}>
+                      <span className={clientType === 'CNPJ' ? 'font-semibold' : 'font-medium'}>
                         CNPJ (Pessoa Jurídica)
                       </span>
                     </Button>
@@ -525,60 +451,19 @@ export function ClientesView({ clienteIdParaEditar, onClearClienteIdParaEditar, 
                 </div>
 
                 {/* --- SEÇÃO PESSOA FÍSICA --- */}
-                {incluirTipo === 'cpf' ? (
+                {clientType === 'CPF' ? (
                   <>
                     <div className="space-y-4">
                       <h3 className="text-lg text-[#a16535] font-semibold">Dados Pessoais</h3>
-                      
+
                       <div className="space-y-2">
-                        <Label htmlFor="incluir-nome" className="text-[#4a3629]">Nome Completo *</Label>
+                        <Label htmlFor="incluir-name" className="text-[#4a3629]">Nome Completo *</Label>
                         <Input
-                          id="incluir-nome"
+                          id="incluir-name"
                           type="text"
                           placeholder="Digite o nome completo"
-                          value={incluirNome}
-                          onChange={(e) => setIncluirNome(e.target.value)}
-                          required
-                          className="bg-[#f6f3ee] border-[#d4c4b0] text-[#2d1f16] placeholder:text-[#6b5544] focus:border-[#a16535] focus:ring-[#a16535]/20"
-                        />
-                      </div>
-
-                      {/* ALTERAÇÃO: Trocado md:grid-cols-2 por sm:grid-cols-2 */}
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4"> 
-                        <div className="space-y-2">
-                          <Label htmlFor="incluir-cpf" className="text-[#4a3629]">CPF *</Label>
-                          <Input
-                            id="incluir-cpf"
-                            type="text"
-                            placeholder="000.000.000-00"
-                            value={incluirCpf}
-                            onChange={(e) => setIncluirCpf(formatCPF(e.target.value))}
-                            required
-                            className="bg-[#f6f3ee] border-[#d4c4b0] text-[#2d1f16] placeholder:text-[#6b5544] focus:border-[#a16535] focus:ring-[#a16535]/20"
-                          />
-                        </div>
-
-                        <div className="space-y-2">
-                          <Label htmlFor="incluir-rg" className="text-[#4a3629]">RG *</Label>
-                          <Input
-                            id="incluir-rg"
-                            type="text"
-                            placeholder="00.000.000-0"
-                            value={incluirRg}
-                            onChange={(e) => setIncluirRg(e.target.value)}
-                            required
-                            className="bg-[#f6f3ee] border-[#d4c4b0] text-[#2d1f16] placeholder:text-[#6b5544] focus:border-[#a16535] focus:ring-[#a16535]/20"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="incluir-data-nascimento" className="text-[#4a3629]">Data de Nascimento *</Label>
-                        <Input
-                          id="incluir-data-nascimento"
-                          type="date"
-                          value={incluirDataNascimento}
-                          onChange={(e) => setIncluirDataNascimento(e.target.value)}
+                          value={name}
+                          onChange={(e) => setName(e.target.value)}
                           required
                           className="bg-[#f6f3ee] border-[#d4c4b0] text-[#2d1f16] placeholder:text-[#6b5544] focus:border-[#a16535] focus:ring-[#a16535]/20"
                         />
@@ -587,13 +472,55 @@ export function ClientesView({ clienteIdParaEditar, onClearClienteIdParaEditar, 
                       {/* ALTERAÇÃO: Trocado md:grid-cols-2 por sm:grid-cols-2 */}
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="space-y-2">
-                          <Label htmlFor="incluir-estado-civil" className="text-[#4a3629]">Estado Civil</Label>
+                          <Label htmlFor="incluir-cpf" className="text-[#4a3629]">CPF *</Label>
                           <Input
-                            id="incluir-estado-civil"
+                            id="incluir-cpf"
+                            type="text"
+                            placeholder="000.000.000-00"
+                            value={cpf}
+                            onChange={(e) => setCPF(formatCPF(e.target.value))}
+                            required
+                            className="bg-[#f6f3ee] border-[#d4c4b0] text-[#2d1f16] placeholder:text-[#6b5544] focus:border-[#a16535] focus:ring-[#a16535]/20"
+                          />
+                        </div>
+
+                        {/*
+                        <div className="space-y-2">
+                          <Label htmlFor="incluir-rg" className="text-[#4a3629]">RG *</Label>
+                          <Input
+                            id="incluir-rg"
+                            type="text"
+                            placeholder="00.000.000-0"
+                            value={rg}
+                            onChange={(e) => setRG(e.target.value)}
+                            required
+                            className="bg-[#f6f3ee] border-[#d4c4b0] text-[#2d1f16] placeholder:text-[#6b5544] focus:border-[#a16535] focus:ring-[#a16535]/20"
+                          />
+                        </div>
+                        */}
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="incluir-data-nascimento" className="text-[#4a3629]">Data de Nascimento *</Label>
+                        <Input
+                          id="incluir-data-nascimento"
+                          type="date"
+                          value={birthDate}
+                          onChange={(e) => setBirthDate(e.target.value)}
+                          required
+                          className="bg-[#f6f3ee] border-[#d4c4b0] text-[#2d1f16] placeholder:text-[#6b5544] focus:border-[#a16535] focus:ring-[#a16535]/20"
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="incluir-state-civil" className="text-[#4a3629]">Estado Civil</Label>
+                          <Input
+                            id="incluir-state-civil"
                             type="text"
                             placeholder="Ex: Solteiro(a)"
-                            value={incluirEstadoCivil}
-                            onChange={(e) => setIncluirEstadoCivil(e.target.value)}
+                            value={maritalStatus}
+                            onChange={(e) => setMaritalStatus(e.target.value)}
                             className="bg-[#f6f3ee] border-[#d4c4b0] text-[#2d1f16] placeholder:text-[#6b5544] focus:border-[#a16535] focus:ring-[#a16535]/20"
                           />
                         </div>
@@ -604,8 +531,8 @@ export function ClientesView({ clienteIdParaEditar, onClearClienteIdParaEditar, 
                             id="incluir-nacionalidade"
                             type="text"
                             placeholder="Ex: Brasileira"
-                            value={incluirNacionalidade}
-                            onChange={(e) => setIncluirNacionalidade(e.target.value)}
+                            value={nationality}
+                            onChange={(e) => setNationality(e.target.value)}
                             className="bg-[#f6f3ee] border-[#d4c4b0] text-[#2d1f16] placeholder:text-[#6b5544] focus:border-[#a16535] focus:ring-[#a16535]/20"
                           />
                         </div>
@@ -615,10 +542,10 @@ export function ClientesView({ clienteIdParaEditar, onClearClienteIdParaEditar, 
                     <Separator className="bg-[#d4c4b0]" />
 
                     {/* Dados Profissionais */}
+                    {/*
                     <div className="space-y-4">
                       <h3 className="text-lg text-[#a16535] font-semibold">Dados Profissionais</h3>
-                      
-                      {/* ALTERAÇÃO: Trocado md:grid-cols-2 por sm:grid-cols-2 */}
+
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="space-y-2">
                           <Label htmlFor="incluir-empresa" className="text-[#4a3629]">Empresa / Local de Trabalho</Label>
@@ -626,7 +553,7 @@ export function ClientesView({ clienteIdParaEditar, onClearClienteIdParaEditar, 
                             id="incluir-empresa"
                             type="text"
                             placeholder="Nome da empresa"
-                            value={incluirEmpresa}
+                            value={}
                             onChange={(e) => setIncluirEmpresa(e.target.value)}
                             className="bg-[#f6f3ee] border-[#d4c4b0] text-[#2d1f16] placeholder:text-[#6b5544] focus:border-[#a16535] focus:ring-[#a16535]/20"
                           />
@@ -645,21 +572,22 @@ export function ClientesView({ clienteIdParaEditar, onClearClienteIdParaEditar, 
                         </div>
                       </div>
                     </div>
+                    */}
                   </>
                 ) : (
                   /* --- SEÇÃO PESSOA JURÍDICA --- */
                   <>
                     <div className="space-y-4">
                       <h3 className="text-lg text-[#a16535] font-semibold">Dados da Empresa</h3>
-                      
+
                       <div className="space-y-2">
-                        <Label htmlFor="incluir-nome-empresa" className="text-[#4a3629]">Nome da Empresa (Razão Social) *</Label>
+                        <Label htmlFor="incluir-name-empresa" className="text-[#4a3629]">Nome da Empresa (Razão Social) *</Label>
                         <Input
-                          id="incluir-nome-empresa"
+                          id="incluir-name-empresa"
                           type="text"
                           placeholder="Digite a razão social"
-                          value={incluirNome}
-                          onChange={(e) => setIncluirNome(e.target.value)}
+                          value={name}
+                          onChange={(e) => setName(e.target.value)}
                           required
                           className="bg-[#f6f3ee] border-[#d4c4b0] text-[#2d1f16] placeholder:text-[#6b5544] focus:border-[#a16535] focus:ring-[#a16535]/20"
                         />
@@ -673,34 +601,34 @@ export function ClientesView({ clienteIdParaEditar, onClearClienteIdParaEditar, 
                             id="incluir-cnpj"
                             type="text"
                             placeholder="00.000.000/0000-00"
-                            value={incluirCnpj}
-                            onChange={(e) => setIncluirCnpj(formatCNPJ(e.target.value))}
+                            value={cnpj}
+                            onChange={(e) => setCNPJ(formatCNPJ(e.target.value))}
                             required
                             className="bg-[#f6f3ee] border-[#d4c4b0] text-[#2d1f16] placeholder:text-[#6b5544] focus:border-[#a16535] focus:ring-[#a16535]/20"
                           />
                         </div>
 
                         <div className="space-y-2">
-                          <Label htmlFor="incluir-nome-fantasia" className="text-[#4a3629]">Nome Fantasia</Label>
+                          <Label htmlFor="incluir-name-fantasia" className="text-[#4a3629]">Nome Fantasia</Label>
                           <Input
-                            id="incluir-nome-fantasia"
+                            id="incluir-name-fantasia"
                             type="text"
-                            placeholder="Digite o nome fantasia (opcional)"
-                            value={incluirNomeFantasia}
-                            onChange={(e) => setIncluirNomeFantasia(e.target.value)}
+                            placeholder="Digite o name fantasia (opcional)"
+                            value={fantasyName}
+                            onChange={(e) => setFantasyName(e.target.value)}
                             className="bg-[#f6f3ee] border-[#d4c4b0] text-[#2d1f16] placeholder:text-[#6b5544] focus:border-[#a16535] focus:ring-[#a16535]/20"
                           />
                         </div>
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="incluir-nome-responsavel" className="text-[#4a3629]">Nome do Responsável *</Label>
+                        <Label htmlFor="incluir-name-responsavel" className="text-[#4a3629]">Nome do Responsável *</Label>
                         <Input
-                          id="incluir-nome-responsavel"
+                          id="incluir-name-responsavel"
                           type="text"
-                          placeholder="Digite o nome do responsável"
-                          value={incluirNomeResponsavel}
-                          onChange={(e) => setIncluirNomeResponsavel(e.target.value)}
+                          placeholder="Digite o name do responsável"
+                          value={responsibleName}
+                          onChange={(e) => setResponsibleName(e.target.value)}
                           required
                           className="bg-[#f6f3ee] border-[#d4c4b0] text-[#2d1f16] placeholder:text-[#6b5544] focus:border-[#a16535] focus:ring-[#a16535]/20"
                         />
@@ -718,7 +646,7 @@ export function ClientesView({ clienteIdParaEditar, onClearClienteIdParaEditar, 
                     <Button
                       type="button"
                       size="sm"
-                      onClick={adicionarCampoTelefone}
+                      onClick={addPhoneField}
                       className="bg-[#a16535] text-white hover:bg-[#8b5329] px-3 py-2"
                     >
                       {/* ALTERAÇÃO: Adicionado mr-2 base e texto "Adicionar" visível apenas em mobile */}
@@ -728,7 +656,7 @@ export function ClientesView({ clienteIdParaEditar, onClearClienteIdParaEditar, 
                     </Button>
                   </div>
 
-                  {incluirTelefones.map((telefone, index) => (
+                  {phones.map((phone, index) => (
                     <div key={index} className="flex gap-2 items-end">
                       <div className="flex-1 space-y-2">
                         <Label htmlFor={`telefone-${index}`} className="text-[#4a3629]">
@@ -738,18 +666,18 @@ export function ClientesView({ clienteIdParaEditar, onClearClienteIdParaEditar, 
                           id={`telefone-${index}`}
                           type="text"
                           placeholder="(00) 00000-0000"
-                          value={telefone}
-                          onChange={(e) => atualizarTelefone(index, e.target.value)}
+                          value={phone}
+                          onChange={(e) => updatePhone(index, e.target.value)}
                           required={index === 0}
                           className="bg-[#f6f3ee] border-[#d4c4b0] text-[#2d1f16] placeholder:text-[#6b5544] focus:border-[#a16535] focus:ring-[#a16535]/20"
                         />
                       </div>
-                      {incluirTelefones.length > 1 && (
+                      {phones.length > 1 && (
                         <Button
                           type="button"
                           variant="ghost"
                           size="icon"
-                          onClick={() => removerCampoTelefone(index)}
+                          onClick={() => removePhoneField(index)}
                           className="mb-1 text-[#d4183d] hover:text-[#b01432] hover:bg-[#d4183d]/10"
                         >
                           <X className="w-4 h-4" />
@@ -764,8 +692,8 @@ export function ClientesView({ clienteIdParaEditar, onClearClienteIdParaEditar, 
                       id="incluir-email"
                       type="email"
                       placeholder="email@exemplo.com"
-                      value={incluirEmail}
-                      onChange={(e) => setIncluirEmail(e.target.value)}
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
                       required
                       className="bg-[#f6f3ee] border-[#d4c4b0] text-[#2d1f16] placeholder:text-[#6b5544] focus:border-[#a16535] focus:ring-[#a16535]/20"
                     />
@@ -786,8 +714,8 @@ export function ClientesView({ clienteIdParaEditar, onClearClienteIdParaEditar, 
                         id="incluir-cep"
                         type="text"
                         placeholder="00000-000"
-                        value={incluirCep}
-                        onChange={(e) => setIncluirCep(formatCEP(e.target.value))}
+                        value={zipCode}
+                        onChange={(e) => setZipCode(formatCEP(e.target.value))}
                         required
                         className="bg-[#f6f3ee] border-[#d4c4b0] text-[#2d1f16] placeholder:text-[#6b5544] focus:border-[#a16535] focus:ring-[#a16535]/20"
                       />
@@ -795,18 +723,18 @@ export function ClientesView({ clienteIdParaEditar, onClearClienteIdParaEditar, 
 
                     <div className="space-y-2">
                       <Label htmlFor="incluir-uf" className="text-[#4a3629]">UF *</Label>
-                      <Select value={incluirUf} onValueChange={setIncluirUf} required>
+                      <Select value={state} onValueChange={setState} required>
                         <SelectTrigger className="bg-[#f6f3ee] border-[#d4c4b0] text-[#2d1f16] focus:border-[#a16535] focus:ring-[#a16535]/20">
                           <SelectValue placeholder="Selecione o estado" />
                         </SelectTrigger>
                         <SelectContent className="bg-white border-[#d4c4b0] max-h-[300px]">
-                          {estadosBrasileiros.map((estado) => (
-                            <SelectItem 
-                              key={estado.sigla} 
-                              value={estado.sigla} 
+                          {states.map((state) => (
+                            <SelectItem
+                              key={state.acronym}
+                              value={state.acronym}
                               className="text-[#2d1f16] hover:bg-[#f6f3ee]"
                             >
-                              {estado.sigla} - {estado.nome}
+                              {state.acronym} - {state.name}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -822,8 +750,8 @@ export function ClientesView({ clienteIdParaEditar, onClearClienteIdParaEditar, 
                         id="incluir-municipio"
                         type="text"
                         placeholder="Digite o município"
-                        value={incluirMunicipio}
-                        onChange={(e) => setIncluirMunicipio(e.target.value)}
+                        value={city}
+                        onChange={(e) => setCity(e.target.value)}
                         required
                         className="bg-[#f6f3ee] border-[#d4c4b0] text-[#2d1f16] placeholder:text-[#6b5544] focus:border-[#a16535] focus:ring-[#a16535]/20"
                       />
@@ -835,8 +763,8 @@ export function ClientesView({ clienteIdParaEditar, onClearClienteIdParaEditar, 
                         id="incluir-bairro"
                         type="text"
                         placeholder="Digite o bairro"
-                        value={incluirBairro}
-                        onChange={(e) => setIncluirBairro(e.target.value)}
+                        value={neighborhood}
+                        onChange={(e) => setNeighborhood(e.target.value)}
                         required
                         className="bg-[#f6f3ee] border-[#d4c4b0] text-[#2d1f16] placeholder:text-[#6b5544] focus:border-[#a16535] focus:ring-[#a16535]/20"
                       />
@@ -851,8 +779,8 @@ export function ClientesView({ clienteIdParaEditar, onClearClienteIdParaEditar, 
                         id="incluir-logradouro"
                         type="text"
                         placeholder="Rua, Avenida, etc."
-                        value={incluirLogradouro}
-                        onChange={(e) => setIncluirLogradouro(e.target.value)}
+                        value={street}
+                        onChange={(e) => setStreet(e.target.value)}
                         required
                         className="bg-[#f6f3ee] border-[#d4c4b0] text-[#2d1f16] placeholder:text-[#6b5544] focus:border-[#a16535] focus:ring-[#a16535]/20"
                       />
@@ -864,8 +792,8 @@ export function ClientesView({ clienteIdParaEditar, onClearClienteIdParaEditar, 
                         id="incluir-numero"
                         type="text"
                         placeholder="123"
-                        value={incluirNumero}
-                        onChange={(e) => setIncluirNumero(e.target.value)}
+                        value={number}
+                        onChange={(e) => setNumber(e.target.value)}
                         required
                         className="bg-[#f6f3ee] border-[#d4c4b0] text-[#2d1f16] placeholder:text-[#6b5544] focus:border-[#a16535] focus:ring-[#a16535]/20"
                       />
@@ -878,39 +806,39 @@ export function ClientesView({ clienteIdParaEditar, onClearClienteIdParaEditar, 
                       id="incluir-complemento"
                       type="text"
                       placeholder="Apto, Casa, Sala, etc. (opcional)"
-                      value={incluirComplemento}
-                      onChange={(e) => setIncluirComplemento(e.target.value)}
+                      value={complement}
+                      onChange={(e) => setComplement(e.target.value)}
                       className="bg-[#f6f3ee] border-[#d4c4b0] text-[#2d1f16] placeholder:text-[#6b5544] focus:border-[#a16535] focus:ring-[#a16535]/20"
                     />
                   </div>
                 </div>
 
+                {/* Observações
                 <Separator className="bg-[#d4c4b0]" />
 
-                {/* Observações */}
                 <div className="space-y-4">
                   <h3 className="text-lg text-[#a16535] font-semibold">Observações</h3>
-                  
+
                   <div className="space-y-2">
                     <Label htmlFor="incluir-observacoes-cpf" className="text-[#4a3629]">Observações</Label>
                     <Textarea
                       id="incluir-observacoes-cpf"
                       placeholder="Digite observações adicionais sobre o cliente (opcional)"
-                      value={incluirObservacoes}
-                      onChange={(e) => setIncluirObservacoes(e.target.value)}
+                      value={notes}
+                      onChange={(e) => setNotes(e.target.value)}
                       rows={4}
                       className="bg-[#f6f3ee] border-[#d4c4b0] text-[#2d1f16] placeholder:text-[#6b5544] focus:border-[#a16535] focus:ring-[#a16535]/20 resize-none"
                     />
                   </div>
                 </div>
+                */}
 
-                {/* ALTERAÇÃO: Adicionado sm:justify-end para alinhar botões à direita em telas maiores */}
                 <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-4">
-                  {clienteEmEdicao && (
+                  {editingClient && (
                     <Button
                       type="button"
                       variant="outline"
-                      onClick={cancelarEdicao}
+                      onClick={cancelEdit}
                       className="flex-1 sm:flex-none border-[#d4c4b0] text-[#6b5544] hover:bg-[#d4c4b0] hover:text-[#2d1f16]"
                     >
                       <X className="w-4 h-4 mr-2" />
@@ -919,10 +847,9 @@ export function ClientesView({ clienteIdParaEditar, onClearClienteIdParaEditar, 
                   )}
                   <Button
                     type="submit"
-                    /* ALTERAÇÃO: Trocado flex-1 por sm:flex-none para largura automática em telas maiores */
                     className="flex-1 sm:flex-none bg-[#a16535] hover:bg-[#8b5329] text-white shadow-lg shadow-[#a16535]/30"
                   >
-                    {clienteEmEdicao ? (
+                    {editingClient ? (
                       <>
                         <Edit className="w-4 h-4 mr-2" />
                         Atualizar Cliente

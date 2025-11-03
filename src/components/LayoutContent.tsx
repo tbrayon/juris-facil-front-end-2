@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import { Toaster } from './ui/sonner';
 
-import { ClientesView } from './Clientes';
+import { Clients } from './Clients';
 import { ProcessosView } from './ProcessosView';
 import PrazosView from './Prazos';
 import { ContratosView } from './ContratosView';
@@ -33,18 +33,17 @@ export default function Layout({
   currentView,
   onNavigate,
 }: LayoutProps) {
-  const [clienteIdParaEditar, setClienteIdParaEditar] = useState<string | null>(null);
   const [processoIdParaEditar, setProcessoIdParaEditar] = useState<string | null>(null);
   const { currentUser } = useUsers();
 
   const handleVoltarInicio = () => {
     onNavigate('home');
-    setClienteIdParaEditar(null);
+    // setClienteIdParaEditar(null);
     setProcessoIdParaEditar(null);
   };
 
   const handleEditarCliente = (clienteId: string) => {
-    setClienteIdParaEditar(clienteId);
+    // setClienteIdParaEditar(clienteId);
     onNavigate('clientes');
   };
 
@@ -61,10 +60,8 @@ export default function Layout({
         return <DashboardView onVoltar={handleVoltarInicio} />;
       case 'clientes':
         return (
-          <ClientesView
-            clienteIdParaEditar={clienteIdParaEditar}
-            onClearClienteIdParaEditar={() => setClienteIdParaEditar(null)}
-            onVoltar={handleVoltarInicio}
+          <Clients
+            onNavigate={onNavigate}
           />
         );
       case 'processos':

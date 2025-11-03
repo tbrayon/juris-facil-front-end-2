@@ -984,8 +984,8 @@ export function ProcessosView({ processoIdParaEditar, onClearProcessoIdParaEdita
                       type="button"
                       onClick={() => setTipoDocumento('cpf')}
                       className={`h-10 px-6 transition-all duration-200 ${tipoDocumento === 'cpf'
-                          ? 'bg-[#a16535] hover:bg-[#8b5329] text-white border-2 border-[#a16535] shadow-md'
-                          : 'bg-white hover:bg-[#f6f3ee] text-[#a16535] border-2 border-[#a16535]'
+                        ? 'bg-[#a16535] hover:bg-[#8b5329] text-white border-2 border-[#a16535] shadow-md'
+                        : 'bg-white hover:bg-[#f6f3ee] text-[#a16535] border-2 border-[#a16535]'
                         }`}
                     >
                       <span className={tipoDocumento === 'cpf' ? 'font-semibold' : 'font-medium'}>
@@ -996,8 +996,8 @@ export function ProcessosView({ processoIdParaEditar, onClearProcessoIdParaEdita
                       type="button"
                       onClick={() => setTipoDocumento('cnpj')}
                       className={`h-10 px-6 transition-all duration-200 ${tipoDocumento === 'cnpj'
-                          ? 'bg-[#a16535] hover:bg-[#8b5329] text-white border-2 border-[#a16535] shadow-md'
-                          : 'bg-white hover:bg-[#f6f3ee] text-[#a16535] border-2 border-[#a16535]'
+                        ? 'bg-[#a16535] hover:bg-[#8b5329] text-white border-2 border-[#a16535] shadow-md'
+                        : 'bg-white hover:bg-[#f6f3ee] text-[#a16535] border-2 border-[#a16535]'
                         }`}
                     >
                       <span className={tipoDocumento === 'cnpj' ? 'font-semibold' : 'font-medium'}>

@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { Login } from './Login';
 
-import Layout from './Layout';
+import Layout from './LayoutContent';
 import { WelcomePage } from './Welcome';
-import { Sac } from './Sac';
-import { PoliticaDeCookies } from './Politica-de-cookies';
-import { PoliticaDePrivacidade } from './Politica-de-privacidade';
-import { TermosDeUso } from './Termos-de-uso';
+import { CustomerService } from './CustomerService';
+import { CookiesPolicy } from './CookiesPolicy';
+import { PrivacyPolicy } from './PrivacyPolicy';
+import { TermsOfUse } from './TermsOfUse';
 
 import { AppView } from '../types/navigation';
 import { useUsers } from '../contexts/UsersContext';
@@ -23,8 +23,6 @@ function Container() {
     logoutMutation.mutate();
     setCurrentView("welcome");
   };
-
-  console.log(currentUser);
 
   return (
     <div className="min-h-screen bg-[#f6f3ee]">
@@ -45,10 +43,10 @@ function Container() {
           {currentView === 'login' && (
             <Login onNavigate={handleNavigate} />
           )}
-          {currentView === 'suporte' && <Sac onNavigate={handleNavigate} />}
-          {currentView === 'termos' && <TermosDeUso onNavigate={handleNavigate} />}
-          {currentView === 'privacidade' && <PoliticaDePrivacidade onNavigate={handleNavigate} />}
-          {currentView === 'cookies' && <PoliticaDeCookies onNavigate={handleNavigate} />}
+          {currentView === 'suporte' && <CustomerService onNavigate={handleNavigate} />}
+          {currentView === 'termos' && <TermsOfUse onNavigate={handleNavigate} />}
+          {currentView === 'privacidade' && <PrivacyPolicy onNavigate={handleNavigate} />}
+          {currentView === 'cookies' && <CookiesPolicy onNavigate={handleNavigate} />}
         </>
       )}
     </div>
