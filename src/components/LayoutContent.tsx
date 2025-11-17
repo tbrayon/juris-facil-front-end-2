@@ -22,6 +22,7 @@ import { CookiesPolicy } from './CookiesPolicy';
 import { AppView } from '../types/navigation';
 import { useUsers } from '@/contexts/UsersContext';
 import { ProcessesView } from './ProcessesView';
+import { ContractsView } from './ContractsView';
 
 interface LayoutProps {
   currentView: AppView;
@@ -83,7 +84,9 @@ export default function Layout({
       case 'prazos':
         return <PrazosView onVoltar={handleVoltarInicio} />;
       case 'contratos':
-        return <ContratosView onVoltar={handleVoltarInicio} />;
+        return <ContractsView onNavigate={onNavigate} />;
+      // case 'contratos':
+      //   return <ContratosView onVoltar={handleVoltarInicio} />;
       case 'relatorios':
         return (
           <RelatoriosView

@@ -1,9 +1,9 @@
-import { formatDateBR, getLocalDateString } from './formatters';
 import { Client } from '@/contexts/ClientsContext';
-import { Contract } from '@/contexts/ContractsContext';
+import { formatDateBR, getLocalDateString } from './formatters';
+import { ContractInput } from '@/contexts/ContractsContext';
 import { Process } from '@/contexts/ProcessesContext';
 
-export const generateContractTemplate = (client: Client, process: Process, contract: Contract) => {
+export const generateContractTemplate = (process: Process,  contract: ContractInput, client: Client) => {
   const today = formatDateBR(getLocalDateString());
   const proceduralHub = process.proceduralHub === 'autor' ? 'AUTOR/REQUERENTE' : process.proceduralHub === 'reu' ? 'RÉU/REQUERIDO' : 'TERCEIRO INTERESSADO';
   const processInfo = process.processNumber
@@ -33,7 +33,7 @@ A CONTRATADA, por meio da advogada responsável ${process.responsibleAttorney ||
 
 ${processInfo}
 Tipo de Ação: ${process.actionType || '[TIPO DE AÇÃO]'}
-Tribunal/Vara: ${process.court || '[TRIBUNAL]'} - ${process.branch || '[VARA]'}
+Tribunal/Vara: ${process.court?.name || '[TRIBUNAL]'} - ${process.branch || '[VARA]'}
 Comarca: ${process.district || '[COMARCA]'}
 Polo Processual: ${proceduralHub}
 Parte Contrária: ${process.opposingParty || '[PARTE CONTRÁRIA]'}
@@ -46,7 +46,7 @@ Pelos serviços prestados, o CONTRATANTE pagará à CONTRATADA, a título de hon
 
 Valor do Contrato: ${contract.contractValue}
 Forma de Pagamento: ${contract.paymentMethod}
-${contract.installmentsNumber ? `Número de Parcelas: ${contract.installmentsNumber}x` : ''}
+${contract.installmentsNumber ? `Número de Parcelas: ${contract.installmentsNumber}` : ''}
 ${contract.dueDate ? `Vencimento: ${contract.dueDate}` : ''}
 
 CLÁUSULA TERCEIRA - DOS HONORÁRIOS DE SUCUMBÊNCIA

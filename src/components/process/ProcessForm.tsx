@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { FileText, Search, DollarSign, AlertCircle, X, Settings } from 'lucide-react';
+import { FileText, Search, AlertCircle, X, Settings } from 'lucide-react';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Input } from '../ui/input';
@@ -123,15 +123,6 @@ export function ProcessForm({ editingProcess, setEditingProcess, setActiveTab }:
         'Execução Fiscal',
         'Habeas Corpus',
         'Mandado de Segurança',
-    ].sort((a, b) => a.localeCompare(b, 'pt-BR')));
-
-    const [paymentMethods] = useState([
-        'À vista',
-        'Boleto',
-        'Cartão de Crédito',
-        'Parcelado',
-        'Pix',
-        'Transferência Bancária',
     ].sort((a, b) => a.localeCompare(b, 'pt-BR')));
 
     // Process data

@@ -4,12 +4,11 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { api } from "@/api/axios";
 import axios from "axios";
-import { ProcessSchema } from "./ProcessesContext";
 
 export const ContractSchema = z.object({
   id: z.uuid(),
 
-  process: ProcessSchema,
+  process: z.uuid(),
 
   contractNumber: z.string().nullable(),
   contractValue: z.string().nullable(),

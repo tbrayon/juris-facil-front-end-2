@@ -3,18 +3,18 @@ import { Button } from './ui/button';
 import { FileText, Search, Plus, ArrowLeft } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger } from './ui/tabs';
 import { AppView } from '@/types/navigation';
-import { Process } from '@/contexts/ProcessesContext';
-import { ProcessForm } from './process/ProcessForm';
-import { ProcessSearch } from './process/ProcessSearch';
+import { Contract } from '@/contexts/ContractsContext';
+import { ContractForm } from './contract/ContractForm';
+import { ContractSearch } from './contract/ContractSearch';
 
-interface ProcessesViewProps {
+interface ContractsViewProps {
   onNavigate: (view: AppView) => void;
 }
 
-export function ProcessesView({ onNavigate }: ProcessesViewProps) {
+export function ContractsView({ onNavigate }: ContractsViewProps) {
   const [activeTab, setActiveTab] = useState<'add' | 'search'>('search');
 
-  const [editingProcess, setEditingProcess] = useState<Process>()
+  const [editingContract, setEditingContract] = useState<Contract>();
 
   return (
     <div className="max-w-6xl mx-auto">
@@ -22,10 +22,10 @@ export function ProcessesView({ onNavigate }: ProcessesViewProps) {
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-xl md:text-2xl text-[#2d1f16] flex items-center gap-2">
-              <FileText className="w-6 h-6 text-[#a16535]" />
-              Gestão de Processos
+              <FileText className="w-5 h-5 md:w-6 md:h-6 text-[#a16535]" />
+              Contratos de Honorários
             </h2>
-            <p className="text-[#6b5544]">Cadastre, consulte e gerencie os processos jurídicos</p>
+            <p className="text-sm text-[#6b5544]">Gere, edite e gerencie contratos de honorários advocatícios</p>
           </div>
           <Button
             variant="outline"
@@ -45,18 +45,18 @@ export function ProcessesView({ onNavigate }: ProcessesViewProps) {
             className="data-[state=active]:bg-[#a16535] data-[state=active]:text-white text-[#6b5544] hover:text-[#a16535] rounded-full h-full transition-all"
           >
             <Search className="w-4 h-4 mr-2" />
-            Consultar Processos
+            Consultar Contratos
           </TabsTrigger>
           <TabsTrigger
             value="add"
             className="data-[state=active]:bg-[#a16535] data-[state=active]:text-white text-[#6b5544] hover:text-[#a16535] rounded-full h-full transition-all"
           >
             <Plus className="w-4 h-4 mr-2" />
-            Cadastrar Processo
+            Cadastrar Contrato
           </TabsTrigger>
         </TabsList>
-        <ProcessSearch setEditProcess={setEditingProcess} setActiveTab={setActiveTab} />
-        <ProcessForm editingProcess={editingProcess} setEditingProcess={setEditingProcess} setActiveTab={setActiveTab} />
+        <ContractSearch setEditContract={setEditingContract} setActiveTab={setActiveTab} />
+        <ContractForm editingContract={editingContract} setEditingContract={setEditingContract} setActiveTab={setActiveTab} />
       </Tabs>
     </div>
   );
