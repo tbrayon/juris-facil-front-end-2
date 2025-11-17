@@ -8,6 +8,14 @@ import { ProcessosProvider } from './contexts/ProcessosContext';
 import { ContratosProvider } from './contexts/ContratosContext';
 import { Toaster } from './components/ui/sonner';
 import { ClientesProvider } from './contexts/ClientesContext';
+import { ProcessesProvider } from './contexts/ProcessesContext';
+import { CompetenciesProvider } from './contexts/CompetenciesContext';
+import { CourtsProvider } from './contexts/CourtsContext';
+import { CourtTypesProvider } from './contexts/CourtTypesContext';
+import { JurisdictionsProvider } from './contexts/JurisdictionsContext';
+import { ProceduralStagesProvider } from './contexts/ProceduralStagesContext';
+import { StatusProvider } from './contexts/StatusContext';
+import { ContractsProvider } from './contexts/ContractsContext';
 
 const queryClient = new QueryClient();
 
@@ -18,10 +26,26 @@ function App() {
         <ClientesProvider>
           <ClientsProvider>
             <ProcessosProvider>
-              <ContratosProvider>
-                <Toaster position="top-right" richColors />
-                <Container />
-              </ContratosProvider>
+              <ProcessesProvider>
+                <CompetenciesProvider>
+                  <CourtsProvider>
+                    <CourtTypesProvider>
+                      <JurisdictionsProvider>
+                        <ProceduralStagesProvider>
+                          <StatusProvider>
+                            <ContratosProvider>
+                              <ContractsProvider>
+                                <Toaster position="top-right" richColors />
+                                <Container />
+                              </ContractsProvider>
+                            </ContratosProvider>
+                          </StatusProvider>
+                        </ProceduralStagesProvider>
+                      </JurisdictionsProvider>
+                    </CourtTypesProvider>
+                  </CourtsProvider>
+                </CompetenciesProvider>
+              </ProcessesProvider>
             </ProcessosProvider>
           </ClientsProvider>
         </ClientesProvider>

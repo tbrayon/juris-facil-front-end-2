@@ -109,9 +109,10 @@ export function getLocalDateTimeString(): string {
 export function formatDateTimeBR(isoString: string): string {
   if (!isoString) return '';
 
-  // Extrai apenas a parte da data (antes do T)
-  const datePart = isoString.split('T')[0];
-  return formatDateBR(datePart);
+  const date = isoString.split('T');
+  const result = formatDateBR(date[0]) + " às " + date[1].substring(0, 5)
+
+  return result;
 }
 
 /**
@@ -267,4 +268,12 @@ export function formatNumeroProcesso(value: string): string {
   }
 
   return formatted;
+}
+
+export function normalize(str: string) {
+  if (!str) return "";
+  return str
+    .normalize("NFD")                // split accents
+    .replace(/[\u0300-\u036f]/g, "") // remove accents
+    .toLowerCase();
 }

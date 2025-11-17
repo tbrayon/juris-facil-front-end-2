@@ -1,35 +1,60 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
+import { Search, UserPlus, Users, CheckCircle, X, Plus, Edit, ArrowLeft } from 'lucide-react';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Button } from './ui/button';
-import { Search, UserPlus, Users, CheckCircle, X, Plus, Edit, ArrowLeft } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { Alert, AlertDescription } from './ui/alert';
 import { Separator } from './ui/separator';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 
-import { formatCPF, formatCNPJ, formatDateBR, formatPhone, formatCEP } from '@/utils/formatters';
+import { formatCPF, formatCNPJ, formatDateTimeBR, formatPhone, formatCEP, normalize } from '@/utils/formatters';
 import { states } from '@/utils/states';
 import { AppView } from '@/types/navigation';
-import { useClients, Client } from '@/contexts/ClientsContext';
+import { useClients, Client, NewClientInput } from '@/contexts/ClientsContext';
 
-interface ClientsProps {
+interface ClientsViewProps {
   onNavigate: (view: AppView) => void;
 }
 
-export function Clients({ onNavigate }: ClientsProps) {
+export function ClientsView({ onNavigate }: ClientsViewProps) {
   const { addClientMutation, updateClientMutation, clients } = useClients();
 
   const [activeTab, setActiveTab] = useState<'search' | 'add'>('search');
 
   // Search state
-  const [searchCPF, setSearchCPF] = useState('');
-  const [searchCNPJ, setSearchCNPJ] = useState('');
-  const [searchName, setSearchName] = useState('');
-  const [searchResults, setSearchResults] = useState<Client[]>([]);
+  const [searchName, setSearchName] = useState("");
+  const [searchCPF, setSearchCPF] = useState("");
+  const [searchCNPJ, setSearchCNPJ] = useState("");
   const [searchPerformed, setSearchPerformed] = useState(false);
+
+  const filteredClients = useMemo(() => {
+    if (!searchName && !searchCPF && !searchCNPJ) {
+      return [];
+    }
+
+    const name = normalize(searchName);
+
+    return clients.filter(client => {
+      const matchesName =
+        searchName &&
+        normalize(client.name).includes(name);
+
+      const matchesCPF = searchCPF && client.document === searchCPF;
+      const matchesCNPJ = searchCNPJ && client.document === searchCNPJ;
+
+      return matchesName || matchesCPF || matchesCNPJ;
+    });
+  }, [clients, searchName, searchCPF, searchCNPJ]);
+
+
+  // Search handler
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    setSearchPerformed(true);
+  };
 
   // Edit state
   const [editingClient, setEditingClient] = useState<Client | null>(null);
@@ -57,21 +82,6 @@ export function Clients({ onNavigate }: ClientsProps) {
   const [number, setNumber] = useState('');
   const [complement, setComplement] = useState('');
 
-  // Search handler
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    console.log(clients);
-    const results = clients.filter(client =>
-      (searchName && client.name.toLowerCase().includes(searchName.toLowerCase())) ||
-      (searchCPF && client.document === searchCPF) ||
-      (searchCNPJ && client.document === searchCNPJ)
-    );
-
-    setSearchResults(results);
-    setSearchPerformed(true);
-  };
-
   // Phone handlers
   const addPhoneField = () => setPhones([...phones, '']);
   const removePhoneField = (index: number) => {
@@ -90,7 +100,7 @@ export function Clients({ onNavigate }: ClientsProps) {
 
     const filteredPhones = phones.filter(p => p.trim() !== '');
 
-    const clientData = {
+    const clientData: NewClientInput = {
       name,
       document: clientType === 'CPF' ? cpf : cnpj,
       type: clientType,
@@ -120,18 +130,25 @@ export function Clients({ onNavigate }: ClientsProps) {
     };
 
     if (editingClient && !!editingClient.id) {
-      updateClientMutation.mutate({ id: editingClient.id, client: clientData });
-      setEditingClient(null);
-    } else {
-      addClientMutation.mutate(clientData);
-    }
+      updateClientMutation.mutate({ id: editingClient.id, client: clientData }, {
+        onSuccess: () => {
+          setEditingClient(null);
+          clearForm();
+          setActiveTab("search");
+        }
+      });
 
-    // clearForm();
-    setTimeout(() => setActiveTab('search'), 1500);
+    } else {
+      addClientMutation.mutate(clientData, {
+        onSuccess: () => {
+          clearForm();
+          setActiveTab("search");
+        }
+      });
+    }
   };
 
   const handleUpdate = (client: Client) => {
-    console.log("client ",client);
     setEditingClient(client);
     setClientType(client.type);
     setName(client.name);
@@ -151,9 +168,7 @@ export function Clients({ onNavigate }: ClientsProps) {
       setMaritalStatus(client.maritalStatus || '');
       setNationality(client.nationality || '');
       setProfession(client.occupation || '');
-      // @ts-ignore
       // setCompany(client.company || '');
-      // // @ts-ignore
       // setPosition(client.position || '');
     } else {
       setCNPJ(client.document || '');
@@ -196,13 +211,11 @@ export function Clients({ onNavigate }: ClientsProps) {
     setSearchCPF('');
     setSearchCNPJ('');
     setSearchName('');
-    setSearchResults([]);
     setSearchPerformed(false);
   };
 
   return (
     <div className="max-w-xl mx-auto md:max-w-4xl px-4 sm:px-0">
-      {/* ALTERAÇÃO: Padding horizontal (px-4) para telas pequenas, removido em sm+ */}
       <div className="mb-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <div>
@@ -220,18 +233,15 @@ export function Clients({ onNavigate }: ClientsProps) {
             <ArrowLeft className="w-4 h-4 mr-2" />
             Página Inicial
           </Button>
-
         </div>
       </div>
 
       <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'search' | 'add')} className="w-full">
-        {/* TabsList com altura e padding otimizados para mobile */}
         <TabsList className="grid w-full grid-cols-2 bg-[#f6f3ee] border-2 border-[#d4c4b0] p-1 rounded-full h-11 sm:h-14">
           <TabsTrigger
             value="search"
             className="data-[state=active]:bg-[#a16535] data-[state=active]:text-white text-[#6b5544] hover:text-[#a16535] rounded-full h-full transition-all text-sm"
           >
-            {/* ALTERAÇÃO: Adicionado mr-2 base e texto "Consultar" visível apenas em mobile */}
             <Search className="w-4 h-4 mr-2" />
             <span className="sm:hidden">Consultar</span>
             <span className="hidden sm:inline">Consultar Cliente</span>
@@ -240,7 +250,6 @@ export function Clients({ onNavigate }: ClientsProps) {
             value="add"
             className="data-[state=active]:bg-[#a16535] data-[state=active]:text-white text-[#6b5544] hover:text-[#a16535] rounded-full h-full transition-all text-sm"
           >
-            {/* ALTERAÇÃO: Adicionado mr-2 base e texto "Incluir/Editar" visível apenas em mobile */}
             {editingClient ? <Edit className="w-4 h-4 mr-2" /> : <UserPlus className="w-4 h-4 mr-2" />}
             <span className="sm:hidden">{editingClient ? 'Editar' : 'Incluir'}</span>
             <span className="hidden sm:inline">{editingClient ? 'Editar Cliente' : 'Incluir Cliente'}</span>
@@ -324,10 +333,10 @@ export function Clients({ onNavigate }: ClientsProps) {
               {searchPerformed && (
                 <div className="mt-6 pt-6 border-t border-[#d4c4b0]">
                   <h3 className="text-[#2d1f16] mb-4 text-lg">
-                    Resultados da Consulta ({searchResults.length})
+                    Resultados da Consulta ({filteredClients.length})
                   </h3>
 
-                  {searchResults.length === 0 ? (
+                  {filteredClients.length === 0 ? (
                     <Alert className="bg-[#a16535]/10 border-[#a16535]/30">
                       <AlertDescription className="text-[#4a3629]">
                         Nenhum cliente encontrado com os critérios informados.
@@ -335,7 +344,7 @@ export function Clients({ onNavigate }: ClientsProps) {
                     </Alert>
                   ) : (
                     <div className="space-y-3">
-                      {searchResults.map((client) => (
+                      {filteredClients.map((client) => (
                         <Card key={client.id} className="bg-[#a16535]/5 border-[#d4c4b0]">
                           <CardContent className="p-4">
                             <div className="flex flex-col sm:flex-row items-start justify-between gap-3">
@@ -364,9 +373,11 @@ export function Clients({ onNavigate }: ClientsProps) {
                                     Telefone: {client.phones.join(', ')}
                                   </p>
                                 )}
-                                <p className="text-xs text-[#8b5329] pt-1">
-                                  Cadastrado em: {formatDateBR(client.createdAt.toString())}
-                                </p>
+                                {client.createdAt && (
+                                  <p className="text-xs text-[#8b5329] pt-1">
+                                    Cadastrado em: {formatDateTimeBR(client.createdAt.toISOString())}
+                                  </p>)
+                                }
                               </div>
                               <div className="w-full sm:w-auto flex justify-end items-center gap-2 mt-2 sm:mt-0">
                                 <Button

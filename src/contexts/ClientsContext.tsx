@@ -2,14 +2,14 @@ import { createContext, useContext, ReactNode } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { z } from "zod";
-import { api } from "@/api/axios"; // <-- reuse your configured axios instance
+import { api } from "@/api/axios";
 import axios from "axios";
 
 // ------------------------
 // Zod Schema
 // ------------------------
 export const clientSchema = z.object({
-  id: z.uuid().optional(),
+  id: z.uuid(),
   type: z.enum(["CPF", "CNPJ"]),
   document: z.string().max(14).optional().nullable(),
   name: z.string().min(1),
@@ -34,11 +34,11 @@ export const clientSchema = z.object({
       zipCode: z.string().max(10),
       state: z.string().min(2).max(2),
       city: z.string().min(3),
-      neighborhood: z.string().optional(),
+      neighborhood: z.string().min(3),
       street: z.string().min(3),
       number: z.string().min(1),
       complement: z.string().optional(),
-    }),
+    }).optional(),
 
   // System fields
   lastUpdatedBy: z.uuid(),
@@ -56,8 +56,7 @@ export type NewClientInput = Omit<Client, "id" | "createdAt" | "createdBy" | "la
 async function fetchClients(): Promise<Client[]> {
   try {
     const { data } = await api.get("/clients");
-    const parsed = z.array(clientSchema).parse(data);
-    console.log("PARSED ", parsed);
+
     return z.array(clientSchema).parse(data);
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -132,8 +131,9 @@ export function ClientsProvider({ children }: { children: ReactNode }) {
       toast.success("Cliente cadastrado com sucesso!");
       queryClient.invalidateQueries({ queryKey: ["clients"] });
     },
-    onError: () => {
+    onError: (error) => {
       toast.error("Erro ao cadastrar cliente.");
+      console.log(error);
     },
   });
 

@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import { Toaster } from './ui/sonner';
 
-import { Clients } from './Clients';
+import { ClientsView } from './ClientsView';
 import { ProcessosView } from './ProcessosView';
 import PrazosView from './Prazos';
 import { ContratosView } from './ContratosView';
@@ -21,17 +21,18 @@ import { CookiesPolicy } from './CookiesPolicy';
 
 import { AppView } from '../types/navigation';
 import { useUsers } from '@/contexts/UsersContext';
+import { ProcessesView } from './ProcessesView';
 
 interface LayoutProps {
-  onLogout: () => void;
   currentView: AppView;
   onNavigate: (view: AppView) => void;
+  onLogout: () => void;
 }
 
 export default function Layout({
-  onLogout,
   currentView,
   onNavigate,
+  onLogout,
 }: LayoutProps) {
   const [processoIdParaEditar, setProcessoIdParaEditar] = useState<string | null>(null);
   const { currentUser } = useUsers();
@@ -60,18 +61,25 @@ export default function Layout({
         return <DashboardView onVoltar={handleVoltarInicio} />;
       case 'clientes':
         return (
-          <Clients
+          <ClientsView
             onNavigate={onNavigate}
           />
         );
       case 'processos':
+        // return (
+        //   <ProcessosView
+        //     processoIdParaEditar={processoIdParaEditar}
+        //     onClearProcessoIdParaEditar={() => setProcessoIdParaEditar(null)}
+        //     onVoltar={handleVoltarInicio}
+        //   />
+        // );
+
         return (
-          <ProcessosView
-            processoIdParaEditar={processoIdParaEditar}
-            onClearProcessoIdParaEditar={() => setProcessoIdParaEditar(null)}
-            onVoltar={handleVoltarInicio}
+          <ProcessesView
+            onNavigate={onNavigate}
           />
-        );
+        )
+
       case 'prazos':
         return <PrazosView onVoltar={handleVoltarInicio} />;
       case 'contratos':
