@@ -447,7 +447,6 @@ export function ProcessForm({ editingProcess, setEditingProcess, setActiveTab }:
                                                         {option}
                                                     </SelectItem>
                                                 ))}
-                                                <Separator className="my-1 bg-[#d4c4b0]" />
                                             </SelectContent>
                                         </Select>
                                     </div>
@@ -701,7 +700,6 @@ export function ProcessForm({ editingProcess, setEditingProcess, setActiveTab }:
                                                         {option.name}
                                                     </SelectItem>
                                                 ))}
-                                                <Separator className="my-1 bg-[#d4c4b0]" />
                                             </SelectContent>
                                         </Select>
                                     </div>
@@ -741,7 +739,6 @@ export function ProcessForm({ editingProcess, setEditingProcess, setActiveTab }:
                                                         {option.name}
                                                     </SelectItem>
                                                 ))}
-                                                <Separator className="my-1 bg-[#d4c4b0]" />
                                             </SelectContent>
                                         </Select>
                                     </div>
@@ -1047,14 +1044,14 @@ export function ProcessForm({ editingProcess, setEditingProcess, setActiveTab }:
                                     <FileText className="w-4 h-4 mr-2" />
                                     {editingProcess ? 'Atualizar Processo' : 'Cadastrar Processo'}
                                 </Button>
-                                <Button
+                                {/* <Button
                                     type="button"
                                     variant="outline"
                                     onClick={clearForm}
                                     className="border-2 border-[#a16535] text-[#a16535] hover:bg-[#a16535] hover:text-white transition-all duration-200"
                                 >
                                     Limpar Formulário
-                                </Button>
+                                </Button> */}
                             </div>
                         </form>
                     </CardContent>

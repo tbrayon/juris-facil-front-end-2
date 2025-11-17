@@ -128,7 +128,7 @@ export function Login({ onNavigate }: LoginProps) {
                     </span>
                     <br />
                     <span className="text-xs">
-                      Advogado: <code className="text-[#a16535] bg-[#f6f3ee] px-1 py-0.5 rounded text-xs">adv@juris.com.br</code> / <code className="text-[#a16535] bg-[#f6f3ee] px-1 py-0.5 rounded text-xs">juris.adv</code>
+                      Advogado: <code className="text-[#a16535] bg-[#f6f3ee] px-1 py-0.5 rounded text-xs">advogado@juris.com.br</code> / <code className="text-[#a16535] bg-[#f6f3ee] px-1 py-0.5 rounded text-xs">juris.advogado</code>
                     </span>
                   </p>
                 </div>
