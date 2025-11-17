@@ -1,6 +1,6 @@
 
 import { useState, useMemo } from 'react';
-import { FileText, Search, Edit, Eye } from 'lucide-react';
+import { FileText, Edit, Eye } from 'lucide-react';
 
 import { getPriorityBadge, getStatusBadge } from './Badges';
 
@@ -13,7 +13,6 @@ import { Separator } from '../ui/separator';
 import { formatDateBR, normalize } from '@/utils/formatters';
 import { Process, useProcesses } from '@/contexts/ProcessesContext';
 import { ProcessModal } from './ProcessModal';
-import { useClients } from '@/contexts/ClientsContext';
 
 interface ProcessSearchProps {
     setActiveTab: (tab: "add" | "search") => void
@@ -27,7 +26,6 @@ export function ProcessSearch({ setActiveTab, setEditProcess }: ProcessSearchPro
 
     const [isProcessModalOpen, setIsProcessModalOpen] = useState(false)
     const [focusedProcess, setFocusedProcess] = useState<Process>()
-    const { clients } = useClients();
 
     const filteredProcesses = useMemo(() => {
         if (!searchTerm) return processes;
@@ -79,13 +77,13 @@ export function ProcessSearch({ setActiveTab, setEditProcess }: ProcessSearchPro
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 className="bg-[#f6f3ee] border-[#d4c4b0] text-[#2d1f16] placeholder:text-[#6b5544] focus:border-[#a16535] focus:ring-[#a16535]/20"
                             />
-                            <Button
+                            {/* <Button
                                 onClick={() => console.log("Buscar processos")}
                                 className="bg-[#a16535] hover:bg-[#8b5329] text-white shadow-lg shadow-[#a16535]/30"
                             >
                                 <Search className="w-4 h-4 mr-2" />
                                 Buscar
-                            </Button>
+                            </Button> */}
                         </div>
 
                         {/* Resultados da pesquisa */}
@@ -107,7 +105,7 @@ export function ProcessSearch({ setActiveTab, setEditProcess }: ProcessSearchPro
                                                         {process.priority && getPriorityBadge(process.priority)}
                                                     </div>
                                                     <p className="text-[#4a3629]">
-                                                        <strong>Cliente:</strong> {clients.find(item => item.id === process.id)?.name}
+                                                        <strong>Cliente:</strong> {process.client.name}
                                                     </p>
                                                     <p className="text-[#4a3629]">
                                                         <strong>Tipo de Ação:</strong> {process.actionType}
