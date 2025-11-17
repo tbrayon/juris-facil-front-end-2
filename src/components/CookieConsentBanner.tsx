@@ -13,15 +13,17 @@ interface CookieConsentBannerProps {
 export function CookieConsentBanner({ onNavigate }: CookieConsentBannerProps) {
   // Estado para controlar a visibilidade do banner
   const [isVisible, setIsVisible] = useState(false);
+  const [consent, setConsent] = useState("");
 
   // Verifica no carregamento se o consentimento já foi dado
   useEffect(() => {
-    const consent = localStorage.getItem('cookieConsent');
+    const item = localStorage.getItem('cookieConsent');
+    setConsent(String(item));
     // Mostra o banner apenas se nenhum consentimento (aceito ou negado) foi registrado
     if (!consent) {
       setIsVisible(true);
     }
-  }, []);
+  }, [isVisible, consent]);
 
   // Função para lidar com a aceitação
   const handleAccept = () => {
