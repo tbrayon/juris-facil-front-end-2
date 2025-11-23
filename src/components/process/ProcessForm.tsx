@@ -83,8 +83,6 @@ export function ProcessForm({ editingProcess, setEditingProcess, setActiveTab }:
                 }
             };
 
-            console.log("process data: ", data);
-
             if (editingProcess && !!editingProcess.id) {
                 updateProcessMutation.mutate({ id: editingProcess.id, data }, {
                     onSuccess: () => {

@@ -43,13 +43,13 @@ export default function Menu({ activeView, onNavigate }: MenuProps) {
     { view: 'prazos', label: 'Prazos e Audiências', icon: Calendar },
     { view: 'contratos', label: 'Contratos de Honorários', icon: FileSignature },
     { view: 'relatorios', label: 'Relatórios', icon: FileBarChart },
+    { view: 'dashboard', label: 'Dashboard', icon: BarChart3 },
     {
       view: 'usuarios',
       label: 'Usuários',
-      icon: isMobile ? Users : UserSquare2, // 👥 mobile / 👤 desktop
+      icon: isMobile ? Users : UserSquare2,
       adminOnly: true
     },
-    { view: 'dashboard', label: 'Dashboard', icon: BarChart3 },
     { view: 'suporte', label: 'Suporte', icon: LifeBuoy }
   ];
 

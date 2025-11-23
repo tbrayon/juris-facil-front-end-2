@@ -1,8 +1,18 @@
 /**
- * Remove todos os caracteres não numéricos de uma string
+ * Retorna a data e hora atual no formato ISO usando o fuso horário local
+ * Evita problemas de diferença de um dia ao usar UTC
  */
-export function removeNonNumeric(value: string): string {
-  return value.replace(/\D/g, '');
+export function getLocalDateTimeString(): string {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  const seconds = String(now.getSeconds()).padStart(2, '0');
+  const milliseconds = String(now.getMilliseconds()).padStart(3, '0');
+
+  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}Z`;
 }
 
 /**
@@ -10,9 +20,11 @@ export function removeNonNumeric(value: string): string {
  */
 export function formatCPF(value: string): string {
   const numbers = removeNonNumeric(value);
+  
 
   // Limita a 11 dígitos
   const limited = numbers.slice(0, 11);
+  
 
   // Aplica a máscara de CPF
   if (limited.length <= 3) {
@@ -31,9 +43,11 @@ export function formatCPF(value: string): string {
  */
 export function formatCNPJ(value: string): string {
   const numbers = removeNonNumeric(value);
+  
 
   // Limita a 14 dígitos
   const limited = numbers.slice(0, 14);
+  
 
   // Aplica a máscara de CNPJ
   if (limited.length <= 2) {
@@ -54,6 +68,7 @@ export function formatCNPJ(value: string): string {
  */
 export function formatCPFOrCNPJ(value: string): string {
   const numbers = removeNonNumeric(value);
+  
 
   // Se tem até 11 dígitos, formata como CPF
   if (numbers.length <= 11) {
@@ -86,23 +101,6 @@ export function formatDateBR(dateString: string): string {
 }
 
 /**
- * Retorna a data e hora atual no formato ISO usando o fuso horário local
- * Evita problemas de diferença de um dia ao usar UTC
- */
-export function getLocalDateTimeString(): string {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const day = String(now.getDate()).padStart(2, '0');
-  const hours = String(now.getHours()).padStart(2, '0');
-  const minutes = String(now.getMinutes()).padStart(2, '0');
-  const seconds = String(now.getSeconds()).padStart(2, '0');
-  const milliseconds = String(now.getMilliseconds()).padStart(3, '0');
-
-  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}Z`;
-}
-
-/**
  * Formata uma data ISO (com timestamp) para DD/MM/YYYY HH:mm
  * Usado para datas que incluem horário
  */
@@ -113,6 +111,11 @@ export function formatDateTimeBR(isoString: string): string {
   const result = formatDateBR(date[0]) + " às " + date[1].substring(0, 5)
 
   return result;
+}
+
+
+export function removeNonNumeric(value: string): string {
+  return value.replace(/\D/g, "")  
 }
 
 /**
@@ -159,21 +162,12 @@ export function formatCEP(value: string): string {
 /**
  * Formata um valor monetário no padrão brasileiro (R$ 0.000,00)
  */
-export function formatCurrency(value: string): string {
-  // Remove tudo exceto números
-  const numbers = removeNonNumeric(value);
-
-  // Se não há números, retorna vazio
-  if (!numbers) return '';
-
-  // Converte para número e divide por 100 para ter os centavos
-  const amount = parseFloat(numbers) / 100;
-
+export function formatCurrency(value: number): string {
   // Formata no padrão brasileiro
   return new Intl.NumberFormat('pt-BR', {
     style: 'currency',
     currency: 'BRL',
-  }).format(amount);
+  }).format(value);
 }
 
 /**

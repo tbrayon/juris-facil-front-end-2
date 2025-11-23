@@ -3,10 +3,8 @@ import { useState } from 'react';
 import { Toaster } from './ui/sonner';
 
 import { ClientsView } from './ClientsView';
-import { ProcessosView } from './ProcessosView';
 import PrazosView from './Prazos';
-import { ContratosView } from './ContratosView';
-import { DashboardView } from './Dashboard';
+import { DashboardView } from './DashboardView';
 import { RelatoriosView } from './RelatoriosView';
 import { UsuariosView } from './Usuarios';
 import { Home } from './Home';
@@ -23,6 +21,7 @@ import { AppView } from '../types/navigation';
 import { useUsers } from '@/contexts/UsersContext';
 import { ProcessesView } from './ProcessesView';
 import { ContractsView } from './ContractsView';
+import { useAppStore } from '@/store/useAppStore';
 
 interface LayoutProps {
   currentView: AppView;
@@ -31,12 +30,16 @@ interface LayoutProps {
 }
 
 export default function Layout({
-  currentView,
-  onNavigate,
   onLogout,
 }: LayoutProps) {
   const [processoIdParaEditar, setProcessoIdParaEditar] = useState<string | null>(null);
   const { currentUser } = useUsers();
+  const {
+    currentView,
+    setView,
+  } = useAppStore();
+
+  const onNavigate = setView;
 
   const handleVoltarInicio = () => {
     onNavigate('home');
@@ -58,8 +61,6 @@ export default function Layout({
     switch (currentView) {
       case 'home':
         return <Home onNavigate={onNavigate} />;
-      case 'dashboard':
-        return <DashboardView onVoltar={handleVoltarInicio} />;
       case 'clientes':
         return (
           <ClientsView
@@ -85,7 +86,6 @@ export default function Layout({
         return <PrazosView onVoltar={handleVoltarInicio} />;
       case 'contratos':
         return <ContractsView onNavigate={onNavigate} />;
-      // case 'contratos':
       //   return <ContratosView onVoltar={handleVoltarInicio} />;
       case 'relatorios':
         return (
@@ -95,6 +95,9 @@ export default function Layout({
             onVoltar={handleVoltarInicio}
           />
         );
+      case 'dashboard':
+        return <DashboardView onNavigate={onNavigate} />;
+
       case 'usuarios':
         return currentUser?.role === 'admin' ? (
           <UsuariosView onVoltar={handleVoltarInicio} />
