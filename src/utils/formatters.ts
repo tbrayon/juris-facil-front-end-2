@@ -162,12 +162,28 @@ export function formatCEP(value: string): string {
 /**
  * Formata um valor monetário no padrão brasileiro (R$ 0.000,00)
  */
-export function formatCurrency(value: number): string {
+export function formatCurrencyFloat(value: number): string {
   // Formata no padrão brasileiro
   return new Intl.NumberFormat('pt-BR', {
     style: 'currency',
     currency: 'BRL',
   }).format(value);
+}
+
+export function formatCurrency(value: string): string {
+  const numbers = removeNonNumeric(value);
+
+  // Se não há números, retorna vazio
+  if (!numbers) return '';
+
+  // Converte para número e divide por 100 para ter os centavos
+  const amount = parseFloat(numbers) / 100;
+
+  // Formata no padrão brasileiro
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+  }).format(amount);
 }
 
 /**
@@ -197,7 +213,7 @@ export function formatPercentage(value: string): string {
 /**
  * Formata número de contrato com barra e ano (XXX/AAAA)
  */
-export function formatNumeroContrato(value: string): string {
+export function formatContractNumber(value: string): string {
   // Remove tudo exceto números e barra
   const cleaned = value.replace(/[^\d\/]/g, '');
 

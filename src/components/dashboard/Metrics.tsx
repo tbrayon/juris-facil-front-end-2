@@ -4,7 +4,7 @@ import { Calendar, DollarSign, FileText, Users } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader } from '../ui/card';
 import { useClients } from '@/contexts/ClientsContext';
 import { useProcesses } from '@/contexts/ProcessesContext';
-import { formatCurrency } from '@/utils/formatters';
+import { formatCurrencyFloat } from '@/utils/formatters';
 import { useContracts } from '@/contexts/ContractsContext';
 
 export function Metrics() {
@@ -30,8 +30,6 @@ export function Metrics() {
 
         return acc + value;
     }, 0);
-
-    console.log("O PIX DEVE SER DE: ", totalContractsValue);
 
     // ---------- Processos urgentes ----------
     const urgentProcesses = processes.filter(
@@ -92,7 +90,7 @@ export function Metrics() {
                     <CardContent>
                         <div className="flex items-center justify-between">
                             <div>
-                                <div className="text-2xl text-[#a16535]">{formatCurrency(totalContractsValue)}</div>
+                                <div className="text-2xl text-[#a16535]">{formatCurrencyFloat(totalContractsValue)}</div>
                                 <div className="text-sm text-[#6b5544] mt-1">Total de honorários</div>
                             </div>
                             <DollarSign className="w-10 h-10 text-[#a16535] opacity-20" />
