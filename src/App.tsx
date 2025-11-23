@@ -5,7 +5,6 @@ import Container from './components/Container';
 import { UsersProvider } from './contexts/UsersContext';
 import { ClientsProvider } from './contexts/ClientsContext';
 import { ProcessosProvider } from './contexts/ProcessosContext';
-import { ContratosProvider } from './contexts/ContratosContext';
 import { Toaster } from './components/ui/sonner';
 import { ClientesProvider } from './contexts/ClientesContext';
 import { ProcessesProvider } from './contexts/ProcessesContext';
@@ -33,12 +32,10 @@ function App() {
                       <JurisdictionsProvider>
                         <ProceduralStagesProvider>
                           <StatusProvider>
-                            <ContratosProvider>
-                              <ContractsProvider>
-                                <Toaster position="top-right" richColors />
-                                <Container />
-                              </ContractsProvider>
-                            </ContratosProvider>
+                            <ContractsProvider>
+                              <Toaster position="top-right" richColors />
+                              <Container />
+                            </ContractsProvider>
                           </StatusProvider>
                         </ProceduralStagesProvider>
                       </JurisdictionsProvider>

@@ -37,7 +37,7 @@ export default function Menu({ activeView, onNavigate }: MenuProps) {
     {
       view: 'clientes',
       label: 'Clientes',
-      icon: isMobile ? UserSquare2 : Users // 👤 mobile / 👥 desktop
+      icon: isMobile ? UserSquare2 : Users
     },
     { view: 'processos', label: 'Processos', icon: FileText },
     { view: 'prazos', label: 'Prazos e Audiências', icon: Calendar },

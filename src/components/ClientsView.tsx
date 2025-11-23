@@ -14,6 +14,7 @@ import { formatCPF, formatCNPJ, formatDateTimeBR, formatPhone, formatCEP, normal
 import { states } from '@/utils/states';
 import { AppView } from '@/types/navigation';
 import { useClients, Client, NewClientInput } from '@/contexts/ClientsContext';
+import { useAppStore } from '@/store/useAppStore';
 
 interface ClientsViewProps {
   onNavigate: (view: AppView) => void;
@@ -22,7 +23,7 @@ interface ClientsViewProps {
 export function ClientsView({ onNavigate }: ClientsViewProps) {
   const { addClientMutation, updateClientMutation, clients } = useClients();
 
-  const [activeTab, setActiveTab] = useState<'search' | 'add'>('search');
+  const { clientsTab, setClientsTab } = useAppStore();
 
   // Search state
   const [searchName, setSearchName] = useState("");
@@ -134,7 +135,7 @@ export function ClientsView({ onNavigate }: ClientsViewProps) {
         onSuccess: () => {
           setEditingClient(null);
           clearForm();
-          setActiveTab("search");
+          setClientsTab("list");
         }
       });
 
@@ -142,7 +143,7 @@ export function ClientsView({ onNavigate }: ClientsViewProps) {
       addClientMutation.mutate(clientData, {
         onSuccess: () => {
           clearForm();
-          setActiveTab("search");
+          setClientsTab("list");
         }
       });
     }
@@ -176,7 +177,7 @@ export function ClientsView({ onNavigate }: ClientsViewProps) {
       setResponsibleName(client.representativeName || '');
     }
 
-    setActiveTab('add');
+    setClientsTab('form');
   };
 
   const cancelEdit = () => {
@@ -236,10 +237,10 @@ export function ClientsView({ onNavigate }: ClientsViewProps) {
         </div>
       </div>
 
-      <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'search' | 'add')} className="w-full">
+      <Tabs value={clientsTab} onValueChange={(value) => setClientsTab(value as 'list' | 'form')} className="w-full">
         <TabsList className="grid w-full grid-cols-2 bg-[#f6f3ee] border-2 border-[#d4c4b0] p-1 rounded-full h-11 sm:h-14">
           <TabsTrigger
-            value="search"
+            value="list"
             className="data-[state=active]:bg-[#a16535] data-[state=active]:text-white text-[#6b5544] hover:text-[#a16535] rounded-full h-full transition-all text-sm"
           >
             <Search className="w-4 h-4 mr-2" />
@@ -247,7 +248,7 @@ export function ClientsView({ onNavigate }: ClientsViewProps) {
             <span className="hidden sm:inline">Consultar Cliente</span>
           </TabsTrigger>
           <TabsTrigger
-            value="add"
+            value="form"
             className="data-[state=active]:bg-[#a16535] data-[state=active]:text-white text-[#6b5544] hover:text-[#a16535] rounded-full h-full transition-all text-sm"
           >
             {editingClient ? <Edit className="w-4 h-4 mr-2" /> : <UserPlus className="w-4 h-4 mr-2" />}
@@ -257,7 +258,7 @@ export function ClientsView({ onNavigate }: ClientsViewProps) {
         </TabsList>
 
         {/* Tab Consultar */}
-        <TabsContent value="search">
+        <TabsContent value="list">
           <Card className="bg-white border-2 border-[#d4c4b0]">
             <CardHeader>
               <CardTitle className="text-[#2d1f16]">Consultar Cliente</CardTitle>
@@ -407,7 +408,7 @@ export function ClientsView({ onNavigate }: ClientsViewProps) {
         </TabsContent>
 
         {/* Tab Incluir/Editar */}
-        <TabsContent value="add">
+        <TabsContent value="form">
           <Card className="bg-white border-2 border-[#d4c4b0]">
             <CardHeader>
               <CardTitle className="text-[#2d1f16] text-xl">

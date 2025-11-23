@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
-import { FileText, DollarSign, AlertCircle, X } from 'lucide-react';
+import { FileText, DollarSign, AlertCircle, X, Printer } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
@@ -12,22 +12,21 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Textarea } from '../ui/textarea';
 import { TabsContent } from '../ui/tabs';
 import { Separator } from '../ui/separator';
-import { formatCurrency, formatPercentage, formatNumeroContrato } from '@/utils/formatters'
+import { formatCurrency, formatPercentage, formatContractNumber } from '@/utils/formatters'
 import { Process, useProcesses } from "@/contexts/ProcessesContext";
 import { generateContractTemplate } from "@/utils/generateContract";
 import { Contract, ContractInput, useContracts } from "@/contexts/ContractsContext";
 import { Client, useClients } from "@/contexts/ClientsContext";
+import { useAppStore } from "@/store/useAppStore";
+import { printContract } from "@/utils/printContract";
 
-interface ContractFormProps {
-    editingContract: Contract | undefined
-    setEditingContract: (contract: Contract | undefined) => void
-    setActiveTab: (tab: "add" | "search") => void
-}
 
-export function ContractForm({ editingContract, setEditingContract, setActiveTab }: ContractFormProps) {
+export function ContractForm() {
     const { processes } = useProcesses();
     const { clients } = useClients();
+    const { contracts } = useContracts();
     const { addContractMutation, updateContractMutation } = useContracts();
+    const { setContractsTab, setSelectedContract, selectedContract } = useAppStore();
 
     // Contract
     const [process, setProcess] = useState("");
@@ -49,6 +48,7 @@ export function ContractForm({ editingContract, setEditingContract, setActiveTab
     const [selectedProcess, setSelectedProcess] = useState<Process>();
     const [selectedClient, setSelectedClient] = useState<Client>();
 
+
     useEffect(() => {
         if (!process) {
             setSelectedProcess(undefined);
@@ -62,80 +62,18 @@ export function ContractForm({ editingContract, setEditingContract, setActiveTab
         setSelectedClient(client || undefined);
     }, [process, processes, clients]);
 
-
-
-    console.log(selectedProcess);
-
-    const handlePrintContract = (template: string) => {
-        const printWindow = window.open('', '_blank');
-        if (printWindow) {
-            printWindow.document.body.insertAdjacentHTML("beforeend", `
-        <!DOCTYPE html>
-        <html>
-          <head>
-            <title>Contrato de Honorários</title>
-            <meta charset="UTF-8">
-            <style>
-              @page { margin: 2cm; }
-              body { font-family: Arial, sans-serif; font-size: 12pt; line-height: 1.8; margin: 0; color: #000; }
-              .header-logo { margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1.5px solid #a16535; display: flex; align-items: center; justify-content: center; gap: 15px; }
-              .logo-coluna { flex-shrink: 0; }
-              .logo-texto { text-align: left; }
-              .logo-texto h1 { font-family: Georgia, serif; font-size: 16pt; margin: 0; letter-spacing: 0.08em; color: #2d1f16; }
-              .logo-texto p { font-family: Georgia, serif; margin: 4px 0 0 0; color: #4a3629; }
-              .logo-subtitle { font-size: 9pt; letter-spacing: 0.12em; }
-              .logo-areas { font-size: 7pt; letter-spacing: 0.15em; color: #6b5544; }
-              pre.contrato-texto { white-space: pre-wrap; font-family: Arial, sans-serif; font-size: 12pt; line-height: 1.8; margin: 0; padding: 0; overflow-x: auto; text-align: justify; }
-              @media print {
-                body { margin: 0; }
-                pre.contrato-texto { white-space: pre-wrap; overflow-x: visible; font-size: 12pt; }
-              }
-            </style>
-          </head>
-          <body>
-            <div class="header-logo">
-              <div class="logo-coluna">
-                <svg width="50" height="60" viewBox="0 0 100 120" style="color: #a16535;">
-                  <line x1="10" y1="5" x2="90" y2="5" stroke="currentColor" stroke-width="2"/>
-                  <line x1="10" y1="9" x2="90" y2="9" stroke="currentColor" stroke-width="2"/>
-                  <line x1="10" y1="13" x2="90" y2="13" stroke="currentColor" stroke-width="2"/>
-                  <path d="M 15 20 Q 20 15, 25 20 Q 30 15, 35 20 Q 40 15, 45 20 Q 50 15, 55 20 Q 60 15, 65 20 Q 70 15, 75 20 Q 80 15, 85 20"
-                        fill="none" stroke="currentColor" stroke-width="2"/>
-                  <path d="M 15 25 Q 20 22, 25 25 Q 30 22, 35 25 Q 40 22, 45 25 Q 50 22, 55 25 Q 60 22, 65 25 Q 70 22, 75 25 Q 80 22, 85 25"
-                        fill="none" stroke="currentColor" stroke-width="2"/>
-                  <line x1="30" y1="30" x2="30" y2="100" stroke="currentColor" stroke-width="2"/>
-                  <line x1="40" y1="30" x2="40" y2="100" stroke="currentColor" stroke-width="2"/>
-                  <line x1="50" y1="30" x2="50" y2="100" stroke="currentColor" stroke-width="2"/>
-                  <line x1="60" y1="30" x2="60" y2="100" stroke="currentColor" stroke-width="2"/>
-                  <line x1="70" y1="30" x2="70" y2="100" stroke="currentColor" stroke-width="2"/>
-                  <rect x="20" y="100" width="60" height="4" fill="currentColor"/>
-                  <rect x="15" y="105" width="70" height="4" fill="currentColor"/>
-                  <rect x="10" y="110" width="80" height="5" fill="currentColor"/>
-                </svg>
-              </div>
-              <div class="logo-texto">
-                <h1>ANNA LAURA ROCHA GOMES</h1>
-                <p class="logo-subtitle">ADVOCACIA E CONSULTORIA</p>
-                <p class="logo-areas">CÍVEL - CRIMINAL - FAMÍLIA</p>
-              </div>
-            </div>
-            <pre class="contrato-texto">${template.replace(/<[^>]*>/g, '')}</pre>
-          </body>
-        </html>
-      `);
-            printWindow.document.close();
-            printWindow.focus();
-            setTimeout(() => printWindow.print(), 250);
-        }
-    };
-
+    const lastIdRef = useRef<string | null>(null);
     useEffect(() => {
-        if (editingContract) {
-            handleEditContract(editingContract);
-            setActiveTab('add');
-            toast.info('Contrato carregado para edição');
+        if (!selectedContract || lastIdRef.current === selectedContract) return;
+
+        const contract = contracts.find(c => c.id === selectedContract);
+        if (!contract) return;
+
+        if (contract) {
+            lastIdRef.current = selectedContract;
+            handleEditContract(contract);
         }
-    }, [editingContract]);
+    }, [selectedContract, contracts]);
 
     const handleEditContract = (contract: Contract) => {
         setProcess(contract.process || "");
@@ -176,29 +114,24 @@ export function ContractForm({ editingContract, setEditingContract, setActiveTab
                 contractTemplate: contractTemplate || "",
             };
 
-            if (editingContract && !!editingContract.id) {
-                updateContractMutation.mutate({ id: editingContract.id, contract: data }, {
+            if (selectedContract) {
+                updateContractMutation.mutate({ id: selectedContract, contract: data }, {
                     onSuccess: () => {
-                        setEditingContract(undefined);
+                        setSelectedContract(null);
                         clearForm();
-                        setActiveTab("search");
+                        setContractsTab("list");
                     }
                 });
-
-                if (data.contractTemplate) {
-                    handlePrintContract(data.contractTemplate);
-                }
-
             } else {
                 const template = generateContractTemplate(selectedProcess, data, selectedClient);
                 data.contractTemplate = template;
 
-                handlePrintContract(template);
+                printContract(template);
 
                 addContractMutation.mutate(data, {
                     onSuccess: () => {
                         clearForm();
-                        setActiveTab("search");
+                        setContractsTab("list");
                     }
                 });
             }
@@ -233,31 +166,31 @@ export function ContractForm({ editingContract, setEditingContract, setActiveTab
 
     return (
         <>
-            <TabsContent value="add">
+            <TabsContent value="form">
                 <Card className="bg-white border-[#d4c4b0]">
                     <CardHeader>
                         <CardTitle className="text-[#2d1f16]">
-                            {editingContract ? 'Editar Contrato' : 'Novo Contrato'}
+                            {selectedContract ? 'Editar Contrato' : 'Novo Contrato'}
                         </CardTitle>
                         <CardDescription className="text-[#6b5544]">
-                            {editingContract
+                            {selectedContract
                                 ? 'Atualize as informações do contrato'
                                 : 'Primeiro, pesquise o processo para vincular ao contrato'
                             }
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        {editingContract && (
+                        {selectedContract && (
                             <Alert className="mb-6 bg-[#a16535]/10 border-[#a16535]/50">
                                 <AlertCircle className="w-4 h-4 text-[#a16535]" />
                                 <AlertDescription className="text-[#a16535] flex items-center justify-between">
-                                    <span>Você está editando o contrato: <strong>{editingContract.contractNumber}</strong></span>
+                                    <span>Você está editando o contrato: <strong>{contractNumber}</strong></span>
                                     <Button
                                         type="button"
                                         variant="ghost"
                                         size="sm"
                                         onClick={() => {
-                                            setEditingContract(undefined);
+                                            setSelectedContract(null);
                                             clearForm();
                                         }}
                                         className="text-[#a16535] hover:text-[#8b5329]"
@@ -302,7 +235,7 @@ export function ContractForm({ editingContract, setEditingContract, setActiveTab
                                             placeholder="000/2025"
                                             value={contractNumber}
                                             onChange={(e) => {
-                                                const formatted = formatNumeroContrato(e.target.value);
+                                                const formatted = formatContractNumber(e.target.value);
                                                 setContractNumber(formatted);
                                             }}
                                             onBlur={(e) => {
@@ -497,7 +430,7 @@ export function ContractForm({ editingContract, setEditingContract, setActiveTab
                                         </SelectContent>
                                     </Select>
                                 </div>
-                                {editingContract &&
+                                {selectedContract &&
                                     <div className="space-y-2">
                                         <Label className="text-[#4a3629]">Texto do Contrato</Label>
                                         <Textarea
@@ -516,15 +449,28 @@ export function ContractForm({ editingContract, setEditingContract, setActiveTab
                                     className="bg-[#a16535] hover:bg-[#8b5329] text-white shadow-md"
                                 >
                                     <FileText className="w-4 h-4 mr-2" />
-                                    {editingContract ? 'Atualizar & Gerar Contrato' : 'Cadastrar & Gerar Contrato'}
+                                    {selectedContract ? 'Atualizar Contrato' : 'Cadastrar Contrato'}
                                 </Button>
+                                {selectedContract && (
+                                    <Button
+                                        type="button"
+                                        onClick={() => printContract(contractTemplate)}
+                                        className="bg-[#a16535] hover:bg-[#8b5329] text-white shadow-md"
+                                    >
+                                        <Printer className="w-4 h-4 mr-2" />
+                                        Imprimir
+                                    </Button>
+                                )}
                                 <Button
                                     type="button"
                                     variant="outline"
-                                    onClick={clearForm}
-                                    className="border-2 border-[#a16535] text-[#a16535] hover:bg-[#a16535] hover:text-hite transition-all duration-200"
+                                    onClick={() => {
+                                        clearForm();
+                                        setContractsTab("list");
+                                    }}
+                                    className="border-2 border-[#a16535] text-[#a16535] hover:bg-[#a16535] hover:text-white transition-all duration-200"
                                 >
-                                    Limpar Formulário
+                                    Cancelar
                                 </Button>
                             </div>
                         </form>

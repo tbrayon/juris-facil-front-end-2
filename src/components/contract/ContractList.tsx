@@ -1,23 +1,22 @@
-import { useState, useRef, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
-import { FileText, Printer, Upload, Edit, Save, X, Plus, Search, CheckCircle, ArrowLeft } from 'lucide-react';
-import { formatDateBR, formatDateTimeBR, getLocalDateString, getLocalDateTimeString, normalize } from '../../utils/formatters';
+import { FileText, Edit } from 'lucide-react';
+import { formatDateTimeBR, normalize } from '@/utils/formatters';
 
-import { Contract, useContracts } from '@/contexts/ContractsContext';
+import { useContracts } from '@/contexts/ContractsContext';
 import { TabsContent } from '../ui/tabs';
 import { useProcesses } from '@/contexts/ProcessesContext';
+import { useAppStore } from '@/store/useAppStore';
 
-interface ContractsSearchProps {
-  setActiveTab: (tab: "add" | "search") => void
-  setEditContract: (contract: Contract) => void
-}
 
-export function ContractSearch({ setActiveTab, setEditContract }: ContractsSearchProps) {
+export function ContractList() {
 
   const { contracts } = useContracts();
   const { processes } = useProcesses();
+  const { setContractsTab, setSelectedContract } = useAppStore();
+
   const [searchTerm, setSearchTerm] = useState('');
 
   const processMap = useMemo(() => {
@@ -30,7 +29,7 @@ export function ContractSearch({ setActiveTab, setEditContract }: ContractsSearc
     if (!searchTerm) {
       return contracts.map(c => ({
         contract: c,
-        process: processMap.get(c.process) // <-- FIX HERE
+        process: processMap.get(c.process)
       }));
     }
 
@@ -38,7 +37,7 @@ export function ContractSearch({ setActiveTab, setEditContract }: ContractsSearc
 
     return contracts
       .map(contract => {
-        const process = processMap.get(contract.process); // <-- FIX
+        const process = processMap.get(contract.process);
         return { contract, process };
       })
       .filter(({ process }) => {
@@ -54,7 +53,7 @@ export function ContractSearch({ setActiveTab, setEditContract }: ContractsSearc
 
   return (
     <>
-      <TabsContent value="search">
+      <TabsContent value="list">
         <Card className="bg-white border-2 border-[#d4c4b0]">
           <CardHeader>
             <CardTitle className="text-[#2d1f16]">Buscar Contratos</CardTitle>
@@ -118,8 +117,8 @@ export function ContractSearch({ setActiveTab, setEditContract }: ContractsSearc
                             size="sm"
                             onClick={() => {
                               // TODO: make this a modal like the process one
-                              setEditContract(contract.contract);
-                              setActiveTab('add');
+                              setSelectedContract(contract.contract.id);
+                              setContractsTab('form');
                             }}
                             className="text-[#a16535] hover:text-[#8b5329] hover:bg-[#f6f3ee]"
                           >
@@ -129,8 +128,8 @@ export function ContractSearch({ setActiveTab, setEditContract }: ContractsSearc
                             variant="ghost"
                             size="sm"
                             onClick={() => {
-                              setEditContract(contract.contract);
-                              setActiveTab('add');
+                              setSelectedContract(contract.contract.id);
+                              setContractsTab('form');
                             }}
                             className="text-[#a16535] hover:text-[#8b5329] hover:bg-[#f6f3ee]"
                           >

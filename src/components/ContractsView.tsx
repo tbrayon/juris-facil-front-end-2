@@ -1,20 +1,24 @@
-import { useState } from 'react';
 import { Button } from './ui/button';
 import { FileText, Search, Plus, ArrowLeft } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger } from './ui/tabs';
 import { AppView } from '@/types/navigation';
-import { Contract } from '@/contexts/ContractsContext';
 import { ContractForm } from './contract/ContractForm';
-import { ContractSearch } from './contract/ContractSearch';
+import { ContractList } from './contract/ContractList';
+import { useAppStore } from '@/store/useAppStore';
+import { useEffect } from 'react';
 
 interface ContractsViewProps {
   onNavigate: (view: AppView) => void;
 }
 
 export function ContractsView({ onNavigate }: ContractsViewProps) {
-  const [activeTab, setActiveTab] = useState<'add' | 'search'>('search');
+  const { contractsTab, setContractsTab, selectedContract, setSelectedContract } = useAppStore();
 
-  const [editingContract, setEditingContract] = useState<Contract>();
+  useEffect(() => {
+    if (selectedContract && contractsTab === "list") {
+      setSelectedContract(null);
+    }
+  }, [contractsTab, selectedContract])
 
   return (
     <div className="max-w-6xl mx-auto">
@@ -38,25 +42,25 @@ export function ContractsView({ onNavigate }: ContractsViewProps) {
         </div>
       </div>
 
-      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'add' | 'search')}>
+      <Tabs value={contractsTab} onValueChange={(v) => setContractsTab(v as 'list' | 'form')}>
         <TabsList className="grid w-full grid-cols-2 bg-[#f6f3ee] border-2 border-[#d4c4b0] p-1 rounded-full h-14">
           <TabsTrigger
-            value="search"
+            value="list"
             className="data-[state=active]:bg-[#a16535] data-[state=active]:text-white text-[#6b5544] hover:text-[#a16535] rounded-full h-full transition-all"
           >
             <Search className="w-4 h-4 mr-2" />
             Consultar Contratos
           </TabsTrigger>
           <TabsTrigger
-            value="add"
+            value="form"
             className="data-[state=active]:bg-[#a16535] data-[state=active]:text-white text-[#6b5544] hover:text-[#a16535] rounded-full h-full transition-all"
           >
             <Plus className="w-4 h-4 mr-2" />
             Cadastrar Contrato
           </TabsTrigger>
         </TabsList>
-        <ContractSearch setEditContract={setEditingContract} setActiveTab={setActiveTab} />
-        <ContractForm editingContract={editingContract} setEditingContract={setEditingContract} setActiveTab={setActiveTab} />
+        <ContractList />
+        <ContractForm />
       </Tabs>
     </div>
   );
