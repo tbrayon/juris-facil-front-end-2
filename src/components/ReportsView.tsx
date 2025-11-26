@@ -11,8 +11,8 @@ import { formatDateBR } from '@/utils/formatters';
 import { AppView } from '@/types/navigation';
 import { Client } from '@/contexts/ClientsContext';
 import { Process } from '@/contexts/ProcessesContext';
-import { ClientReports } from './reports/clients';
-import { ProcessReports } from './reports/processes';
+import { ClientReports } from './reports/ClientReports';
+import { ProcessReports } from './reports/ProcessReports';
 import { getPriorityBadge, getStatusBadge } from './process/Badges';
 
 
