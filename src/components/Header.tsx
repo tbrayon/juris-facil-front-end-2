@@ -26,13 +26,11 @@ import { useUsers } from "@/contexts/UsersContext";
 
 interface HeaderProps {
   onLogout: () => void;
-  onBack: () => void;
   onNavigate: (view: AppView) => void;
 }
 
 export default function Header({
   onLogout,
-  onBack,
   onNavigate,
 }: HeaderProps) {
   const [menuAberto, setMenuAberto] = React.useState(false);
@@ -58,7 +56,7 @@ export default function Header({
       <div className="max-w-7xl mx-auto w-full flex items-center justify-between px-6 py-4">
         {/* LOGO E TÍTULO */}
         <button
-          onClick={onBack}
+          onClick={() => onNavigate("home")}
           className="flex items-center gap-2 md:gap-3 cursor-pointer hover:opacity-80 transition-opacity group"
         >
           <div className="bg-gradient-to-br from-[#a16535] to-[#8b5329] p-2.5 rounded-lg shadow-lg group-hover:shadow-xl transition-shadow">

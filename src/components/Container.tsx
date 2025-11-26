@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Login } from './Login';
 
-import Layout from './LayoutContent';
+import Layout from './Layout';
 import { WelcomePage } from './Welcome';
 import { CustomerService } from './CustomerService';
 import { CookiesPolicy } from './CookiesPolicy';

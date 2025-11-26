@@ -5,7 +5,6 @@ import { Toaster } from './ui/sonner';
 import { ClientsView } from './ClientsView';
 import PrazosView from './Prazos';
 import { DashboardView } from './DashboardView';
-import { RelatoriosView } from './RelatoriosView';
 import { UsuariosView } from './Usuarios';
 import { Home } from './Home';
 import Header from './Header';
@@ -22,6 +21,7 @@ import { useUsers } from '@/contexts/UsersContext';
 import { ProcessesView } from './ProcessesView';
 import { ContractsView } from './ContractsView';
 import { useAppStore } from '@/store/useAppStore';
+import { ReportsView } from './ReportsView';
 
 interface LayoutProps {
   currentView: AppView;
@@ -32,7 +32,6 @@ interface LayoutProps {
 export default function Layout({
   onLogout,
 }: LayoutProps) {
-  const [processoIdParaEditar, setProcessoIdParaEditar] = useState<string | null>(null);
   const { currentUser } = useUsers();
   const {
     currentView,
@@ -41,67 +40,24 @@ export default function Layout({
 
   const onNavigate = setView;
 
-  const handleVoltarInicio = () => {
-    onNavigate('home');
-    // setClienteIdParaEditar(null);
-    setProcessoIdParaEditar(null);
-  };
-
-  const handleEditarCliente = (clienteId: string) => {
-    // setClienteIdParaEditar(clienteId);
-    onNavigate('clientes');
-  };
-
-  const handleEditarProcesso = (processoId: string) => {
-    setProcessoIdParaEditar(processoId);
-    onNavigate('processos');
-  };
-
   const CurrentView = () => {
     switch (currentView) {
-      case 'home':
-        return <Home onNavigate={onNavigate} />;
       case 'clientes':
-        return (
-          <ClientsView
-            onNavigate={onNavigate}
-          />
-        );
+        return <ClientsView onNavigate={onNavigate} />;
       case 'processos':
-        // return (
-        //   <ProcessosView
-        //     processoIdParaEditar={processoIdParaEditar}
-        //     onClearProcessoIdParaEditar={() => setProcessoIdParaEditar(null)}
-        //     onVoltar={handleVoltarInicio}
-        //   />
-        // );
-
-        return (
-          <ProcessesView
-            onNavigate={onNavigate}
-          />
-        )
-
-      case 'prazos':
-        return <PrazosView onVoltar={handleVoltarInicio} />;
+        return <ProcessesView onNavigate={onNavigate} />;
+      // case 'prazos':
+      //   return <PrazosView onVoltar={handleVoltarInicio} />;
       case 'contratos':
         return <ContractsView onNavigate={onNavigate} />;
-      //   return <ContratosView onVoltar={handleVoltarInicio} />;
       case 'relatorios':
-        return (
-          <RelatoriosView
-            onEditarCliente={handleEditarCliente}
-            onEditarProcesso={handleEditarProcesso}
-            onVoltar={handleVoltarInicio}
-          />
-        );
+        return <ReportsView onNavigate={onNavigate} />;
       case 'dashboard':
         return <DashboardView onNavigate={onNavigate} />;
-
       case 'usuarios':
-        return currentUser?.role === 'admin' ? (
-          <UsuariosView onVoltar={handleVoltarInicio} />
-        ) : null;
+      // return currentUser?.role === 'admin' ? (
+      //   <UsuariosView onVoltar={handleVoltarInicio} />
+      // ) : null;
       case 'suporte':
         return <CustomerService onNavigate={onNavigate} />;
       case 'termos':
@@ -123,7 +79,6 @@ export default function Layout({
         {/* HEADER — com menu mobile/tablet embutido */}
         <Header
           onLogout={onLogout}
-          onBack={handleVoltarInicio}
           onNavigate={onNavigate}
         />
 

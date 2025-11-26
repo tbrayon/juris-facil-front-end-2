@@ -20,11 +20,11 @@ export function getLocalDateTimeString(): string {
  */
 export function formatCPF(value: string): string {
   const numbers = removeNonNumeric(value);
-  
+
 
   // Limita a 11 dígitos
   const limited = numbers.slice(0, 11);
-  
+
 
   // Aplica a máscara de CPF
   if (limited.length <= 3) {
@@ -43,11 +43,11 @@ export function formatCPF(value: string): string {
  */
 export function formatCNPJ(value: string): string {
   const numbers = removeNonNumeric(value);
-  
+
 
   // Limita a 14 dígitos
   const limited = numbers.slice(0, 14);
-  
+
 
   // Aplica a máscara de CNPJ
   if (limited.length <= 2) {
@@ -68,7 +68,7 @@ export function formatCNPJ(value: string): string {
  */
 export function formatCPFOrCNPJ(value: string): string {
   const numbers = removeNonNumeric(value);
-  
+
 
   // Se tem até 11 dígitos, formata como CPF
   if (numbers.length <= 11) {
@@ -115,7 +115,7 @@ export function formatDateTimeBR(isoString: string): string {
 
 
 export function removeNonNumeric(value: string): string {
-  return value.replace(/\D/g, "")  
+  return value.replace(/\D/g, "")
 }
 
 /**
@@ -286,4 +286,8 @@ export function normalize(str: string) {
     .normalize("NFD")                // split accents
     .replace(/[\u0300-\u036f]/g, "") // remove accents
     .toLowerCase();
+}
+
+export function capitalizeFirstLetter(value: string | null | undefined) {
+  return String(value).charAt(0).toUpperCase() + String(value).slice(1);
 }
