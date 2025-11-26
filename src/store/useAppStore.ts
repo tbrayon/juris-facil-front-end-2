@@ -15,6 +15,9 @@ interface AppStore {
 
   selectedContract: string | null;
   setSelectedContract: (id: string | null) => void;
+
+  selectedProcess: string | null;
+  setSelectedProcess: (id: string | null) => void;
 }
 
 export const useAppStore = create<AppStore>((set) => ({
@@ -29,4 +32,7 @@ export const useAppStore = create<AppStore>((set) => ({
 
   selectedContract: null,
   setSelectedContract: (selectedContract) => set({ selectedContract }),
+
+  selectedProcess: null,
+  setSelectedProcess: (selectedProcess) => set({ selectedProcess }),
 }));

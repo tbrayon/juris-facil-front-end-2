@@ -12,6 +12,39 @@ const RefSchema = z.object({
   name: z.string(),
 }).optional().nullable();
 
+export const ExpenseSchema = z.object({
+  id: z.uuid(),
+  process: z.uuid(),
+
+  amount: z.string().nullable(), // decimal → string
+  purpose: z.string().nullable(),
+
+  lastUpdatedBy: z.uuid(),
+  lastUpdatedAt: z.string(),
+  createdBy: z.uuid(),
+  createdAt: z.string(),
+});
+
+export const NotificationSchema = z.object({
+  id: z.uuid().nullable(),
+  process: z.uuid().optional(),
+
+  type: z.string().nullable(),
+  sentAt: z.string().nullable(),
+  receivedAt: z.string().nullable(),
+  notes: z.string().nullable(),
+});
+
+export const NoteSchema = z.object({
+  id: z.uuid(),
+  process: z.uuid(),
+
+  content: z.string(),
+
+  createdBy: z.uuid(),
+  createdAt: z.string(),
+});
+
 export const ProcessSchema = z.object({
   id: z.uuid(),
   client: clientSchema,
@@ -39,6 +72,9 @@ export const ProcessSchema = z.object({
   nextDeadline: z.string().optional().nullable(), // proximoPrazo
   processLink: z.string().optional().nullable(), // linkProcesso
   processNotes: z.string().optional().nullable(), // observacoesProcesso
+
+  expenses: z.array(ExpenseSchema).optional(),
+  notifications: z.array(NotificationSchema).optional(),
 
   createdAt: z.string(), // dataCadastro
   lastUpdatedAt: z.string(),
@@ -70,44 +106,9 @@ export const ProcessInputSchema = z.object({
   nextDeadline: z.string().optional().nullable(), // proximoPrazo
   processLink: z.string().optional().nullable(), // linkProcesso
   processNotes: z.string().optional().nullable(), // observacoesProcesso
-});
 
-export const ExpenseSchema = z.object({
-  id: z.uuid(),
-  process: z.uuid(),
-
-  amount: z.string().nullable(), // decimal → string
-  purpose: z.string().nullable(),
-
-  lastUpdatedBy: z.uuid(),
-  lastUpdatedAt: z.string(),
-  createdBy: z.uuid(),
-  createdAt: z.string(),
-});
-
-export const NotificationSchema = z.object({
-  id: z.uuid(),
-  process: z.uuid(),
-
-  type: z.string().nullable(),
-  sentAt: z.string().nullable(),
-  receivedAt: z.string().nullable(),
-  notes: z.string().nullable(),
-
-  lastUpdatedBy: z.uuid(),
-  lastUpdatedAt: z.string(),
-  createdBy: z.uuid(),
-  createdAt: z.string(),
-});
-
-export const NoteSchema = z.object({
-  id: z.uuid(),
-  process: z.uuid(),
-
-  content: z.string(),
-
-  createdBy: z.uuid(),
-  createdAt: z.string(),
+  expenses: z.array(ExpenseSchema).optional(),
+  notifications: z.array(NotificationSchema).optional(),
 });
 
 export type Process = z.infer<typeof ProcessSchema>;
@@ -117,7 +118,6 @@ export type Expense = z.infer<typeof ExpenseSchema>;
 export type ExpenseInput = Omit<Process, "id" | "createdAt" | "createdBy" | "lastUpdatedAt" | "lastUpdatedBy">;
 
 export type Notification = z.infer<typeof NotificationSchema>;
-export type NotificationInput = Omit<Notification, "id" | "createdAt" | "createdBy" | "lastUpdatedAt" | "lastUpdatedBy">;
 
 export type Note = z.infer<typeof NoteSchema>;
 export type NoteInput = Omit<Note, "id" | "createdAt" | "createdBy" | "lastUpdatedAt" | "lastUpdatedBy">;
@@ -139,13 +139,27 @@ async function fetchProcesses(): Promise<Process[]> {
   }
 }
 
+async function fetchProcess(id: string): Promise<Process> {
+  try {
+    const { data } = await api.get(`/processes/${id}`);
+
+    return ProcessSchema.parse(data);
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw error.response?.data || new Error('Erro de servidor. Por favor, tente novamente mais tarde!');
+    }
+
+    throw error;
+  }
+}
+
 interface CreateProcessInput {
   process: ProcessInput
 }
 
-async function createProcess({ process }: CreateProcessInput) {
+async function createProcess(params: CreateProcessInput) {
   try {
-    const { data } = await api.post("/processes", { process });
+    const { data } = await api.post("/processes", params);
 
     return ProcessInputSchema.parse(data.process);
   } catch (error) {
@@ -159,11 +173,12 @@ async function createProcess({ process }: CreateProcessInput) {
 
 interface UpdateProcessInput {
   process: ProcessInput
+  notifications: Notification[]
 }
 
-async function updateProcess(id: string, { process }: UpdateProcessInput) {
+async function updateProcess(id: string, params: UpdateProcessInput) {
   try {
-    const { data } = await api.patch(`/processes/${id}`, { process });
+    const { data } = await api.patch(`/processes/${id}`, params);
 
     return ProcessInputSchema.parse(data.process);
   } catch (error) {
@@ -227,7 +242,7 @@ export function ProcessesProvider({ children }: { children: ReactNode }) {
     },
     onError: (e) => {
       console.log(e);
-      toast.error("Erro ao atualizar Processe.");
+      toast.error("Erro ao atualizar Processo.");
     },
   });
 
@@ -256,4 +271,10 @@ export function useProcesses() {
   return context;
 }
 
-
+export function useProcess(id: string | null) {
+  return useQuery({
+    queryKey: ['process', id],
+    queryFn: () => fetchProcess(id!),
+    enabled: !!id,
+  });
+}

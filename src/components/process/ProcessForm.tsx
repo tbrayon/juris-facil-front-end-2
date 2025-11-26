@@ -10,8 +10,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Textarea } from '../ui/textarea';
 import { TabsContent } from '../ui/tabs';
 import { Separator } from '../ui/separator';
-import { formatCurrency, formatNumeroProcesso, formatCPF, formatCNPJ } from '@/utils/formatters'
-import { Process, ProcessInput, useProcesses } from '@/contexts/ProcessesContext';
+import { formatCurrency, formatNumeroProcesso, formatCPF, formatCNPJ, convertToIsoDate } from '@/utils/formatters'
+import { Expense, Notification, Process, ProcessInput, useProcess, useProcesses } from '@/contexts/ProcessesContext';
 import { states } from '@/utils/states';
 import { useProceduralStages } from '@/contexts/ProceduralStagesContext';
 import { Client, useClients } from '@/contexts/ClientsContext';
@@ -22,15 +22,15 @@ import { useCourtTypes } from '@/contexts/CourtTypesContext';
 import { useCourts } from '@/contexts/CourtsContext';
 import { useJurisdictions } from '@/contexts/JurisdictionsContext';
 import { toast } from 'sonner';
+import { Notifications } from './Notifications';
+import { useAppStore } from '@/store/useAppStore';
 
 interface ProcessFormProps {
-    editingProcess: Process | undefined
-    setEditingProcess: (process: Process | undefined) => void
     setActiveTab: (tab: "add" | "search") => void
 }
 
-export function ProcessForm({ editingProcess, setEditingProcess, setActiveTab }: ProcessFormProps) {
-    const { addProcessMutation, updateProcessMutation, processes } = useProcesses();
+export function ProcessForm({ setActiveTab }: ProcessFormProps) {
+    const { addProcessMutation, updateProcessMutation } = useProcesses();
     const { clients } = useClients();
 
     const { status } = useStatus();
@@ -44,6 +44,13 @@ export function ProcessForm({ editingProcess, setEditingProcess, setActiveTab }:
     const [documentSearch, setDocumentSearch] = useState("");
     const [selectedClient, setSelectedClient] = useState<Client>();
 
+    const [notifications, setNotifications] = useState<Notification[]>([]);
+    const [expenses, setExpenses] = useState<Expense[]>([]);
+
+    const { selectedProcess, setSelectedProcess } = useAppStore();
+    const { data: editingProcess } = useProcess(selectedProcess);
+
+
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -56,7 +63,13 @@ export function ProcessForm({ editingProcess, setEditingProcess, setActiveTab }:
         e.preventDefault();
 
         if (selectedClient) {
-            const data: { process: ProcessInput } = {
+            const payloadNotifications = notifications.map((n) => ({
+                ...n,
+                sentAt: convertToIsoDate(n.sentAt),
+                receivedAt: convertToIsoDate(n.receivedAt),
+            }));
+
+            const data: { process: ProcessInput, notifications: Notification[] } = {
                 process: {
                     client: selectedClient.id,
                     processNumber,
@@ -80,13 +93,18 @@ export function ProcessForm({ editingProcess, setEditingProcess, setActiveTab }:
                     nextDeadline: nextDeadline || null,
                     processLink,
                     processNotes,
-                }
+
+                },
+                notifications: payloadNotifications,
+                // expenses,
             };
 
-            if (editingProcess && !!editingProcess.id) {
-                updateProcessMutation.mutate({ id: editingProcess.id, data }, {
+            console.log(data);
+
+            if (selectedProcess) {
+                updateProcessMutation.mutate({ id: selectedProcess, data }, {
                     onSuccess: () => {
-                        setEditingProcess(undefined);
+                        setSelectedProcess(null);
                         clearForm();
                         setActiveTab("search");
                     }
@@ -183,18 +201,11 @@ export function ProcessForm({ editingProcess, setEditingProcess, setActiveTab }:
         setProcessLink(process.processLink || "");
         setProcessNotes(process.processNotes || "");
 
+        setExpenses(process.expenses || []);
+        setNotifications(process.notifications || []);
+
     }
 
-    // Expenses
-    const [amount, setAmount] = useState("");
-    const [purpose, setPurpose] = useState("");
-
-    // Notifications
-    const [notificationTypes, setNotificationTypes] = useState([
-        'Email',
-        'Registered Letter (AR)',
-        'WhatsApp',
-    ]);
 
     const clearForm = () => {
         setProcessNumber("");
@@ -221,9 +232,8 @@ export function ProcessForm({ editingProcess, setEditingProcess, setActiveTab }:
         setProcessLink("");
         setProcessNotes("");
 
-        // Expenses (single expense fields)
-        setAmount("");
-        setPurpose("");
+        setExpenses([]);
+        setNotifications([]);
     };
 
 
@@ -270,7 +280,7 @@ export function ProcessForm({ editingProcess, setEditingProcess, setActiveTab }:
                                         variant="ghost"
                                         size="sm"
                                         onClick={() => {
-                                            setEditingProcess(undefined);
+                                            setSelectedProcess(null);
                                             clearForm();
                                         }}
                                         className="text-[#a16535] hover:text-[#8b5329]"
@@ -885,7 +895,7 @@ export function ProcessForm({ editingProcess, setEditingProcess, setActiveTab }:
 
                                 <div className="space-y-2">
                                     <Label htmlFor="observacoes-processo" className="text-[#4a3629]">
-                                        Observações do Processo
+                                        Observações
                                     </Label>
                                     <Textarea
                                         id="observacoes-processo"
@@ -897,143 +907,10 @@ export function ProcessForm({ editingProcess, setEditingProcess, setActiveTab }:
                                     />
                                 </div>
                             </div>
-
                             <Separator className="bg-[#d4c4b0]" />
 
-                            {/* Notificações Enviadas */}
-                            {/* <div className="space-y-4">
-                                <h3 className="text-[#a16535] flex items-center gap-2">
-                                    <Bell className="w-5 h-5" />
-                                    Notificações Enviadas
-                                </h3>
-                            */}
-
-                            {/* Lista de Notificações */}
-                            {/* <div className="space-y-3">
-                                    {notifications.map((notification, index) => (
-                                        <div key={notification.id} className="bg-[#f6f3ee] border border-[#d4c4b0] rounded-lg p-4">
-                                            <div className="flex items-start justify-between mb-3">
-                                                <div className="flex items-center gap-2">
-                                                    <Badge className="bg-[#a16535] text-white">{notification.type}</Badge>
-                                                </div>
-                                                <Button
-                                                    type="button"
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    onClick={() => {
-                                                        removeNotification(notification.id);
-                                                    }}
-                                                    className="text-red-600 hover:text-red-700 hover:bg-red-50 h-6 px-2"
-                                                >
-                                                    <X className="w-4 h-4" />
-                                                </Button>
-                                            </div>
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <div className="space-y-1">
-                                                    <Label className="text-[#6b5544] text-xs">Data de Envio</Label>
-                                                    <Input
-                                                        type="date"
-                                                        value={notification.sentAt}
-                                                        onChange={(e) => {
-                                                            // const novasNotificacoes = [...notificacoes];
-                                                            // novasNotificacoes[index].dataEnvio = e.target.value;
-                                                            // setNotificacoes(novasNotificacoes);
-                                                        }}
-                                                        className="bg-white border-[#d4c4b0] text-[#2d1f16] h-9"
-                                                    />
-                                                </div>
-                                                <div className="space-y-1">
-                                                    <Label className="text-[#6b5544] text-xs">Data de Recebimento</Label>
-                                                    <Input
-                                                        type="date"
-                                                        value={notification.receivedAt}
-                                                        onChange={(e) => {
-                                                            // const novasNotificacoes = [...notificacoes];
-                                                            // novasNotificacoes[index].dataRecebimento = e.target.value;
-                                                            // setNotificacoes(novasNotificacoes);
-                                                        }}
-                                                        className="bg-white border-[#d4c4b0] text-[#2d1f16] h-9"
-                                                    />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))}
-
-                                    {notifications.length === 0 && (
-                                        <div className="text-center text-[#6b5544] py-4 bg-[#f6f3ee] border border-dashed border-[#d4c4b0] rounded-lg">
-                                            Nenhuma notificação cadastrada
-                                        </div>
-                                    )}
-                                </div>
-                                */}
-
-                            {/* Botões para adicionar notificações */}
-                            {/*
-                                <div className="flex flex-wrap gap-2">
-                                    {notificationTypes.map((type) => (
-                                        <Button
-                                            key={type}
-                                            type="button"
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() => {
-                                                // setNotificacoes([...notificacoes, {
-                                                //     id: Date.now().toString(),
-                                                //     tipo,
-                                                //     dataEnvio: '',
-                                                //     dataRecebimento: ''
-                                                // }]);
-                                                toast.success(`${type} adicionado`);
-                                            }}
-                                            className="border-[#a16535] text-[#a16535] hover:bg-[#a16535] hover:text-white"
-                                        >
-                                            <Plus className="w-3 h-3 mr-1" />
-                                            {type}
-                                        </Button>
-                                    ))}
-                                    <Button
-                                        type="button"
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => {
-                                            // const novoTipo = prompt('Digite o nome do novo tipo de notificação:');
-                                            // if (novoTipo && novoTipo.trim()) {
-                                            //     setTiposNotificacao([...tiposNotificacao, novoTipo.trim()]);
-                                            //     setNotificacoes([...notificacoes, {
-                                            //         id: Date.now().toString(),
-                                            //         tipo: novoTipo.trim(),
-                                            //         dataEnvio: '',
-                                            //         dataRecebimento: ''
-                                            //     }]);
-                                            //     toast.success(`${novoTipo} adicionado`);
-                                            // }
-                                        }}
-                                        className="border-dashed border-[#a16535] text-[#a16535] hover:bg-[#a16535] hover:text-white"
-                                    >
-                                        <PlusCircle className="w-3 h-3 mr-1" />
-                                        Adicionar outro tipo...
-                                    </Button>
-                                </div>
-                                */}
-                            {/* Observações das Notificações */}
-                            {/*
-                                <div className="space-y-2">
-                                    <Label htmlFor="observacoes-notificacoes" className="text-[#4a3629]">
-                                        Observações sobre Notificações
-                                    </Label>
-                                    <Textarea
-                                        id="observacoes-notificacoes"
-                                        placeholder="Observações sobre as notificações enviadas..."
-                                        value={notificationNotes}
-                                        onChange={(e) => setNotificationNotes(e.target.value)}
-                                        rows={2}
-                                        className="bg-[#f6f3ee] border-[#d4c4b0] text-[#2d1f16] placeholder:text-[#6b5544] focus:border-[#a16535] focus:ring-[#a16535]/20 resize-none"
-                                    />
-                                </div>
-                            </div>
-
-                            <Separator className="bg-[#d4c4b0]" />
-                            */}
+                            {/* Notificações */}
+                            <Notifications notifications={notifications} setNotifications={setNotifications} process={editingProcess?.id} />
                             <div className="flex gap-2">
                                 <Button
                                     type="submit"

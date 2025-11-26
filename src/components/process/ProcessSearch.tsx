@@ -11,16 +11,18 @@ import { TabsContent } from '../ui/tabs';
 import { Separator } from '../ui/separator';
 
 import { formatDateBR, normalize } from '@/utils/formatters';
-import { Process, useProcesses } from '@/contexts/ProcessesContext';
+import { Process, useProcess, useProcesses } from '@/contexts/ProcessesContext';
 import { ProcessModal } from './ProcessModal';
+import { useAppStore } from '@/store/useAppStore';
 
 interface ProcessSearchProps {
     setActiveTab: (tab: "add" | "search") => void
-    setEditProcess: (process: Process) => void
+    setEditProcess: (process: Process | undefined) => void
 }
 
 export function ProcessSearch({ setActiveTab, setEditProcess }: ProcessSearchProps) {
     const { processes } = useProcesses();
+    const { setSelectedProcess } = useAppStore();
 
     const [searchTerm, setSearchTerm] = useState('');
 
@@ -46,8 +48,8 @@ export function ProcessSearch({ setActiveTab, setEditProcess }: ProcessSearchPro
         setIsProcessModalOpen(true);
     }
 
-    const handleProcessEdit = (process: Process) => {
-        setEditProcess(process);
+    const handleProcessEdit = (id: string) => {
+        setSelectedProcess(id);
         setActiveTab("add");
     }
 
@@ -123,7 +125,7 @@ export function ProcessSearch({ setActiveTab, setEditProcess }: ProcessSearchPro
                                                     <Button
                                                         variant="ghost"
                                                         size="sm"
-                                                        onClick={() => handleProcessEdit(process)}
+                                                        onClick={() => handleProcessEdit(process.id)}
                                                         className="text-[#a16535] hover:text-[#8b5329] hover:bg-[#a16535]/10"
                                                     >
                                                         <Edit className="w-4 h-4" />

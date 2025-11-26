@@ -291,3 +291,7 @@ export function normalize(str: string) {
 export function capitalizeFirstLetter(value: string | null | undefined) {
   return String(value).charAt(0).toUpperCase() + String(value).slice(1);
 }
+
+export function convertToIsoDate(value?: string | null) {
+  return value ? new Date(value).toISOString() : null;
+}
