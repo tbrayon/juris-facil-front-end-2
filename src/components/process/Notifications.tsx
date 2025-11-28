@@ -22,8 +22,6 @@ export function Notifications({ notifications, setNotifications, process }: Noti
         'WhatsApp',
     ];
 
-    console.log("Notify me: ", notifications);
-
     return (
         <>
 

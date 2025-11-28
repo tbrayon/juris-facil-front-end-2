@@ -24,6 +24,7 @@ import { useJurisdictions } from '@/contexts/JurisdictionsContext';
 import { toast } from 'sonner';
 import { Notifications } from './Notifications';
 import { useAppStore } from '@/store/useAppStore';
+import { Expenses } from './Expenses';
 
 interface ProcessFormProps {
     setActiveTab: (tab: "add" | "search") => void
@@ -69,7 +70,7 @@ export function ProcessForm({ setActiveTab }: ProcessFormProps) {
                 receivedAt: convertToIsoDate(n.receivedAt),
             }));
 
-            const data: { process: ProcessInput, notifications: Notification[] } = {
+            const data: { process: ProcessInput, notifications: Notification[], expenses: Expense[] } = {
                 process: {
                     client: selectedClient.id,
                     processNumber,
@@ -92,11 +93,11 @@ export function ProcessForm({ setActiveTab }: ProcessFormProps) {
                     responsibleAttorney,
                     nextDeadline: nextDeadline || null,
                     processLink,
-                    processNotes,
+                    note,
 
                 },
                 notifications: payloadNotifications,
-                // expenses,
+                expenses,
             };
 
             console.log(data);
@@ -164,7 +165,7 @@ export function ProcessForm({ setActiveTab }: ProcessFormProps) {
     const [priority, setPriority] = useState("");
     const [nextDeadline, setNextDeadline] = useState("");
     const [processLink, setProcessLink] = useState("");
-    const [processNotes, setProcessNotes] = useState("");
+    const [note, setProcessNotes] = useState("");
 
     useEffect(() => {
         if (editingProcess) {
@@ -199,7 +200,7 @@ export function ProcessForm({ setActiveTab }: ProcessFormProps) {
         setPriority(process.priority || "");
         setNextDeadline(process.nextDeadline || "");
         setProcessLink(process.processLink || "");
-        setProcessNotes(process.processNotes || "");
+        setProcessNotes(process.note || "");
 
         setExpenses(process.expenses || []);
         setNotifications(process.notifications || []);
@@ -900,17 +901,24 @@ export function ProcessForm({ setActiveTab }: ProcessFormProps) {
                                     <Textarea
                                         id="observacoes-processo"
                                         placeholder="Observações adicionais sobre o processo..."
-                                        value={processNotes}
+                                        value={note}
                                         onChange={(e) => setProcessNotes(e.target.value)}
                                         rows={3}
                                         className="bg-[#f6f3ee] border-[#d4c4b0] text-[#2d1f16] placeholder:text-[#6b5544] focus:border-[#a16535] focus:ring-[#a16535]/20 resize-none"
                                     />
                                 </div>
                             </div>
+
+                            <Separator className="bg-[#d4c4b0]" />
+
+                            {/* Despesas processuais */}
+                            <Expenses expenses={expenses} setExpenses={setExpenses} process={editingProcess?.id} />
+
                             <Separator className="bg-[#d4c4b0]" />
 
                             {/* Notificações */}
                             <Notifications notifications={notifications} setNotifications={setNotifications} process={editingProcess?.id} />
+
                             <div className="flex gap-2">
                                 <Button
                                     type="submit"

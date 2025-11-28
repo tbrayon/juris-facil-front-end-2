@@ -13,16 +13,11 @@ const RefSchema = z.object({
 }).optional().nullable();
 
 export const ExpenseSchema = z.object({
-  id: z.uuid(),
-  process: z.uuid(),
+  id: z.uuid().nullable(),
+  process: z.uuid().optional(),
 
   amount: z.string().nullable(), // decimal → string
   purpose: z.string().nullable(),
-
-  lastUpdatedBy: z.uuid(),
-  lastUpdatedAt: z.string(),
-  createdBy: z.uuid(),
-  createdAt: z.string(),
 });
 
 export const NotificationSchema = z.object({
@@ -71,7 +66,7 @@ export const ProcessSchema = z.object({
   priority: z.string().optional().nullable(),
   nextDeadline: z.string().optional().nullable(), // proximoPrazo
   processLink: z.string().optional().nullable(), // linkProcesso
-  processNotes: z.string().optional().nullable(), // observacoesProcesso
+  note: z.string().optional().nullable(), // observacoesProcesso
 
   expenses: z.array(ExpenseSchema).optional(),
   notifications: z.array(NotificationSchema).optional(),
@@ -105,7 +100,7 @@ export const ProcessInputSchema = z.object({
   priority: z.string().optional().nullable(),
   nextDeadline: z.string().optional().nullable(), // proximoPrazo
   processLink: z.string().optional().nullable(), // linkProcesso
-  processNotes: z.string().optional().nullable(), // observacoesProcesso
+  note: z.string().optional().nullable(), // observacoesProcesso
 
   expenses: z.array(ExpenseSchema).optional(),
   notifications: z.array(NotificationSchema).optional(),
@@ -155,6 +150,8 @@ async function fetchProcess(id: string): Promise<Process> {
 
 interface CreateProcessInput {
   process: ProcessInput
+  expenses: Expense[]
+  notifications: Notification[]
 }
 
 async function createProcess(params: CreateProcessInput) {
@@ -173,6 +170,7 @@ async function createProcess(params: CreateProcessInput) {
 
 interface UpdateProcessInput {
   process: ProcessInput
+  expenses: Expense[]
   notifications: Notification[]
 }
 
