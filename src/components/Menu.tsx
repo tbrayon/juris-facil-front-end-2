@@ -40,7 +40,7 @@ export default function Menu({ activeView, onNavigate }: MenuProps) {
       icon: isMobile ? UserSquare2 : Users
     },
     { view: 'processos', label: 'Processos', icon: FileText },
-    { view: 'prazos', label: 'Prazos e Audiências', icon: Calendar },
+    // { view: 'prazos', label: 'Prazos e Audiências', icon: Calendar },
     { view: 'contratos', label: 'Contratos de Honorários', icon: FileSignature },
     { view: 'relatorios', label: 'Relatórios', icon: FileBarChart },
     { view: 'dashboard', label: 'Dashboard', icon: BarChart3 },
